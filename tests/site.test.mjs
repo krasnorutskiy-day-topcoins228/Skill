@@ -152,6 +152,15 @@ test('mobile menu uses simple bars and narrower, taller glass buttons without a 
   assert.match(css, /\.site-menu-toggle\[hidden\],\s*\.site-nav\[hidden\]\s*\{[^}]*display:\s*none/);
 });
 
+test('the open mobile menu and its header share the same burgundy surface', () => {
+  const top = css.match(/\.has-menu\s+\.site-header\.is-menu-open\s+\.site-header__inner::after\s*\{([^}]*)\}/)?.[1];
+  const drawer = css.match(/\.has-menu\s+\.site-nav\s*\{([^}]*)\}/)?.[1];
+  assert.ok(top && drawer, 'Mobile menu surfaces are missing');
+  assert.match(top, /background:\s*var\(--wine\)/);
+  assert.match(drawer, /background:\s*var\(--wine\)/);
+  assert.doesNotMatch(top, /border-bottom/);
+});
+
 test('the header stays fixed and its glass edge fades in only after scrolling', () => {
   assert.match(css, /\.has-sticky-header\s+\.site-header\s*\{[^}]*position:\s*fixed/);
   const edge = css.match(/\.site-header::after\s*\{([^}]*)\}/)?.[1];
@@ -204,14 +213,17 @@ test('the role is above the name without forced line breaks', () => {
   assert.match(css, /\.hero__description\s*\{[^}]*font-size:\s*22px/);
 });
 
-test('phone hero is lowered, has a slightly larger name and compact buttons without flying petals', () => {
+test('phone hero keeps the cloche and still petals visible with readable, compact actions', () => {
   const phone = css.match(/@media\s*\(max-width:\s*599px\)\s*\{([^{}]*\.hero__petals\s*\{[^}]*\}[\s\S]*?)\n\}/)?.[1];
   assert.ok(phone, 'Phone hero styles are missing');
   assert.match(phone, /\.hero__petals\s*\{[^}]*display:\s*none/);
-  assert.match(phone, /\.has-menu\s+\.hero__inner\s*\{[^}]*padding-top:\s*152px/);
-  assert.match(phone, /\.hero\s+h1\s*\{[^}]*font-size:\s*clamp\(3\.3125rem,\s*14\.7vw/);
-  assert.match(phone, /\.hero__actions\s+\.button\s*\{[^}]*width:\s*fit-content/);
-  assert.match(css, /@media\s*\(min-width:\s*600px\)\s*and\s*\(max-width:\s*1100px\)\s*and\s*\(max-height:\s*500px\)\s*\{[\s\S]*?\.hero__petals\s*\{[^}]*display:\s*none/);
+  assert.match(phone, /\.has-menu\s+\.hero__inner\s*\{[^}]*padding-top:\s*112px/);
+  assert.match(phone, /\.hero\s+h1\s*\{[^}]*font-size:\s*clamp\(3\.125rem,\s*13\.4vw/);
+  assert.match(phone, /\.hero__description\s*\{[^}]*font-size:\s*20px/);
+  assert.match(phone, /\.hero__actions\s+\.button\s*\{[^}]*width:\s*min\(225px,\s*62vw\)[^}]*min-height:\s*64px/);
+  assert.match(phone, /\.hero__image\s*\{[^}]*top:\s*max\(188px,\s*calc\(100svh\s*-\s*630px\)\)[^}]*bottom:\s*auto/);
+  assert.match(css, /@media\s*\(max-width:\s*599px\)\s*and\s*\(max-height:\s*700px\)\s*and\s*\(orientation:\s*portrait\)[\s\S]*?\.hero::after\s*\{[^}]*rose-petal-tabletop\.png/);
+  assert.match(css, /@media\s*\(max-width:\s*1100px\)\s*and\s*\(max-height:\s*500px\)\s*and\s*\(orientation:\s*landscape\)[\s\S]*?\.hero__petals\s*\{[^}]*display:\s*none/);
 });
 
 test('the logo is proportionally smaller and every section keeps a larger label', () => {
@@ -272,6 +284,8 @@ test('services show the four supplied packages and distinguish the video editing
 });
 
 test('personal brand support preserves the supplied scope, format, and monthly price', () => {
+  assert.match(css, /\.personal__included\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/);
+  assert.match(css, /\.personal__included-heading\s+h3\s*\{[^}]*overflow-wrap:\s*anywhere/);
   const section = html.match(/<section\b[^>]*id="personal-brand"[\s\S]*?<\/section>/)?.[0];
   assert.ok(section, 'Personal brand section is missing');
   assert.match(html, /href="#personal-brand"/);

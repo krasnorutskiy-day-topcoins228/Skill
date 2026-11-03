@@ -333,8 +333,8 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 .personal__intro { max-width: 680px; font-size: 21px; line-height: 1.65; }
 .personal__intro h3 { margin-bottom: 20px; font-size: 25px; line-height: 1.25; letter-spacing: -.025em; }
 .personal__intro p + p { margin-top: 18px; }
-.personal__included { display: grid; gap: 24px; margin-top: 60px; }
-.personal__included-heading h3 { font-size: clamp(30px, 7vw, 48px); font-weight: 700; letter-spacing: -.035em; line-height: 1.15; }
+.personal__included { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; margin-top: 60px; }
+.personal__included-heading h3 { overflow-wrap: anywhere; font-size: clamp(30px, 7vw, 48px); font-weight: 700; letter-spacing: -.035em; line-height: 1.15; }
 .personal__included-heading em { font-family: var(--font-accent); font-size: 1.15em; font-weight: 600; }
 .personal__features { border-top: 1px solid var(--line-on-ice); }
 .personal-feature { border-bottom: 1px solid var(--line-on-ice); }
@@ -428,7 +428,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .has-menu .site-header__inner { flex-wrap: nowrap; justify-content: space-between; gap: 12px; }
   .has-menu .site-header.is-menu-open .site-header__inner::after {
     content: ""; position: fixed; z-index: 3; inset: 0 0 auto; height: var(--header-offset); pointer-events: none;
-    background: rgba(70, 7, 27, .98); border-bottom: 1px solid rgba(199, 229, 255, .16);
+    background: var(--wine);
   }
   .has-menu .site-nav {
     position: fixed; z-index: 2; top: 0; left: 0; right: 0; display: flex; flex-direction: column; gap: 10px;
@@ -437,7 +437,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
     overflow-y: auto; overscroll-behavior: contain; scroll-padding-top: var(--header-offset);
     scrollbar-width: thin; scrollbar-color: rgba(199, 229, 255, .45) transparent;
     border: 1px solid rgba(221, 240, 255, .22); border-top: 0; border-radius: 0 0 28px 28px;
-    background: radial-gradient(ellipse at 15% 0%, rgba(218, 239, 255, .15), transparent 48%), rgba(70, 7, 27, .97);
+    background: var(--wine);
     box-shadow: 0 18px 55px rgba(25, 0, 10, .35), inset 0 -1px 0 rgba(255, 255, 255, .12);
     -webkit-backdrop-filter: blur(28px) saturate(140%); backdrop-filter: blur(28px) saturate(140%);
     visibility: hidden; pointer-events: none; opacity: 0; transform: translateY(-100%);
@@ -465,21 +465,22 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .has-menu .hero__inner { padding-top: 120px; }
 }
 
-/* On phones, keep the still petals, lower the copy and make the actions more compact. */
+/* On phones, the copy and compact actions leave the cloche visible from the first screen. */
 @media (max-width: 599px) {
   .hero__petals { display: none; }
-  .has-menu .hero__inner { padding-top: 152px; }
-  .hero h1 { font-size: clamp(3.3125rem, 14.7vw, 6.9rem); letter-spacing: -.085em; }
-  .hero__actions .button { width: fit-content; max-width: 100%; padding-inline: 20px; }
-}
-@media (max-width: 339px) {
-  .hero__actions .button { padding-inline: 10px; }
-}
-/* A short, landscape phone gets the same calmer treatment. */
-@media (min-width: 600px) and (max-width: 1100px) and (max-height: 500px) {
-  .hero__petals { display: none; }
-  .has-menu .hero__inner { padding-top: 148px; }
-  .hero__actions .button { width: fit-content; min-width: 0; max-width: 100%; padding-inline: 20px; }
+  .has-menu .hero__inner { padding-top: 112px; padding-bottom: 160px; }
+  .hero__role { margin-bottom: 14px; font-size: clamp(18px, 4.9vw, 20px); line-height: 1.35; }
+  .hero h1 { font-size: clamp(3.125rem, 13.4vw, 4.2rem); letter-spacing: -.075em; line-height: 1.01; }
+  .hero__description { max-width: min(56vw, 220px); margin-top: 16px; font-size: 20px; line-height: 1.43; }
+  .hero__actions { gap: 10px; margin-top: 16px; }
+  .hero__actions .button { width: min(225px, 62vw); max-width: 100%; min-height: 64px; padding: 8px 10px; font-size: 18px; line-height: 1.15; }
+  /* Position and scale the portrait against the initial viewport, not a taller content block. */
+  .hero__image {
+    top: max(188px, calc(100vh - 630px)); top: max(188px, calc(100svh - 630px));
+    right: -8%; bottom: auto;
+    width: min(100%, 390px, max(180px, calc(66.667vh - 126px)));
+    width: min(100%, 390px, max(180px, calc(66.667svh - 126px)));
+  }
 }
 
 /* Keep the copy readable where the cloche sits behind it on smaller screens. */
@@ -503,15 +504,28 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .has-menu .site-header__inner { width: calc(100% - 32px); }
   /* Keep the larger text clear of the rose on narrow phones. */
   .hero__shade { background: linear-gradient(180deg, var(--wine) 0%, var(--wine) 14%, rgba(101, 14, 39, .12) 36%, transparent 68%, var(--wine) 100%), linear-gradient(90deg, var(--wine) 0%, rgba(101, 14, 39, .95) 28%, rgba(101, 14, 39, .7) 58%, rgba(101, 14, 39, .03) 88%); }
-  .hero__image, .hero__petals { bottom: clamp(0px, calc(405px - 112.5vw), 45px); }
   .petal--one { left: 77%; }
   .petal--six { left: 78%; }
 }
 
-/* Tighten only vertical spacing on short screens; keep touch targets large. */
-@media (max-width: 599px) and (max-height: 700px) {
-  .hero__description { margin-top: 18px; }
-  .hero__actions { margin-top: 28px; }
+/* A still foreground petal remains visible on short portrait screens without covering the buttons. */
+@media (max-width: 599px) and (max-height: 700px) and (orientation: portrait) {
+  .hero::after {
+    content: ""; position: absolute; z-index: -1; pointer-events: none; right: 2%;
+    top: calc(100vh - 54px); top: calc(100svh - 54px); width: 52px; height: 52px;
+    background: url("assets/rose-petal-tabletop.png") center / contain no-repeat;
+    filter: drop-shadow(0 4px 3px rgba(24, 0, 7, .55)); transform: rotate(-9deg);
+  }
+}
+@media (max-width: 359px) and (max-height: 700px) and (orientation: portrait) {
+  .hero__image {
+    top: 202px;
+    width: min(100%, max(180px, calc(66.667vh - 135px)));
+    width: min(100%, max(180px, calc(66.667svh - 135px)));
+  }
+}
+@media (max-width: 339px) and (min-height: 650px) and (orientation: portrait) {
+  .hero__image { right: -10%; }
 }
 
 @media (min-width: 600px) {
@@ -650,6 +664,24 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 @media (max-width: 1100px) and (max-height: 500px) {
   :root { --header-offset: 78px; }
   .has-menu .site-header__inner { padding-top: 10px; padding-bottom: 10px; }
+}
+
+/* Short landscape screens keep the whole cloche in view without squeezing the text. */
+@media (max-width: 1100px) and (max-height: 500px) and (orientation: landscape) {
+  .hero__petals { display: none; }
+  .has-menu .hero__inner { align-items: flex-start; padding-top: 96px; padding-bottom: 160px; }
+  .hero__content { width: 70%; max-width: 680px; }
+  .hero__role { margin-bottom: 10px; font-size: 18px; line-height: 1.3; }
+  .hero h1 { font-size: clamp(2.75rem, 7vw, 4.4rem); letter-spacing: -.075em; line-height: 1.02; }
+  .hero__description { max-width: 100%; margin-top: 12px; font-size: 20px; line-height: 1.35; }
+  .hero__actions { flex-direction: row; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+  .hero__actions .button { width: fit-content; min-width: 0; max-width: 100%; min-height: 56px; padding: 10px 16px; font-size: 17px; }
+  .hero__image {
+    top: 84px; right: 2%; bottom: auto;
+    width: min(36%, max(140px, calc(66.667vh - 56px)));
+    width: min(36%, max(140px, calc(66.667svh - 56px)));
+  }
+  .hero__shade { background: linear-gradient(90deg, var(--wine) 0%, rgba(101, 14, 39, .95) 36%, rgba(101, 14, 39, .32) 65%, transparent 82%), linear-gradient(0deg, var(--wine) 0%, transparent 24%); }
 }
 
 @media (prefers-reduced-motion: reduce) {
