@@ -3,13 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#7a102d">
+  <meta name="theme-color" content="#650e27">
   <meta name="description" content="Елизавета Кравец — SMM-специалист. Стратегия, продвижение и создание контента для бизнеса и личных брендов.">
   <title>Елизавета Кравец — SMM-специалист</title>
-  <link rel="preload" href="assets/fonts/manrope-cyrillic-700-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/rose-hero.webp" as="image" type="image/webp">
+  <link rel="preload" href="assets/fonts/onest-cyrillic-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/onest-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/rose-cloche.webp" as="image" type="image/webp">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=glass-menu-wide-nav-27">
+  <script src="script.js?v=glass-menu-18" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">Перейти к содержимому</a>
@@ -21,16 +23,25 @@
         <span class="brand__name">ЕЛИЗАВЕТА<br>КРАВЕЦ</span>
       </a>
 
-      <a class="header-contact glass-pill" href="#contact">
-        <span>На связи</span>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M8 5h11v11"/></svg>
-      </a>
-
-      <nav class="site-nav" aria-label="Основная навигация">
+      <button class="site-menu-toggle" type="button" aria-label="Открыть меню" aria-controls="primary-navigation" aria-expanded="false" hidden>
+        <span class="site-menu-toggle__icon" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button>
+      <nav class="site-nav" id="primary-navigation" aria-label="Основная навигация">
         <a class="glass-pill" href="#about">Обо мне</a>
         <a class="glass-pill" href="#results">Результаты</a>
         <a class="glass-pill" href="#projects">Проекты</a>
         <a class="glass-pill" href="#services">Услуги</a>
+        <div class="site-nav__extras">
+          <div class="site-nav__socials">
+            <a class="site-nav__social" href="https://t.me/lizzieamo" aria-label="Написать в Telegram">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M21.4 4.4c.3-1.3-.5-1.8-1.4-1.4L2.8 9.7c-1.2.5-1.2 1.1-.2 1.4l4.4 1.4 1.7 5.4c.2.6.1.8.7.8.5 0 .7-.2 1-.5l2.3-2.2 4.8 3.5c.9.5 1.5.3 1.7-.8l3.2-14.3ZM8.1 12.2l10-6.3c.5-.3.9-.2.6.2l-8.3 7.5-.3 3.3-2-4.7Z"/></svg>
+            </a>
+            <a class="site-nav__social" href="mailto:unicorn.lyyy@gmail.com" aria-label="Написать на почту">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4.5 7 7.5 6 7.5-6"/></svg>
+            </a>
+          </div>
+          <a class="site-nav__phone" href="tel:+79697007993">+7 (969) 700-79-93</a>
+        </div>
       </nav>
     </div>
   </header>
@@ -38,37 +49,41 @@
   <main id="main-content">
     <section class="hero" id="top" aria-labelledby="hero-title">
       <picture class="hero__image" aria-hidden="true">
-        <source srcset="assets/rose-hero.webp" type="image/webp">
-        <img src="assets/rose-hero.jpg" alt="" width="1376" height="768" fetchpriority="high">
+        <source srcset="assets/rose-cloche.webp" type="image/webp">
+        <img src="assets/rose-cloche.jpg" alt="" width="1024" height="1536" fetchpriority="high">
       </picture>
       <div class="hero__shade" aria-hidden="true"></div>
       <div class="hero__petals" aria-hidden="true">
-        <img class="petal petal--one" src="assets/rose-petal.png" alt="" width="140" height="70">
-        <img class="petal petal--two" src="assets/rose-petal.png" alt="" width="140" height="70">
-        <img class="petal petal--three" src="assets/rose-petal.png" alt="" width="140" height="70">
+        <span class="petal petal--one petal--floating"></span>
+        <span class="petal petal--two petal--broad"></span>
+        <span class="petal petal--four petal--round"></span>
+        <span class="petal petal--five petal--broad"></span>
+        <span class="petal petal--six petal--round"></span>
+        <span class="petal petal--eight petal--floating"></span>
+      </div>
+      <div class="hero__ground" aria-hidden="true">
+        <span class="ground-petal ground-petal--one ground-petal--tabletop"></span>
+        <span class="ground-petal ground-petal--two ground-petal--broad"></span>
+        <span class="ground-petal ground-petal--three ground-petal--resting"></span>
+        <span class="ground-petal ground-petal--four ground-petal--tabletop"></span>
+        <span class="ground-petal ground-petal--five ground-petal--broad"></span>
+        <span class="ground-petal ground-petal--six ground-petal--tabletop"></span>
+        <span class="ground-petal ground-petal--seven ground-petal--resting"></span>
       </div>
 
       <div class="hero__inner container">
         <div class="hero__content">
-          <p class="hero__eyebrow"><span class="eyebrow-dot"></span> SMM &amp; DIGITAL-МАРКЕТИНГ <span class="eyebrow-line"></span> С 2019 ГОДА</p>
-          <h1 id="hero-title"><span>ЕЛИЗАВЕТА</span><span>КРАВЕЦ<span class="hero__asterisk" aria-hidden="true">✳</span></span></h1>
-          <p class="hero__role">SMM-специалист <span aria-hidden="true">/</span><br>Стратегия, продвижение<br class="hero__role-break"> и создание контента</p>
+          <p class="hero__role">SMM-специалист / Стратегия, продвижение и создание контента</p>
+          <h1 id="hero-title"><span>ЕЛИЗАВЕТА</span><span>КРАВЕЦ</span></h1>
           <p class="hero__description">Помогаю бизнесу и личным брендам развиваться в социальных сетях — от стратегии до контента.</p>
           <div class="hero__actions">
             <a class="button button--ice" href="#projects">
               <span>Посмотреть проекты</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M8 5h11v11"/></svg>
             </a>
-            <a class="button button--glass" href="#contact">
+            <a class="button button--glass" href="https://t.me/lizzieamo" aria-label="Обсудить сотрудничество в Telegram">
               <span>Обсудить сотрудничество</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M8 5h11v11"/></svg>
             </a>
           </div>
-        </div>
-        <div class="hero__bottom" aria-hidden="true">
-          <span>ПРОДВИЖЕНИЕ СО СМЫСЛОМ</span>
-          <span class="hero__scroll">ЛИСТАЙТЕ НИЖЕ <span>↓</span></span>
-          <span>01 — 04</span>
         </div>
       </div>
     </section>
@@ -78,18 +93,13 @@
         <div class="about__heading">
           <p class="section-label"><span>01</span><i></i> ОБО МНЕ</p>
           <h2 class="section-title" id="about-title">За каждым<br>брендом —<br><em>история.</em></h2>
-          <div class="experience">
-            <span class="experience__number">7</span>
-            <span class="experience__text">ЛЕТ<br>В ПРОФЕССИИ</span>
-            <svg class="sparkle" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 1c0 11-8 19-19 19 11 0 19 8 19 19 0-11 8-19 19-19C28 20 20 12 20 1Z"/></svg>
-          </div>
         </div>
         <div class="about__copy">
-          <p class="about__lead">Меня зовут <strong>Елизавета Кравец.</strong> Я работаю в сфере SMM и digital-маркетинга с 2019 года.</p>
-          <p>За это время успела поработать с проектами на российском и зарубежном рынках, сотрудничать с digital-агентствами, развивать собственные проекты и выстраивать работу собственной команды.</p>
-          <p>За 7 лет в профессии я прошла путь от создания контента до комплексного управления SMM-проектами. Постоянно слежу за изменениями digital-среды, изучаю новые инструменты продвижения и адаптирую стратегии под современные алгоритмы социальных сетей.</p>
-          <p>В своей работе объединяю аналитику, стратегическое планирование, креатив и создание контента. Для меня SMM — это не просто регулярные публикации, а системная работа над узнаваемостью бренда, развитием аудитории и достижением бизнес-целей.</p>
-          <p class="about__statement">Помогаю бизнесу и личным брендам развиваться в социальных сетях: от разработки SMM-стратегии до реализации контента и анализа результатов.</p>
+          <p class="about__lead">Меня зовут <strong>Елизавета Кравец.</strong> Я работаю в сфере SMM и <span class="about__term">digital-маркетинга</span> с <span class="about__term">2019 года.</span></p>
+          <p>За это время успела поработать с проектами на российском и зарубежном рынках, сотрудничать с <span class="about__term">digital-агентствами</span>, развивать собственные проекты и выстраивать работу собственной команды.</p>
+          <p>За 7 лет в профессии я прошла путь от создания контента до комплексного управления <span class="about__term">SMM-проектами</span>. Постоянно слежу за изменениями <span class="about__term">digital-среды</span>, изучаю новые инструменты продвижения и адаптирую стратегии под современные алгоритмы социальных сетей.</p>
+          <p>В своей работе объединяю аналитику, стратегическое планирование, креатив и создание контента. Для меня SMM — это не просто регулярные публикации, а системная работа над узнаваемостью бренда, развитием аудитории и достижением <span class="about__term">бизнес-целей</span>.</p>
+          <p class="about__statement">Помогаю бизнесу и личным брендам развиваться в социальных сетях: от разработки <span class="about__term">SMM-стратегии</span> до реализации контента и анализа результатов.</p>
         </div>
       </div>
     </section>
@@ -136,7 +146,7 @@
             <div class="metric__top"><span>05 / ЭФФЕКТИВНОСТЬ</span><span aria-hidden="true">↗</span></div>
             <p class="metric__number">ХХХ<span class="metric__percent">%</span></p>
             <p class="metric__unit">результата</p>
-            <p class="metric__caption">Другой подтверждённый показатель проекта.</p>
+            <p class="metric__caption">Другой результат проекта.</p>
             <span class="metric__pending">Показатель уточняется</span>
           </article>
         </div>
@@ -246,17 +256,230 @@
     </section>
 
     <section class="services section section--wine" id="services" aria-labelledby="services-title">
-      <div class="container services__inner">
-        <div>
-          <p class="section-label"><span>04</span><i></i> УСЛУГИ И СТОИМОСТЬ</p>
-          <h2 class="section-title" id="services-title">От идеи<br><em>до результата.</em></h2>
+      <div class="container">
+        <div class="section-heading services__heading">
+          <div>
+            <p class="section-label"><span>04</span><i></i> УСЛУГИ И СТОИМОСТЬ</p>
+            <h2 class="section-title" id="services-title">От идеи<br><em>до результата.</em></h2>
+          </div>
+          <div>
+            <h3 class="services__subheading" id="tariffs-title">Тарифы на комплексное ведение</h3>
+            <p class="services__related">Отдельная услуга: <a href="#personal-brand">сопровождение личного бренда</a></p>
+          </div>
         </div>
-        <div class="services__note">
-          <svg class="sparkle" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 1c0 11-8 19-19 19 11 0 19 8 19 19 0-11 8-19 19-19C28 20 20 12 20 1Z"/></svg>
-          <p class="services__note-label">СКОРО ЗДЕСЬ</p>
-          <h3>Услуги и стоимость</h3>
-          <p>Подробная информация о форматах сотрудничества и стоимости появится здесь позже.</p>
-          <a class="text-link" href="#contact">Обсудить сотрудничество <span aria-hidden="true">↗</span></a>
+
+        <ul class="tariffs" role="list" aria-labelledby="tariffs-title">
+          <li class="tariff-card">
+            <h4 class="tariff-card__name">Базовый</h4>
+            <p class="tariff-card__price">50&nbsp;000&nbsp;₽</p>
+            <p class="tariff-card__volume">До 30 единиц</p>
+            <p class="tariff-card__details">Посты, Reels и карусели в месяц</p>
+            <p class="tariff-card__description">Комплексное <span class="tariff-card__term">SMM-ведение</span> без монтажа видеороликов.</p>
+          </li>
+          <li class="tariff-card">
+            <h4 class="tariff-card__name">Базовый + монтаж</h4>
+            <p class="tariff-card__price">80&nbsp;000&nbsp;₽</p>
+            <p class="tariff-card__volume">До 30 единиц</p>
+            <p class="tariff-card__details">Включая монтаж до 30 видео</p>
+            <p class="tariff-card__description">Полное ведение социальных сетей и производство видеоконтента из предоставленных исходников.</p>
+          </li>
+          <li class="tariff-card">
+            <h4 class="tariff-card__name">Расширенный</h4>
+            <p class="tariff-card__price">65&nbsp;000&nbsp;₽</p>
+            <p class="tariff-card__volume">До 60 единиц</p>
+            <p class="tariff-card__details">Посты, Reels и карусели в месяц</p>
+            <p class="tariff-card__description">Увеличенный объём контента для активного развития социальных сетей.</p>
+          </li>
+          <li class="tariff-card tariff-card--package">
+            <h4 class="tariff-card__name">Расширенный + монтаж</h4>
+            <p class="tariff-card__price">100&nbsp;000&nbsp;₽</p>
+            <p class="tariff-card__volume">До 60 единиц контента и монтаж</p>
+            <p class="tariff-card__description">Комплексное ведение с дополнительным производством видеоконтента.</p>
+            <p class="tariff-card__package">Пакетная цена</p>
+            <p class="tariff-card__details">Выгоднее раздельного заказа услуг.</p>
+          </li>
+        </ul>
+
+        <aside class="services__extra" aria-labelledby="video-service-title">
+          <div>
+            <p class="services__extra-label">ДОПОЛНИТЕЛЬНАЯ УСЛУГА</p>
+            <h3 id="video-service-title">Монтаж видео</h3>
+          </div>
+          <div>
+            <p class="services__extra-copy">Монтаж видео можно включить в сотрудничество за дополнительную стоимость.</p>
+            <a class="text-link" href="https://t.me/lizzieamo" aria-label="Обсудить сотрудничество в Telegram">Обсудить сотрудничество</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="personal section section--ice" id="personal-brand" aria-labelledby="personal-title">
+      <div class="container">
+        <div class="personal__header">
+          <div class="personal__title-wrap">
+            <p class="section-label"><span>05</span><i></i> ЛИЧНЫЙ БРЕНД</p>
+            <h2 class="section-title personal__title" id="personal-title">Продвижение<br><em>личного бренда.</em></h2>
+            <p class="personal__rate"><strong>35&nbsp;000&nbsp;₽</strong> <span>в месяц</span></p>
+          </div>
+          <div class="personal__intro">
+            <h3><span class="personal__term">SMM-сопровождение</span> личного бренда</h3>
+            <p>Помогаю экспертам, предпринимателям и специалистам развивать личный бренд, формировать узнаваемость и привлекать целевую аудиторию через социальные сети.</p>
+            <p>Это формат ежемесячного профессионального сопровождения, при котором вы самостоятельно ведёте свой аккаунт, а я отвечаю за стратегию, контентное направление и маркетинговую составляющую.</p>
+            <p>Вы получаете не просто список идей для публикаций, а системный подход к развитию блога и поддержку <span class="personal__term">SMM-специалиста</span> на протяжении всего месяца.</p>
+          </div>
+        </div>
+
+        <div class="personal__included">
+          <div class="personal__included-heading">
+            <h3>Что входит<br><em>в сопровождение.</em></h3>
+          </div>
+          <div class="personal__features">
+            <details class="personal-feature" open>
+              <summary><span>1. Анализ и позиционирование</span><span class="personal-feature__toggle" aria-hidden="true"></span></summary>
+              <div class="personal-feature__content">
+                <ul>
+                  <li>Анализ текущего аккаунта.</li>
+                  <li>Изучение вашей экспертности, опыта и сильных сторон.</li>
+                  <li>Формирование позиционирования личного бренда.</li>
+                  <li>Определение целевой аудитории.</li>
+                  <li>Анализ интересов, потребностей и болей потенциальных подписчиков.</li>
+                  <li>Определение целей развития блога.</li>
+                </ul>
+              </div>
+            </details>
+            <details class="personal-feature">
+              <summary><span>2. Разработка <span class="personal__term">SMM-стратегии</span></span><span class="personal-feature__toggle" aria-hidden="true"></span></summary>
+              <div class="personal-feature__content">
+                <ul>
+                  <li>Создание индивидуальной стратегии продвижения.</li>
+                  <li>Формирование основных контентных направлений.</li>
+                  <li>Разработка контентных рубрик.</li>
+                  <li>Определение tone of voice и особенностей коммуникации.</li>
+                  <li>Рекомендации по визуальному оформлению аккаунта.</li>
+                  <li>Формирование стратегии привлечения и удержания аудитории.</li>
+                </ul>
+              </div>
+            </details>
+            <details class="personal-feature">
+              <summary><span>3. Контент-планирование</span><span class="personal-feature__toggle" aria-hidden="true"></span></summary>
+              <div class="personal-feature__content">
+                <ul>
+                  <li>Разработка ежемесячного <span class="personal__term">контент-плана</span>.</li>
+                  <li>Подбор актуальных тем для публикаций.</li>
+                  <li>Генерация идей для Reels, Stories и постов.</li>
+                  <li>Подготовка сценариев видеороликов.</li>
+                  <li>Разработка продающего, экспертного и личного контента.</li>
+                  <li>Рекомендации по раскрытию экспертности через публикации.</li>
+                </ul>
+              </div>
+            </details>
+            <details class="personal-feature">
+              <summary><span>4. Консультационная поддержка</span><span class="personal-feature__toggle" aria-hidden="true"></span></summary>
+              <div class="personal-feature__content">
+                <ul>
+                  <li>Регулярная обратная связь по контенту.</li>
+                  <li>Разбор опубликованных материалов.</li>
+                  <li>Рекомендации по улучшению подачи и качества контента.</li>
+                  <li>Помощь в решении текущих <span class="personal__term">SMM-задач</span>.</li>
+                  <li>Консультации по форматам и алгоритмам социальных сетей.</li>
+                  <li>Корректировка стратегии с учётом динамики развития блога.</li>
+                </ul>
+              </div>
+            </details>
+            <details class="personal-feature">
+              <summary><span>5. Сопровождение в процессе развития</span><span class="personal-feature__toggle" aria-hidden="true"></span></summary>
+              <div class="personal-feature__content">
+                <ul>
+                  <li>Помощь в поиске новых тем и форматов.</li>
+                  <li>Рекомендации по съёмке и монтажу Reels.</li>
+                  <li>Помощь в работе с вовлекающим и продающим контентом.</li>
+                  <li>Анализ реакции аудитории.</li>
+                  <li>Адаптация контентного направления под меняющиеся задачи личного бренда.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="personal__format">
+          <div class="personal__format-copy">
+            <h3>Формат работы</h3>
+            <p>Вы самостоятельно управляете аккаунтом и публикуете контент. Я обеспечиваю стратегическое сопровождение, помогаю с планированием, идеями и всеми возникающими вопросами по продвижению.</p>
+            <p>Без передачи доступа к вашему аккаунту и без необходимости полностью делегировать ведение социальных сетей.</p>
+          </div>
+          <div class="personal__offer">
+            <p>Стоимость ежемесячного сопровождения</p>
+            <strong>35&nbsp;000&nbsp;₽</strong>
+            <a class="text-link" href="https://t.me/lizzieamo" aria-label="Обсудить сотрудничество в Telegram">Обсудить сотрудничество</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="why section section--wine" id="why-smm" aria-labelledby="why-title">
+      <div class="container">
+        <div class="why__intro">
+          <div>
+            <p class="section-label"><span>06</span><i></i> ПОЧЕМУ SMM ВАЖЕН</p>
+            <h2 class="section-title why__title" id="why-title">Хороший <span class="why__phrase">SMM — это</span><br> <em>инвестиция в развитие бизнеса.</em></h2>
+          </div>
+          <p class="why__intro-copy">Социальные сети давно перестали быть просто площадкой для публикации фотографий и новостей. Сегодня это полноценный инструмент маркетинга, который помогает бизнесу находить новых клиентов, формировать доверие к бренду и увеличивать узнаваемость.</p>
+        </div>
+
+        <div class="why__group">
+          <h3>Грамотное <span class="why__term">SMM-продвижение</span> помогает:</h3>
+          <ul class="why__list" role="list">
+            <li class="why__item">
+              <h4>Увеличивать узнаваемость бренда</h4>
+              <p>Регулярный и продуманный контент помогает бренду оставаться на виду, формировать собственный образ и привлекать внимание новой аудитории.</p>
+            </li>
+            <li class="why__item">
+              <h4>Привлекать целевую аудиторию</h4>
+              <p>Контент, созданный с учётом интересов и потребностей потенциальных клиентов, помогает привлекать не просто подписчиков, а людей, которым действительно интересен продукт.</p>
+            </li>
+            <li class="why__item">
+              <h4>Формировать доверие</h4>
+              <p>Экспертные публикации, отзывы, закулисье компании и открытая коммуникация помогают аудитории лучше узнать бренд и принять решение о покупке.</p>
+            </li>
+            <li class="why__item">
+              <h4>Увеличивать количество обращений</h4>
+              <p>Продающий контент, грамотное позиционирование и понятная коммуникация помогают превращать внимание аудитории в реальные заявки и обращения.</p>
+            </li>
+            <li class="why__item">
+              <h4>Создавать сильный личный бренд</h4>
+              <p>Для экспертов и предпринимателей социальные сети становятся инструментом развития профессиональной репутации, формирования экспертности и привлечения новых клиентов.</p>
+            </li>
+          </ul>
+        </div>
+
+        <div class="why__group why__group--approach">
+          <h3>Почему стоит доверить продвижение мне?</h3>
+          <ul class="why__list why__list--approach" role="list">
+            <li class="why__item">
+              <h4>7 лет опыта в SMM и <span class="why__term">digital-маркетинге</span></h4>
+              <p>Работаю с социальными сетями с 2019 года, знаю особенности разных ниш и понимаю, как меняются инструменты продвижения.</p>
+            </li>
+            <li class="why__item">
+              <h4>Стратегический подход</h4>
+              <p>Не работаю по принципу публикаций ради публикаций. Каждый <span class="why__term">контент-план</span> строится на целях проекта, особенностях продукта и потребностях целевой аудитории.</p>
+            </li>
+            <li class="why__item">
+              <h4>Опыт на разных рынках</h4>
+              <p>Работала с российскими и зарубежными проектами, в <span class="why__term">digital-агентствах</span>, самостоятельно и в собственной команде.</p>
+            </li>
+            <li class="why__item">
+              <h4>Комплексный подход к контенту</h4>
+              <p>Объединяю маркетинговую стратегию, создание идей, сценарии, съёмку, монтаж и аналитику. Понимаю не только, что нужно опубликовать, но и зачем это нужно бизнесу.</p>
+            </li>
+            <li class="why__item">
+              <h4>Работа с цифрами и результатами</h4>
+              <p>Отслеживаю показатели, анализирую эффективность контента и корректирую стратегию на основе данных, а не предположений.</p>
+            </li>
+            <li class="why__item">
+              <h4>Индивидуальный подход</h4>
+              <p>Не использую универсальные решения для всех проектов. У каждого бизнеса и личного бренда свои задачи, аудитория и особенности, поэтому стратегия разрабатывается индивидуально.</p>
+            </li>
+          </ul>
         </div>
       </div>
     </section>
@@ -264,12 +487,20 @@
     <section class="contact section section--ice" id="contact" aria-labelledby="contact-title">
       <div class="container contact__inner">
         <div>
-          <p class="section-label"><span>↗</span><i></i> ДАВАЙТЕ НА СВЯЗЬ</p>
-          <h2 class="section-title" id="contact-title">Есть идея?<br><em>Давайте обсудим.</em></h2>
+          <p class="section-label"><span>07</span><i></i> КОНТАКТЫ</p>
+          <h2 class="section-title" id="contact-title">Давайте обсудим<br> <em>ваш проект.</em></h2>
         </div>
         <div class="contact__copy">
-          <p>Расскажите о своём проекте — и найдём подход к его развитию в социальных сетях.</p>
-          <div class="contact__placeholder"><span class="eyebrow-dot"></span> Контакты для связи скоро появятся</div>
+          <p>Ищете <span class="contact__term">SMM-специалиста</span> для развития бизнеса или личного бренда?</p>
+          <p>Расскажите о своей задаче, и мы обсудим подходящий формат сотрудничества.</p>
+          <p>Открыта к новым проектам и интересным задачам.</p>
+          <h3>Связаться со мной:</h3>
+          <dl class="contact__channels">
+            <div><dt>Telegram</dt><dd><a href="https://t.me/lizzieamo">@lizzieamo</a></dd></div>
+            <div><dt>Телефон</dt><dd><a href="tel:+79697007993">+7 (969) 700-79-93</a></dd></div>
+            <div><dt>Почта</dt><dd><a href="mailto:unicorn.lyyy@gmail.com">unicorn.lyyy@gmail.com</a></dd></div>
+          </dl>
+          <a class="button contact__cta" href="https://t.me/lizzieamo" aria-label="Обсудить проект в Telegram">ОБСУДИТЬ ПРОЕКТ</a>
         </div>
       </div>
     </section>
@@ -278,7 +509,6 @@
   <footer class="footer">
     <div class="container footer__inner">
       <a class="footer__brand" href="#top">ЕЛИЗАВЕТА КРАВЕЦ<span aria-hidden="true"> ✳</span></a>
-      <p>SMM &amp; DIGITAL-МАРКЕТИНГ</p>
       <a href="#top" class="footer__top">НАВЕРХ <span aria-hidden="true">↑</span></a>
     </div>
   </footer>
