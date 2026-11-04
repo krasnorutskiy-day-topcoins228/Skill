@@ -136,6 +136,7 @@ def start_round(token: str, chat_id: int, game: dict) -> None:
     game["used"].add(country["iso"])
     game["answer"] = country
     game["answered"] = False
+    game["round_hints"] = 0
     flag_url = f"https://flagcdn.com/w320/{country['iso']}.png"
     call(token, "sendPhoto", {"chat_id": chat_id, "photo": flag_url, "caption": f"🌍 Раунд {game['round']} • {level} сложность\nУгадайте страну только по флагу! Ответьте названием страны."})
 
@@ -191,10 +192,22 @@ def handle(token: str, message: dict) -> None:
         elif game["hints_left"] <= 0:
             send(token, chat_id, "Подсказки на эту игру закончились — вы уже использовали все 5.")
         else:
-            answer_name = game["answer"]["name"]
-            normalized_name = answer_name.replace(" ", "").replace("-", "")
+            answer = game["answer"]
+            normalized_name = "".join(char for char in answer["name"] if char.isalpha())
+            step = game.get("round_hints", 0) + 1
+            game["round_hints"] = step
             game["hints_left"] -= 1
-            send(token, chat_id, f"💡 Подсказка: название начинается на «{normalized_name[0]}», в нём {len(normalized_name)} букв. Осталось подсказок: {game['hints_left']} из 5.")
+            if step == 1:
+                clue = f"В названии {len(normalized_name)} букв."
+            elif step == 2:
+                clue = f"Название начинается на «{normalized_name[:1]}»."
+            elif step == 3:
+                clue = f"Первые две буквы: «{normalized_name[:2]}»."
+            elif step == 4:
+                clue = f"Первые три буквы: «{normalized_name[:3]}»."
+            else:
+                clue = f"Столица этой страны — {answer['capital']}."
+            send(token, chat_id, f"💡 Подсказка {step}/5: {clue} Осталось подсказок на игру: {game['hints_left']} из 5.")
         return
     if not game or not text or text.startswith("/"):
         return

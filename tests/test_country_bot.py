@@ -24,8 +24,9 @@ class CountryBotTests(unittest.TestCase):
 
     @patch.object(country_bot, "call")
     def test_new_round_sends_an_online_flag_image_without_country_clue(self, api_call):
-        game = {"used": set(), "round": 0, "answer": None, "answered": False}
+        game = {"used": set(), "round": 0, "answer": None, "answered": False, "round_hints": 4}
         country_bot.start_round("token", 123, game)
+        self.assertEqual(game["round_hints"], 0)
         self.assertEqual(api_call.call_args.args[1], "sendPhoto")
         fields = api_call.call_args.args[2]
         self.assertIn("https://flagcdn.com/w320/", fields["photo"])
@@ -38,12 +39,15 @@ class CountryBotTests(unittest.TestCase):
         country_bot.ALLOWED_USERS = {11, 22}
         country_bot.GAMES[999] = {
             "scores": {}, "names": {}, "used": set(), "round": 1,
-            "answer": {"name": "Япония", "flag": "🇯🇵", "iso": "jp"},
-            "answered": False, "hints_left": 5,
+            "answer": {"name": "Япония", "flag": "🇯🇵", "capital": "Токио", "iso": "jp"},
+            "answered": False, "hints_left": 5, "round_hints": 0,
         }
         message = {"chat": {"id": 999}, "from": {"id": 11, "first_name": "Аня"}, "text": "/hint"}
-        for _ in range(5):
+        expected = ["6 букв", "начинается на «Я»", "две буквы: «Яп»", "три буквы: «Япо»", "Столица этой страны — Токио"]
+        for index, clue in enumerate(expected):
             country_bot.handle("token", message)
+            self.assertIn(clue, send.call_args.args[2])
+            self.assertEqual(country_bot.GAMES[999]["round_hints"], index + 1)
         self.assertEqual(country_bot.GAMES[999]["hints_left"], 0)
         previous_calls = send.call_count
         message["from"] = {"id": 22, "first_name": "Борис"}
