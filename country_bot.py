@@ -85,9 +85,13 @@ def call(token: str, method: str, data: dict | None = None) -> dict:
     return result
 
 
-INLINE_KEYBOARD = {
+MAIN_MENU_KEYBOARD = {
     "inline_keyboard": [
         [{"text": "🎮 Игра вдвоём", "callback_data": "newgame"}, {"text": "👤 Одиночная игра", "callback_data": "solo"}],
+    ]
+}
+GAME_KEYBOARD = {
+    "inline_keyboard": [
         [{"text": "💡 Подсказка", "callback_data": "hint"}, {"text": "🏆 Счёт", "callback_data": "score"}],
         [{"text": "⏭ Дальше", "callback_data": "next"}, {"text": "🛑 Стоп", "callback_data": "stop"}],
     ]
@@ -122,7 +126,7 @@ def send(token: str, chat_id: int, text: str, keyboard: dict | None = None) -> d
     return call(token, "sendMessage", {
         "chat_id": chat_id,
         "text": text,
-        "reply_markup": json.dumps(keyboard or INLINE_KEYBOARD, ensure_ascii=False),
+        "reply_markup": json.dumps(keyboard or GAME_KEYBOARD, ensure_ascii=False),
     })
 
 
@@ -209,7 +213,7 @@ def start_round(token: str, chat_id: int, game: dict) -> None:
         "chat_id": chat_id,
         "photo": flag_url,
         "caption": f"🌍 Раунд {game['round']} • {level} сложность\nУгадайте страну только по флагу! Ответьте названием страны.",
-        "reply_markup": json.dumps(INLINE_KEYBOARD, ensure_ascii=False),
+        "reply_markup": json.dumps(GAME_KEYBOARD, ensure_ascii=False),
     })
 
 
@@ -271,7 +275,7 @@ def handle(token: str, message: dict) -> None:
         return
 
     if command in ("/start", "/help"):
-        send(token, chat_id, "Привет! Угадывайте страны только по изображениям флагов 🗺️\n\n/newgame — игра вдвоём\n/solo — одиночная игра с выбором уровня\n/hint — взять подсказку (5 на игру)\n/score — посмотреть счёт\n/next — пропустить вопрос\n/stop — завершить игру\n\nВ одиночном режиме можно пройти выбранный уровень или изучить все флаги.")
+        send(token, chat_id, "Привет! Угадывайте страны только по изображениям флагов 🗺️\n\n/newgame — игра вдвоём\n/solo — одиночная игра с выбором уровня\n/hint — взять подсказку (5 на игру)\n/score — посмотреть счёт\n/next — пропустить вопрос\n/stop — завершить игру\n\nВ одиночном режиме можно пройти выбранный уровень или изучить все флаги.", MAIN_MENU_KEYBOARD)
         return
     if command == "/solo":
         GAMES[chat_id] = {"mode": "solo_setup", "owner": user.get("id"), "scores": {}, "names": {}}

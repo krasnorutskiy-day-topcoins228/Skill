@@ -127,15 +127,26 @@ class CountryBotTests(unittest.TestCase):
         country_bot.GAMES.pop(999, None)
 
     @patch.object(country_bot, "call")
-    def test_text_replies_include_persistent_keyboard(self, api_call):
-        country_bot.send("token", 123, "Меню")
+    def test_game_messages_show_controls_not_the_game_selection_menu(self, api_call):
+        country_bot.send("token", 123, "Вопрос")
         payload = api_call.call_args.args[2]
         import json
         markup = json.loads(payload["reply_markup"])
-        self.assertIn("inline_keyboard", markup)
         buttons = [b for row in markup["inline_keyboard"] for b in row]
-        self.assertIn("👤 Одиночная игра", [b["text"] for b in buttons])
-        self.assertIn({"text": "⏭ Дальше", "callback_data": "next"}, buttons)
+        labels = [b["text"] for b in buttons]
+        self.assertIn("⏭ Дальше", labels)
+        self.assertNotIn("👤 Одиночная игра", labels)
+        self.assertNotIn("🎮 Игра вдвоём", labels)
+
+    @patch.object(country_bot, "send")
+    def test_start_help_shows_game_selection_buttons(self, send):
+        country_bot.ALLOWED_USERS = {11, 22}
+        message = {"chat": {"id": 123}, "from": {"id": 11, "first_name": "Аня"}, "text": "/start"}
+        country_bot.handle("token", message)
+        keyboard = send.call_args.args[3]
+        labels = [b["text"] for row in keyboard["inline_keyboard"] for b in row]
+        self.assertIn("👤 Одиночная игра", labels)
+        self.assertIn("🎮 Игра вдвоём", labels)
 
     @patch.object(country_bot, "handle")
     @patch.object(country_bot, "call")
