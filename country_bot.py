@@ -152,6 +152,20 @@ def solo_pool(level_key: str) -> tuple[str, list[dict]]:
     return pools[level_key]
 
 
+def solo_round_pool(level_key: str, used: set[str]) -> tuple[str, list[dict]]:
+    if level_key != "all":
+        return solo_pool(level_key)
+    tiers = [
+        ("Все флаги • начальный этап", [c for c in COUNTRIES if c["iso"] in EASY_ISO]),
+        ("Все флаги • средний этап", [c for c in COUNTRIES if c["iso"] not in EASY_ISO and c["iso"] not in TERRITORY_ISO]),
+        ("Все флаги • продвинутый этап", [c for c in COUNTRIES if c["iso"] in TERRITORY_ISO]),
+    ]
+    for label, tier in tiers:
+        if any(c["iso"] not in used for c in tier):
+            return label, tier
+    return "Все флаги", []
+
+
 def solo_answer_keyboard(options: list[dict]) -> dict:
     rows = [[{"text": item["name"], "callback_data": f"solo_answer:{item['iso']}"} for item in options[:2]],
             [{"text": item["name"], "callback_data": f"solo_answer:{item['iso']}"} for item in options[2:4]],
@@ -160,11 +174,12 @@ def solo_answer_keyboard(options: list[dict]) -> dict:
 
 
 def start_solo_round(token: str, chat_id: int, game: dict) -> None:
-    level_name, pool = solo_pool(game["level"])
+    level_name, pool = solo_round_pool(game["level"], game["used"])
     unused = [c for c in pool if c["iso"] not in game["used"]]
     if not unused:
         game["finished"] = True
-        send(token, chat_id, f"🎉 Уровень «{level_name}» пройден! Вы изучили все {len(pool)} флагов. Одиночный режим не добавляет очки в общий счёт.")
+        total = len(COUNTRIES) if game["level"] == "all" else len(pool)
+        send(token, chat_id, f"🎉 Уровень «{level_name}» пройден! Вы изучили все {total} флагов. Одиночный режим не добавляет очки в общий счёт.")
         return
 
     target = random.choice(unused)
@@ -274,7 +289,7 @@ def handle(token: str, message: dict) -> None:
         return
     if command == "/solo":
         GAMES[chat_id] = {"mode": "solo_setup", "owner": user.get("id"), "scores": {}, "names": {}}
-        send(token, chat_id, "👤 Одиночная игра — выберите уровень:", SOLO_LEVEL_KEYBOARD)
+        send(token, chat_id, "👤 Одиночная игра — выберите уровень:\nНачальный: самые знакомые флаги. Средний: остальные страны. Продвинутый: территории. «Все флаги» проходит этапы от простых к редким. В каждом вопросе 1 флаг, 4 варианта и 15 секунд.", SOLO_LEVEL_KEYBOARD)
         return
     if command in ("/solo_easy", "/solo_medium", "/solo_hard", "/solo_all"):
         setup = GAMES.get(chat_id)
@@ -304,6 +319,8 @@ def handle(token: str, message: dict) -> None:
         return
     if command == "/stop":
         if game:
+            if game.get("mode") == "solo":
+                close_solo_buttons(token, chat_id, game)
             GAMES.pop(chat_id, None)
             if game.get("mode") == "solo":
                 send(token, chat_id, "Одиночная тренировка завершена. Она не входит в общий счёт.")
@@ -321,6 +338,9 @@ def handle(token: str, message: dict) -> None:
     if command == "/next":
         if game and game.get("answer") and not game.get("finished"):
             answer = game["answer"]
+            if game.get("mode") == "solo":
+                close_solo_buttons(token, chat_id, game)
+                game["answered"] = True
             send(token, chat_id, f"Ответ: {answer['name']} {answer['flag']}. Следующий раунд!")
             start_round(token, chat_id, game)
         elif game and game.get("finished"):

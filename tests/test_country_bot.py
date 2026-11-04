@@ -57,6 +57,19 @@ class CountryBotTests(unittest.TestCase):
         self.assertGreater(send.call_count, previous_calls)
         country_bot.GAMES.pop(999)
 
+    def test_all_flags_level_advances_through_easy_medium_and_hard_stages(self):
+        easy_codes = {c["iso"] for c in country_bot.COUNTRIES if c["iso"] in country_bot.EASY_ISO}
+        name, pool = country_bot.solo_round_pool("all", set())
+        self.assertIn("начальный", name)
+        self.assertTrue(all(c["iso"] in country_bot.EASY_ISO for c in pool))
+        name, pool = country_bot.solo_round_pool("all", easy_codes)
+        self.assertIn("средний", name)
+        self.assertTrue(all(c["iso"] not in country_bot.EASY_ISO and c["iso"] not in country_bot.TERRITORY_ISO for c in pool))
+        used_through_medium = easy_codes | {c["iso"] for c in pool}
+        name, pool = country_bot.solo_round_pool("all", used_through_medium)
+        self.assertIn("продвинутый", name)
+        self.assertTrue(all(c["iso"] in country_bot.TERRITORY_ISO for c in pool))
+
     @patch.object(country_bot, "call")
     def test_solo_question_has_one_flag_four_answers_and_deadline(self, api_call):
         api_call.return_value = {"result": {"message_id": 456}}
