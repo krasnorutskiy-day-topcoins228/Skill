@@ -57,19 +57,19 @@ class CountryBotTests(unittest.TestCase):
         self.assertGreater(send.call_count, previous_calls)
         country_bot.GAMES.pop(999)
 
-    @patch.object(country_bot, "send")
     @patch.object(country_bot, "call")
-    def test_solo_question_has_four_flag_choices_and_deadline(self, api_call, send):
+    def test_solo_question_has_one_flag_four_answers_and_deadline(self, api_call):
+        api_call.return_value = {"result": {"message_id": 456}}
         game = {"mode": "solo", "level": "all", "used": set(), "round": 0, "answered": False}
-        send.return_value = {"result": {"message_id": 456}}
         country_bot.start_solo_round("token", 123, game)
-        media_call = next(c for c in api_call.call_args_list if c.args[1] == "sendMediaGroup")
+        photo_call = next(c for c in api_call.call_args_list if c.args[1] == "sendPhoto")
         import json
-        media = json.loads(media_call.args[2]["media"])
-        keyboard = send.call_args.args[3]["inline_keyboard"]
+        fields = photo_call.args[2]
+        keyboard = json.loads(fields["reply_markup"])["inline_keyboard"]
         choices = [button for row in keyboard[:2] for button in row]
-        self.assertEqual(len(media), 4)
+        self.assertIn("flagcdn.com/w320/", fields["photo"])
         self.assertEqual(len(choices), 4)
+        self.assertEqual(len({button["callback_data"] for button in choices}), 4)
         self.assertGreater(game["deadline"], country_bot.time.time())
         self.assertEqual(game["prompt_message_id"], 456)
 

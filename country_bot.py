@@ -167,29 +167,24 @@ def start_solo_round(token: str, chat_id: int, game: dict) -> None:
         send(token, chat_id, f"🎉 Уровень «{level_name}» пройден! Вы изучили все {len(pool)} флагов. Одиночный режим не добавляет очки в общий счёт.")
         return
 
-    choices = unused[:]
-    if len(choices) > 4:
-        choices = random.sample(choices, 4)
-    elif len(choices) < 4:
-        fillers = [c for c in pool if c["iso"] not in {x["iso"] for x in choices}]
-        choices.extend(random.sample(fillers, 4 - len(choices)))
-    target_position = random.randrange(4)
-    target = choices[target_position]
+    target = random.choice(unused)
+    distractors = [c for c in pool if c["iso"] != target["iso"]]
+    options = random.sample(distractors, 3) + [target]
+    random.shuffle(options)
     game["round"] += 1
     game["used"].add(target["iso"])
     game["answer"] = target
-    game["options"] = choices
+    game["options"] = options
     game["answered"] = False
     game["round_hints"] = 0
-    game["target_position"] = target_position
 
-    media = [{"type": "photo", "media": f"https://flagcdn.com/w320/{country['iso']}.png"} for country in choices]
-    call(token, "sendMediaGroup", {"chat_id": chat_id, "media": json.dumps(media, ensure_ascii=False)})
-    positions = ["верхний левый", "верхний правый", "нижний левый", "нижний правый"]
-    prompt = send(token, chat_id,
-                  f"👤 {level_name} • вопрос {game['round']}\nВыберите страну с флагом в позиции: {positions[target_position]}. У вас 15 секунд!",
-                  solo_answer_keyboard(choices))
-    game["prompt_message_id"] = (prompt.get("result") or {}).get("message_id")
+    result = call(token, "sendPhoto", {
+        "chat_id": chat_id,
+        "photo": f"https://flagcdn.com/w320/{target['iso']}.png",
+        "caption": f"👤 {level_name} • вопрос {game['round']}\nНазовите страну по флагу. У вас 15 секунд!",
+        "reply_markup": json.dumps(solo_answer_keyboard(options), ensure_ascii=False),
+    })
+    game["prompt_message_id"] = (result.get("result") or {}).get("message_id")
     game["deadline"] = time.time() + 15
 
 
