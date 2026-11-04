@@ -85,16 +85,20 @@ def call(token: str, method: str, data: dict | None = None) -> dict:
     return result
 
 
-REPLY_KEYBOARD = {
-    "keyboard": [
-        [{"text": "🎮 Новая игра"}, {"text": "💡 Подсказка"}],
-        [{"text": "🏆 Счёт"}, {"text": "⏭ Дальше"}],
-        [{"text": "🛑 Стоп"}],
-    ],
-    "resize_keyboard": True,
-    "is_persistent": True,
+INLINE_KEYBOARD = {
+    "inline_keyboard": [
+        [{"text": "🎮 Новая игра", "callback_data": "newgame"}, {"text": "💡 Подсказка", "callback_data": "hint"}],
+        [{"text": "🏆 Счёт", "callback_data": "score"}, {"text": "⏭ Дальше", "callback_data": "next"}],
+        [{"text": "🛑 Стоп", "callback_data": "stop"}],
+    ]
 }
 BUTTON_COMMANDS = {
+    "newgame": "/newgame",
+    "hint": "/hint",
+    "score": "/score",
+    "next": "/next",
+    "stop": "/stop",
+    # Compatibility with the older reply keyboard.
     "🎮 Новая игра": "/newgame",
     "💡 Подсказка": "/hint",
     "🏆 Счёт": "/score",
@@ -107,7 +111,7 @@ def send(token: str, chat_id: int, text: str) -> None:
     call(token, "sendMessage", {
         "chat_id": chat_id,
         "text": text,
-        "reply_markup": json.dumps(REPLY_KEYBOARD, ensure_ascii=False),
+        "reply_markup": json.dumps(INLINE_KEYBOARD, ensure_ascii=False),
     })
 
 
@@ -138,7 +142,12 @@ def start_round(token: str, chat_id: int, game: dict) -> None:
     game["answered"] = False
     game["round_hints"] = 0
     flag_url = f"https://flagcdn.com/w320/{country['iso']}.png"
-    call(token, "sendPhoto", {"chat_id": chat_id, "photo": flag_url, "caption": f"🌍 Раунд {game['round']} • {level} сложность\nУгадайте страну только по флагу! Ответьте названием страны."})
+    call(token, "sendPhoto", {
+        "chat_id": chat_id,
+        "photo": flag_url,
+        "caption": f"🌍 Раунд {game['round']} • {level} сложность\nУгадайте страну только по флагу! Ответьте названием страны.",
+        "reply_markup": json.dumps(INLINE_KEYBOARD, ensure_ascii=False),
+    })
 
 
 def handle(token: str, message: dict) -> None:
@@ -231,6 +240,16 @@ def score_text(game: dict | None) -> str:
     return "🏆 Счёт:\n" + "\n".join(f"{game['names'].get(uid, 'Игрок')} — {score}" for uid, score in rows)
 
 
+def handle_callback(token: str, query: dict) -> None:
+    call(token, "answerCallbackQuery", {"callback_query_id": query["id"]})
+    message = query.get("message")
+    command = BUTTON_COMMANDS.get(query.get("data", ""))
+    if not message or not command:
+        return
+    # Reuse the normal command path so permissions and game rules stay identical.
+    handle(token, {**message, "from": query.get("from", {}), "text": command})
+
+
 def main() -> None:
     global ALLOWED_USERS
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
@@ -249,9 +268,19 @@ def main() -> None:
         print("ID discovery mode: only /myid replies; no gameplay is allowed until two IDs are configured.")
     offset = 0
     while True:
-        updates = call(token, "getUpdates", {"timeout": 30, "offset": offset})
+        updates = call(token, "getUpdates", {
+            "timeout": 30,
+            "offset": offset,
+            "allowed_updates": json.dumps(["message", "callback_query"]),
+        })
         for update in updates.get("result", []):
             offset = update["update_id"] + 1
+            if update.get("callback_query"):
+                try:
+                    handle_callback(token, update["callback_query"])
+                except Exception as exc:
+                    print(f"Callback handling error: {exc}")
+                continue
             message = update.get("message")
             if message:
                 try:

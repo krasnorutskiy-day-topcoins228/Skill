@@ -75,8 +75,23 @@ class CountryBotTests(unittest.TestCase):
         payload = api_call.call_args.args[2]
         import json
         markup = json.loads(payload["reply_markup"])
-        self.assertTrue(markup["is_persistent"])
-        self.assertIn("🎮 Новая игра", [b["text"] for row in markup["keyboard"] for b in row])
+        self.assertIn("inline_keyboard", markup)
+        buttons = [b for row in markup["inline_keyboard"] for b in row]
+        self.assertIn("🎮 Новая игра", [b["text"] for b in buttons])
+        self.assertIn({"text": "⏭ Дальше", "callback_data": "next"}, buttons)
+
+    @patch.object(country_bot, "handle")
+    @patch.object(country_bot, "call")
+    def test_inline_next_button_acknowledges_and_routes_next_command(self, api_call, handle):
+        query = {
+            "id": "cb-1", "data": "next", "from": {"id": 11, "first_name": "Аня"},
+            "message": {"chat": {"id": 999}, "message_id": 7},
+        }
+        country_bot.handle_callback("token", query)
+        api_call.assert_called_once_with("token", "answerCallbackQuery", {"callback_query_id": "cb-1"})
+        routed = handle.call_args.args[1]
+        self.assertEqual(routed["text"], "/next")
+        self.assertEqual(routed["from"]["id"], 11)
 
     def test_scoreboard_handles_empty_and_multiple_players(self):
         game = {"scores": {}, "names": {}}
