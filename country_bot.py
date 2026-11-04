@@ -41,16 +41,29 @@ def flag_for(iso: str) -> str:
     return "".join(chr(127397 + ord(letter)) for letter in iso.upper())
 
 
-_curated = {row[1]: row for row in COUNTRIES}
+def iso_for_flag(flag: str) -> str:
+    return "".join(chr(ord(letter) - 127397) for letter in flag).lower()
+
+
+_curated = {iso_for_flag(row[1]): row for row in COUNTRIES}
 try:
     records = json.loads((Path(__file__).parent / "data" / "countries.json").read_text(encoding="utf-8"))
-    for row in records:
-        flag = flag_for(row["iso"])
-        if flag not in _curated:
-            _curated[flag] = (row["name"], flag, row["capital"], f"Столица этой страны — {row['capital']}. Угадайте страну по флагу!")
-    COUNTRIES = list(_curated.values())
+    COUNTRY_BY_ISO = {}
+    for item in records:
+        iso = item["iso"].lower()
+        flag = flag_for(iso)
+        curated = _curated.get(iso)
+        if curated:
+            name, _, capital, clue = curated
+        else:
+            name, capital, clue = item["name"], item["capital"], ""
+        COUNTRY_BY_ISO[iso] = {"iso": iso, "name": name, "flag": flag, "capital": capital, "clue": clue}
 except (OSError, ValueError, KeyError):
-    pass
+    COUNTRY_BY_ISO = {
+        iso_for_flag(row[1]).lower(): {"iso": iso_for_flag(row[1]).lower(), "name": row[0], "flag": row[1], "capital": row[2], "clue": row[3]}
+        for row in COUNTRIES
+    }
+COUNTRIES = list(COUNTRY_BY_ISO.values())
 
 API = "https://api.telegram.org/bot{}/{}"
 GAMES: dict[int, dict] = {}
@@ -76,17 +89,33 @@ def send(token: str, chat_id: int, text: str) -> None:
     call(token, "sendMessage", {"chat_id": chat_id, "text": text})
 
 
+TERRITORY_ISO = set("ai as aw ax bl bq cc ck cw cx eh fk fo gf gg gs gu hk hm im io je ky mf mq ms nc nf nu pf pm pn pr re sj sx tc tk um vg vi wf yt".split())
+EASY_ISO = set("jp br is eg ca it au ke gr mx no ma th pe kr ch pt nz tr ar gb fr de es us cn in ru".split())
+
+
+def difficulty_pool(round_number: int) -> tuple[str, list[dict]]:
+    if round_number <= 5:
+        return "Лёгкая", [c for c in COUNTRIES if c["iso"] in EASY_ISO]
+    if round_number <= 15:
+        return "Средняя", [c for c in COUNTRIES if c["iso"] not in EASY_ISO and c["iso"] not in TERRITORY_ISO]
+    return "Сложная", [c for c in COUNTRIES if c["iso"] in TERRITORY_ISO]
+
+
 def start_round(token: str, chat_id: int, game: dict) -> None:
-    choices = [c for c in COUNTRIES if c[0] not in game["used"]]
+    game["round"] += 1
+    level, pool = difficulty_pool(game["round"])
+    choices = [c for c in pool if c["iso"] not in game["used"]]
+    if not choices:
+        choices = [c for c in COUNTRIES if c["iso"] not in game["used"]]
     if not choices:
         game["used"].clear()
-        choices = COUNTRIES[:]
+        choices = pool or COUNTRIES[:]
     country = random.choice(choices)
-    game["used"].add(country[0])
+    game["used"].add(country["iso"])
     game["answer"] = country
     game["answered"] = False
-    game["round"] += 1
-    send(token, chat_id, f"🌍 Раунд {game['round']}! Угадайте страну по подсказке: {country[3]}\nМожно отвечать обоим — первый правильный ответ получает очко. Или напишите /hint за флагом.")
+    flag_url = f"https://flagcdn.com/w320/{country['iso']}.png"
+    call(token, "sendPhoto", {"chat_id": chat_id, "photo": flag_url, "caption": f"🌍 Раунд {game['round']} • {level} сложность\nУгадайте страну только по флагу! Ответьте названием страны."})
 
 
 def handle(token: str, message: dict) -> None:
@@ -104,7 +133,7 @@ def handle(token: str, message: dict) -> None:
         return
 
     if command in ("/start", "/help"):
-        send(token, chat_id, "Привет! Это игра-угадайка про страны для вас двоих 🗺️\n\n/newgame — начать новую игру\n/hint — показать флаг страны\n/score — счёт\n/next — пропустить вопрос\n/stop — завершить игру\n\nИграйте вместе в личном чате с ботом или добавьте его в общий чат. Первый правильный ответ в раунде получает очко!")
+        send(token, chat_id, "Привет! Угадывайте страны только по изображениям флагов 🗺️\n\n/newgame — начать новую игру\n/score — посмотреть счёт\n/next — пропустить вопрос\n/stop — завершить игру\n\nРаунды постепенно становятся сложнее. Первый правильный ответ получает очко!")
         return
     if command == "/newgame":
         GAMES[chat_id] = {"scores": {}, "names": {}, "used": set(), "round": 0, "answer": None, "answered": False}
@@ -126,28 +155,25 @@ def handle(token: str, message: dict) -> None:
     if command == "/next":
         if game:
             answer = game["answer"]
-            send(token, chat_id, f"Ответ: {answer[0]} {answer[1]}. Следующий раунд!")
+            send(token, chat_id, f"Ответ: {answer['name']} {answer['flag']}. Следующий раунд!")
             start_round(token, chat_id, game)
         else:
             send(token, chat_id, "Сначала начните игру командой /newgame.")
         return
     if command == "/hint":
-        if game and game["answer"] and not game["answered"]:
-            send(token, chat_id, f"Подсказка-флаг: {game['answer'][1]}")
-        else:
-            send(token, chat_id, "Сейчас нечего подсказывать — начните игру командой /newgame.")
+        send(token, chat_id, "В этой игре подсказки только флагом — других подсказок нет 🙂")
         return
     if not game or not text or text.startswith("/"):
         return
 
     answer = game["answer"]
     normalize = lambda value: " ".join(value.casefold().replace("ё", "е").strip(" .,!?«»\"'").split())
-    accepted = {normalize(answer[0]), normalize(answer[2])}
-    if not game["answered"] and normalize(text) in accepted:
+    accepted = normalize(answer["name"])
+    if not game["answered"] and normalize(text) == accepted:
         game["answered"] = True
         game["names"][user.get("id", name)] = name
         game["scores"][user.get("id", name)] = game["scores"].get(user.get("id", name), 0) + 1
-        send(token, chat_id, f"✅ Верно, {name}! Это {answer[0]} {answer[1]}. +1 очко\n\n" + score_text(game))
+        send(token, chat_id, f"✅ Верно, {name}! Это {answer['name']} {answer['flag']}. +1 очко\n\n" + score_text(game))
         time.sleep(1)
         start_round(token, chat_id, game)
 

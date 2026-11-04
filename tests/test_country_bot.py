@@ -5,14 +5,33 @@ import country_bot
 
 
 class CountryBotTests(unittest.TestCase):
-    def test_full_country_dataset_has_flags_capitals_and_clues(self):
+    def test_full_flag_dataset_has_unique_iso_codes_and_image_fields(self):
         self.assertGreaterEqual(len(country_bot.COUNTRIES), 200)
-        flags = set()
-        for record in country_bot.COUNTRIES:
-            self.assertEqual(len(record), 4)
-            self.assertTrue(all(isinstance(value, str) and value for value in record))
-            flags.add(record[1])
-        self.assertEqual(len(flags), len(country_bot.COUNTRIES))
+        codes = set()
+        for country in country_bot.COUNTRIES:
+            self.assertEqual(set(country), {"iso", "name", "flag", "capital", "clue"})
+            self.assertEqual(len(country["iso"]), 2)
+            self.assertTrue(country["name"] and country["flag"] and country["capital"])
+            codes.add(country["iso"])
+        self.assertEqual(len(codes), len(country_bot.COUNTRIES))
+
+    def test_difficulty_progresses_from_common_flags_to_territories(self):
+        self.assertEqual(country_bot.difficulty_pool(1)[0], "Лёгкая")
+        self.assertEqual(country_bot.difficulty_pool(6)[0], "Средняя")
+        self.assertEqual(country_bot.difficulty_pool(16)[0], "Сложная")
+        self.assertTrue(all(c["iso"] in country_bot.EASY_ISO for c in country_bot.difficulty_pool(1)[1]))
+        self.assertTrue(all(c["iso"] in country_bot.TERRITORY_ISO for c in country_bot.difficulty_pool(16)[1]))
+
+    @patch.object(country_bot, "call")
+    def test_new_round_sends_an_online_flag_image_without_country_clue(self, api_call):
+        game = {"used": set(), "round": 0, "answer": None, "answered": False}
+        country_bot.start_round("token", 123, game)
+        self.assertEqual(api_call.call_args.args[1], "sendPhoto")
+        fields = api_call.call_args.args[2]
+        self.assertIn("https://flagcdn.com/w320/", fields["photo"])
+        self.assertIn("только по флагу", fields["caption"])
+        self.assertNotIn(game["answer"]["name"], fields["caption"])
+        self.assertEqual(game["round"], 1)
 
     def test_scoreboard_handles_empty_and_multiple_players(self):
         game = {"scores": {}, "names": {}}
