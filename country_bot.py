@@ -133,10 +133,10 @@ def handle(token: str, message: dict) -> None:
         return
 
     if command in ("/start", "/help"):
-        send(token, chat_id, "Привет! Угадывайте страны только по изображениям флагов 🗺️\n\n/newgame — начать новую игру\n/score — посмотреть счёт\n/next — пропустить вопрос\n/stop — завершить игру\n\nРаунды постепенно становятся сложнее. Первый правильный ответ получает очко!")
+        send(token, chat_id, "Привет! Угадывайте страны только по изображениям флагов 🗺️\n\n/newgame — начать новую игру\n/hint — взять подсказку (всего 5 за игру)\n/score — посмотреть счёт\n/next — пропустить вопрос\n/stop — завершить игру\n\nРаунды постепенно становятся сложнее. Первый правильный ответ получает очко!")
         return
     if command == "/newgame":
-        GAMES[chat_id] = {"scores": {}, "names": {}, "used": set(), "round": 0, "answer": None, "answered": False}
+        GAMES[chat_id] = {"scores": {}, "names": {}, "used": set(), "round": 0, "answer": None, "answered": False, "hints_left": 5}
         send(token, chat_id, "🎉 Новая игра! Зовите друг друга и отвечайте в этом чате. Начинаем!")
         start_round(token, chat_id, GAMES[chat_id])
         return
@@ -161,7 +161,17 @@ def handle(token: str, message: dict) -> None:
             send(token, chat_id, "Сначала начните игру командой /newgame.")
         return
     if command == "/hint":
-        send(token, chat_id, "В этой игре подсказки только флагом — других подсказок нет 🙂")
+        if not game:
+            send(token, chat_id, "Сначала начните игру командой /newgame.")
+        elif game["answered"]:
+            send(token, chat_id, "Раунд уже завершён — дождитесь следующего флага.")
+        elif game["hints_left"] <= 0:
+            send(token, chat_id, "Подсказки на эту игру закончились — вы уже использовали все 5.")
+        else:
+            answer_name = game["answer"]["name"]
+            normalized_name = answer_name.replace(" ", "").replace("-", "")
+            game["hints_left"] -= 1
+            send(token, chat_id, f"💡 Подсказка: название начинается на «{normalized_name[0]}», в нём {len(normalized_name)} букв. Осталось подсказок: {game['hints_left']} из 5.")
         return
     if not game or not text or text.startswith("/"):
         return

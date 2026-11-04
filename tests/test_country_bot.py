@@ -33,6 +33,26 @@ class CountryBotTests(unittest.TestCase):
         self.assertNotIn(game["answer"]["name"], fields["caption"])
         self.assertEqual(game["round"], 1)
 
+    @patch.object(country_bot, "send")
+    def test_hints_are_limited_to_five_per_game_and_shared_in_chat(self, send):
+        country_bot.ALLOWED_USERS = {11, 22}
+        country_bot.GAMES[999] = {
+            "scores": {}, "names": {}, "used": set(), "round": 1,
+            "answer": {"name": "Япония", "flag": "🇯🇵", "iso": "jp"},
+            "answered": False, "hints_left": 5,
+        }
+        message = {"chat": {"id": 999}, "from": {"id": 11, "first_name": "Аня"}, "text": "/hint"}
+        for _ in range(5):
+            country_bot.handle("token", message)
+        self.assertEqual(country_bot.GAMES[999]["hints_left"], 0)
+        previous_calls = send.call_count
+        message["from"] = {"id": 22, "first_name": "Борис"}
+        country_bot.handle("token", message)
+        self.assertEqual(country_bot.GAMES[999]["hints_left"], 0)
+        self.assertIn("закончились", send.call_args.args[2])
+        self.assertGreater(send.call_count, previous_calls)
+        country_bot.GAMES.pop(999)
+
     def test_scoreboard_handles_empty_and_multiple_players(self):
         game = {"scores": {}, "names": {}}
         self.assertIn("пуст", country_bot.score_text(game))
