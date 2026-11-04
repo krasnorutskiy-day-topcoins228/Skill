@@ -85,8 +85,30 @@ def call(token: str, method: str, data: dict | None = None) -> dict:
     return result
 
 
+REPLY_KEYBOARD = {
+    "keyboard": [
+        [{"text": "🎮 Новая игра"}, {"text": "💡 Подсказка"}],
+        [{"text": "🏆 Счёт"}, {"text": "⏭ Дальше"}],
+        [{"text": "🛑 Стоп"}],
+    ],
+    "resize_keyboard": True,
+    "is_persistent": True,
+}
+BUTTON_COMMANDS = {
+    "🎮 Новая игра": "/newgame",
+    "💡 Подсказка": "/hint",
+    "🏆 Счёт": "/score",
+    "⏭ Дальше": "/next",
+    "🛑 Стоп": "/stop",
+}
+
+
 def send(token: str, chat_id: int, text: str) -> None:
-    call(token, "sendMessage", {"chat_id": chat_id, "text": text})
+    call(token, "sendMessage", {
+        "chat_id": chat_id,
+        "text": text,
+        "reply_markup": json.dumps(REPLY_KEYBOARD, ensure_ascii=False),
+    })
 
 
 TERRITORY_ISO = set("ai as aw ax bl bq cc ck cw cx eh fk fo gf gg gs gu hk hm im io je ky mf mq ms nc nf nu pf pm pn pr re sj sx tc tk um vg vi wf yt".split())
@@ -123,6 +145,7 @@ def handle(token: str, message: dict) -> None:
     user = message.get("from", {})
     name = user.get("first_name") or "Игрок"
     text = (message.get("text") or "").strip()
+    text = BUTTON_COMMANDS.get(text, text)
     command = text.split()[0].split("@")[0].lower() if text.startswith("/") else ""
 
     # This one onboarding command reveals only the caller's own Telegram ID.

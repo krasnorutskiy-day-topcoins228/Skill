@@ -53,6 +53,27 @@ class CountryBotTests(unittest.TestCase):
         self.assertGreater(send.call_count, previous_calls)
         country_bot.GAMES.pop(999)
 
+    @patch.object(country_bot, "start_round")
+    @patch.object(country_bot, "send")
+    def test_reply_keyboard_button_starts_a_game(self, send, start_round):
+        country_bot.ALLOWED_USERS = {11, 22}
+        country_bot.GAMES.pop(999, None)
+        message = {"chat": {"id": 999}, "from": {"id": 11, "first_name": "Аня"}, "text": "🎮 Новая игра"}
+        country_bot.handle("token", message)
+        self.assertIn(999, country_bot.GAMES)
+        self.assertEqual(country_bot.GAMES[999]["hints_left"], 5)
+        start_round.assert_called_once()
+        country_bot.GAMES.pop(999, None)
+
+    @patch.object(country_bot, "call")
+    def test_text_replies_include_persistent_keyboard(self, api_call):
+        country_bot.send("token", 123, "Меню")
+        payload = api_call.call_args.args[2]
+        import json
+        markup = json.loads(payload["reply_markup"])
+        self.assertTrue(markup["is_persistent"])
+        self.assertIn("🎮 Новая игра", [b["text"] for row in markup["keyboard"] for b in row])
+
     def test_scoreboard_handles_empty_and_multiple_players(self):
         game = {"scores": {}, "names": {}}
         self.assertIn("пуст", country_bot.score_text(game))
