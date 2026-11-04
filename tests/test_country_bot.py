@@ -57,6 +57,36 @@ class CountryBotTests(unittest.TestCase):
         self.assertGreater(send.call_count, previous_calls)
         country_bot.GAMES.pop(999)
 
+    @patch.object(country_bot, "send")
+    @patch.object(country_bot, "call")
+    def test_solo_question_has_four_flag_choices_and_deadline(self, api_call, send):
+        game = {"mode": "solo", "level": "all", "used": set(), "round": 0, "answered": False}
+        send.return_value = {"result": {"message_id": 456}}
+        country_bot.start_solo_round("token", 123, game)
+        media_call = next(c for c in api_call.call_args_list if c.args[1] == "sendMediaGroup")
+        import json
+        media = json.loads(media_call.args[2]["media"])
+        keyboard = send.call_args.args[3]["inline_keyboard"]
+        choices = [button for row in keyboard[:2] for button in row]
+        self.assertEqual(len(media), 4)
+        self.assertEqual(len(choices), 4)
+        self.assertGreater(game["deadline"], country_bot.time.time())
+        self.assertEqual(game["prompt_message_id"], 456)
+
+    @patch.object(country_bot, "start_solo_round")
+    @patch.object(country_bot, "send")
+    @patch.object(country_bot, "call")
+    def test_solo_answers_do_not_add_duo_score(self, api_call, send, start_round):
+        game = {
+            "mode": "solo", "answer": {"iso": "jp", "name": "Япония"},
+            "options": [{"iso": "jp", "name": "Япония"}], "answered": False,
+            "finished": False, "deadline": country_bot.time.time() + 5,
+            "prompt_message_id": 456, "scores": {11: 0}, "used": set(), "level": "all",
+        }
+        country_bot.submit_solo_choice("token", 123, game, "jp")
+        self.assertEqual(game["scores"], {11: 0})
+        start_round.assert_called_once()
+
     @patch.object(country_bot, "start_round")
     @patch.object(country_bot, "send")
     def test_solo_mode_offers_levels_and_starts_selected_course(self, send, start_round):

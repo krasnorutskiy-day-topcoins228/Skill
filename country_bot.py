@@ -118,8 +118,8 @@ BUTTON_COMMANDS = {
 }
 
 
-def send(token: str, chat_id: int, text: str, keyboard: dict | None = None) -> None:
-    call(token, "sendMessage", {
+def send(token: str, chat_id: int, text: str, keyboard: dict | None = None) -> dict:
+    return call(token, "sendMessage", {
         "chat_id": chat_id,
         "text": text,
         "reply_markup": json.dumps(keyboard or INLINE_KEYBOARD, ensure_ascii=False),
@@ -138,25 +138,64 @@ def difficulty_pool(round_number: int) -> tuple[str, list[dict]]:
     return "Сложная", [c for c in COUNTRIES if c["iso"] in TERRITORY_ISO]
 
 
-def start_round(token: str, chat_id: int, game: dict) -> None:
-    game["round"] += 1
-    if game.get("mode") == "solo":
-        solo_levels = {
-            "easy": ("Начальный", [c for c in COUNTRIES if c["iso"] in EASY_ISO]),
-            "medium": ("Средний", [c for c in COUNTRIES if c["iso"] not in EASY_ISO and c["iso"] not in TERRITORY_ISO]),
-            "hard": ("Продвинутый", [c for c in COUNTRIES if c["iso"] in TERRITORY_ISO]),
-            "all": ("Все флаги", COUNTRIES[:]),
-        }
-        level, pool = solo_levels[game["level"]]
-    else:
-        level, pool = difficulty_pool(game["round"])
-    choices = [c for c in pool if c["iso"] not in game["used"]]
-    if not choices and game.get("mode") == "solo":
+def solo_pool(level_key: str) -> tuple[str, list[dict]]:
+    pools = {
+        "easy": ("Начальный", [c for c in COUNTRIES if c["iso"] in EASY_ISO]),
+        "medium": ("Средний", [c for c in COUNTRIES if c["iso"] not in EASY_ISO and c["iso"] not in TERRITORY_ISO]),
+        "hard": ("Продвинутый", [c for c in COUNTRIES if c["iso"] in TERRITORY_ISO]),
+        "all": ("Все флаги", COUNTRIES[:]),
+    }
+    return pools[level_key]
+
+
+def solo_answer_keyboard(options: list[dict]) -> dict:
+    rows = [[{"text": item["name"], "callback_data": f"solo_answer:{item['iso']}"} for item in options[:2]],
+            [{"text": item["name"], "callback_data": f"solo_answer:{item['iso']}"} for item in options[2:4]],
+            [{"text": "💡 Подсказка", "callback_data": "hint"}, {"text": "⏭ Дальше", "callback_data": "next"}, {"text": "🛑 Стоп", "callback_data": "stop"}]]
+    return {"inline_keyboard": rows}
+
+
+def start_solo_round(token: str, chat_id: int, game: dict) -> None:
+    level_name, pool = solo_pool(game["level"])
+    unused = [c for c in pool if c["iso"] not in game["used"]]
+    if not unused:
         game["finished"] = True
-        send(token, chat_id, f"🎉 Уровень «{level}» пройден! Вы изучили все {len(pool)} флагов в этом уровне. Нажмите «Одиночная игра», чтобы выбрать другой уровень.")
+        send(token, chat_id, f"🎉 Уровень «{level_name}» пройден! Вы изучили все {len(pool)} флагов. Одиночный режим не добавляет очки в общий счёт.")
         return
-    if not choices:
-        choices = [c for c in COUNTRIES if c["iso"] not in game["used"]]
+
+    choices = unused[:]
+    if len(choices) > 4:
+        choices = random.sample(choices, 4)
+    elif len(choices) < 4:
+        fillers = [c for c in pool if c["iso"] not in {x["iso"] for x in choices}]
+        choices.extend(random.sample(fillers, 4 - len(choices)))
+    target_position = random.randrange(4)
+    target = choices[target_position]
+    game["round"] += 1
+    game["used"].add(target["iso"])
+    game["answer"] = target
+    game["options"] = choices
+    game["answered"] = False
+    game["round_hints"] = 0
+    game["target_position"] = target_position
+
+    media = [{"type": "photo", "media": f"https://flagcdn.com/w320/{country['iso']}.png"} for country in choices]
+    call(token, "sendMediaGroup", {"chat_id": chat_id, "media": json.dumps(media, ensure_ascii=False)})
+    positions = ["верхний левый", "верхний правый", "нижний левый", "нижний правый"]
+    prompt = send(token, chat_id,
+                  f"👤 {level_name} • вопрос {game['round']}\nВыберите страну с флагом в позиции: {positions[target_position]}. У вас 15 секунд!",
+                  solo_answer_keyboard(choices))
+    game["prompt_message_id"] = (prompt.get("result") or {}).get("message_id")
+    game["deadline"] = time.time() + 15
+
+
+def start_round(token: str, chat_id: int, game: dict) -> None:
+    if game.get("mode") == "solo":
+        start_solo_round(token, chat_id, game)
+        return
+    game["round"] += 1
+    level, pool = difficulty_pool(game["round"])
+    choices = [c for c in pool if c["iso"] not in game["used"]]
     if not choices:
         game["used"].clear()
         choices = pool or COUNTRIES[:]
@@ -172,6 +211,44 @@ def start_round(token: str, chat_id: int, game: dict) -> None:
         "caption": f"🌍 Раунд {game['round']} • {level} сложность\nУгадайте страну только по флагу! Ответьте названием страны.",
         "reply_markup": json.dumps(INLINE_KEYBOARD, ensure_ascii=False),
     })
+
+
+def close_solo_buttons(token: str, chat_id: int, game: dict) -> None:
+    message_id = game.get("prompt_message_id")
+    if message_id:
+        call(token, "editMessageReplyMarkup", {
+            "chat_id": chat_id,
+            "message_id": message_id,
+            "reply_markup": json.dumps({"inline_keyboard": []}),
+        })
+
+
+def submit_solo_choice(token: str, chat_id: int, game: dict, selected_iso: str) -> None:
+    if game.get("answered") or game.get("finished") or selected_iso not in {c["iso"] for c in game.get("options", [])}:
+        return
+    if time.time() >= game.get("deadline", 0):
+        game["answered"] = True
+        close_solo_buttons(token, chat_id, game)
+        send(token, chat_id, f"⏰ Время вышло! Это {game['answer']['name']}.")
+        start_solo_round(token, chat_id, game)
+        return
+    close_solo_buttons(token, chat_id, game)
+    if selected_iso == game["answer"]["iso"]:
+        send(token, chat_id, "✅ Верно! Следующий флаг.")
+    else:
+        send(token, chat_id, f"❌ Не угадали. Это {game['answer']['name']}. Следующий флаг.")
+    game["answered"] = True
+    start_solo_round(token, chat_id, game)
+
+
+def expire_solo_rounds(token: str) -> None:
+    now = time.time()
+    for chat_id, game in list(GAMES.items()):
+        if game.get("mode") == "solo" and not game.get("answered") and not game.get("finished") and now >= game.get("deadline", float("inf")):
+            game["answered"] = True
+            close_solo_buttons(token, chat_id, game)
+            send(token, chat_id, f"⏰ Время вышло! Это {game['answer']['name']}.")
+            start_solo_round(token, chat_id, game)
 
 
 def handle(token: str, message: dict) -> None:
@@ -221,16 +298,26 @@ def handle(token: str, message: dict) -> None:
         start_round(token, chat_id, GAMES[chat_id])
         return
     game = GAMES.get(chat_id)
+    if command == "/solo_answer":
+        selected_iso = text.split(maxsplit=1)[1].strip().lower() if len(text.split(maxsplit=1)) > 1 else ""
+        if game and game.get("mode") == "solo":
+            submit_solo_choice(token, chat_id, game, selected_iso)
+        return
     if command == "/stop":
         if game:
-            scoreboard = score_text(game)
             GAMES.pop(chat_id, None)
-            send(token, chat_id, "Игра завершена!\n" + scoreboard)
+            if game.get("mode") == "solo":
+                send(token, chat_id, "Одиночная тренировка завершена. Она не входит в общий счёт.")
+            else:
+                send(token, chat_id, "Игра завершена!\n" + score_text(game))
         else:
             send(token, chat_id, "Сейчас нет активной игры. Напишите /newgame, чтобы начать.")
         return
     if command == "/score":
-        send(token, chat_id, score_text(game) if game else "Сейчас нет активной игры. Напишите /newgame.")
+        if game and game.get("mode") == "solo":
+            send(token, chat_id, "Одиночная тренировка не входит в общий игровой счёт.")
+        else:
+            send(token, chat_id, score_text(game) if game else "Сейчас нет активной игры. Напишите /newgame.")
         return
     if command == "/next":
         if game and game.get("answer") and not game.get("finished"):
@@ -272,8 +359,14 @@ def handle(token: str, message: dict) -> None:
     if not game or not text or text.startswith("/"):
         return
 
-    answer = game["answer"]
     normalize = lambda value: " ".join(value.casefold().replace("ё", "е").strip(" .,!?«»\"'").split())
+    if game.get("mode") == "solo":
+        chosen = next((c for c in game.get("options", []) if normalize(text) == normalize(c["name"])), None)
+        if chosen:
+            submit_solo_choice(token, chat_id, game, chosen["iso"])
+        return
+
+    answer = game["answer"]
     accepted = normalize(answer["name"])
     if not game["answered"] and normalize(text) == accepted:
         game["answered"] = True
@@ -294,8 +387,14 @@ def score_text(game: dict | None) -> str:
 def handle_callback(token: str, query: dict) -> None:
     call(token, "answerCallbackQuery", {"callback_query_id": query["id"]})
     message = query.get("message")
-    command = BUTTON_COMMANDS.get(query.get("data", ""))
-    if not message or not command:
+    data = query.get("data", "")
+    if not message:
+        return
+    if data.startswith("solo_answer:"):
+        command = "/solo_answer " + data.split(":", 1)[1]
+    else:
+        command = BUTTON_COMMANDS.get(data)
+    if not command:
         return
     # Reuse the normal command path so permissions and game rules stay identical.
     handle(token, {**message, "from": query.get("from", {}), "text": command})
@@ -320,7 +419,7 @@ def main() -> None:
     offset = 0
     while True:
         updates = call(token, "getUpdates", {
-            "timeout": 30,
+            "timeout": 5,
             "offset": offset,
             "allowed_updates": json.dumps(["message", "callback_query"]),
         })
@@ -338,6 +437,10 @@ def main() -> None:
                     handle(token, message)
                 except Exception as exc:
                     print(f"Update handling error: {exc}")
+        try:
+            expire_solo_rounds(token)
+        except Exception as exc:
+            print(f"Solo timer error: {exc}")
 
 
 if __name__ == "__main__":
