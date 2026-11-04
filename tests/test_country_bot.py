@@ -7,11 +7,13 @@ import country_bot
 class CountryBotTests(unittest.TestCase):
     def test_full_flag_dataset_has_unique_iso_codes_and_image_fields(self):
         self.assertGreaterEqual(len(country_bot.COUNTRIES), 200)
+        self.assertEqual(len(country_bot.COUNTRIES), 244)
         codes = set()
         for country in country_bot.COUNTRIES:
             self.assertEqual(set(country), {"iso", "name", "flag", "capital", "clue"})
             self.assertEqual(len(country["iso"]), 2)
             self.assertTrue(country["name"] and country["flag"] and country["capital"])
+            self.assertTrue(any("а" <= char.lower() <= "я" or char.lower() == "ё" for char in country["name"]))
             codes.add(country["iso"])
         self.assertEqual(len(codes), len(country_bot.COUNTRIES))
 
@@ -86,6 +88,24 @@ class CountryBotTests(unittest.TestCase):
         self.assertGreater(game["deadline"], country_bot.time.time())
         self.assertEqual(game["prompt_message_id"], 456)
 
+    @patch("country_bot.time.time", return_value=200)
+    @patch.object(country_bot, "start_solo_round")
+    @patch.object(country_bot, "send")
+    @patch.object(country_bot, "call")
+    def test_solo_question_times_out_and_advances(self, api_call, send, start_round, now):
+        game = {
+            "mode": "solo", "level": "all", "used": set(), "round": 1,
+            "answer": {"iso": "jp", "name": "Япония"}, "answered": False,
+            "finished": False, "deadline": 199, "prompt_message_id": 123,
+        }
+        country_bot.GAMES[999] = game
+        country_bot.expire_solo_rounds("token")
+        self.assertTrue(game["answered"])
+        send.assert_called_once()
+        self.assertIn("Время вышло", send.call_args.args[2])
+        start_round.assert_called_once_with("token", 999, game)
+        country_bot.GAMES.pop(999, None)
+
     @patch.object(country_bot, "start_solo_round")
     @patch.object(country_bot, "send")
     @patch.object(country_bot, "call")
@@ -102,14 +122,18 @@ class CountryBotTests(unittest.TestCase):
 
     @patch.object(country_bot, "start_round")
     @patch.object(country_bot, "send")
-    def test_solo_mode_offers_levels_and_starts_selected_course(self, send, start_round):
+    @patch.object(country_bot, "call")
+    def test_solo_mode_offers_levels_and_starts_selected_course(self, api_call, send, start_round):
         country_bot.ALLOWED_USERS = {11, 22}
         country_bot.GAMES.pop(999, None)
         message = {"chat": {"id": 999}, "from": {"id": 11, "first_name": "Аня"}, "text": "/solo"}
         country_bot.handle("token", message)
         self.assertEqual(country_bot.GAMES[999]["mode"], "solo_setup")
-        message["text"] = "/solo_all"
-        country_bot.handle("token", message)
+        callback = {
+            "id": "level-callback", "data": "level_all", "from": message["from"],
+            "message": {"chat": {"id": 999}, "message_id": 123},
+        }
+        country_bot.handle_callback("token", callback)
         game = country_bot.GAMES[999]
         self.assertEqual(game["mode"], "solo")
         self.assertEqual(game["level"], "all")

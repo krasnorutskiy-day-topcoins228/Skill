@@ -56,13 +56,10 @@ try:
         if curated:
             name, _, capital, clue = curated
         else:
-            name, capital, clue = item["name"], item["capital"], ""
+            name, capital, clue = item.get("name_ru", item["name"]), item["capital"], ""
         COUNTRY_BY_ISO[iso] = {"iso": iso, "name": name, "flag": flag, "capital": capital, "clue": clue}
-except (OSError, ValueError, KeyError):
-    COUNTRY_BY_ISO = {
-        iso_for_flag(row[1]).lower(): {"iso": iso_for_flag(row[1]).lower(), "name": row[0], "flag": row[1], "capital": row[2], "clue": row[3]}
-        for row in COUNTRIES
-    }
+except (OSError, ValueError, KeyError) as exc:
+    raise RuntimeError("Не удалось загрузить data/countries.json. Оставьте файл данных в папке data рядом с country_bot.py.") from exc
 COUNTRIES = list(COUNTRY_BY_ISO.values())
 
 API = "https://api.telegram.org/bot{}/{}"
@@ -76,7 +73,7 @@ def call(token: str, method: str, data: dict | None = None) -> dict:
     try:
         with urllib.request.urlopen(req, timeout=40) as response:
             result = json.loads(response.read())
-    except (urllib.error.URLError, TimeoutError) as exc:
+    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
         print(f"Telegram API error: {exc}")
         return {}
     if not result.get("ok"):
@@ -312,6 +309,9 @@ def handle(token: str, message: dict) -> None:
         start_round(token, chat_id, GAMES[chat_id])
         return
     game = GAMES.get(chat_id)
+    if game and game.get("mode") == "solo_setup" and not command:
+        send(token, chat_id, "Выберите один из уровней в меню выше:", SOLO_LEVEL_KEYBOARD)
+        return
     if command == "/solo_answer":
         selected_iso = text.split(maxsplit=1)[1].strip().lower() if len(text.split(maxsplit=1)) > 1 else ""
         if game and game.get("mode") == "solo":
@@ -442,6 +442,9 @@ def main() -> None:
             "offset": offset,
             "allowed_updates": json.dumps(["message", "callback_query"]),
         })
+        if "result" not in updates:
+            time.sleep(3)
+            continue
         for update in updates.get("result", []):
             offset = update["update_id"] + 1
             if update.get("callback_query"):
