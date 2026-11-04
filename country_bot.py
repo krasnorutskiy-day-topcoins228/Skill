@@ -87,13 +87,24 @@ def call(token: str, method: str, data: dict | None = None) -> dict:
 
 INLINE_KEYBOARD = {
     "inline_keyboard": [
-        [{"text": "🎮 Новая игра", "callback_data": "newgame"}, {"text": "💡 Подсказка", "callback_data": "hint"}],
-        [{"text": "🏆 Счёт", "callback_data": "score"}, {"text": "⏭ Дальше", "callback_data": "next"}],
-        [{"text": "🛑 Стоп", "callback_data": "stop"}],
+        [{"text": "🎮 Игра вдвоём", "callback_data": "newgame"}, {"text": "👤 Одиночная игра", "callback_data": "solo"}],
+        [{"text": "💡 Подсказка", "callback_data": "hint"}, {"text": "🏆 Счёт", "callback_data": "score"}],
+        [{"text": "⏭ Дальше", "callback_data": "next"}, {"text": "🛑 Стоп", "callback_data": "stop"}],
+    ]
+}
+SOLO_LEVEL_KEYBOARD = {
+    "inline_keyboard": [
+        [{"text": "🌱 Начальный", "callback_data": "level_easy"}, {"text": "🌿 Средний", "callback_data": "level_medium"}],
+        [{"text": "🔥 Продвинутый", "callback_data": "level_hard"}, {"text": "🌍 Все флаги", "callback_data": "level_all"}],
     ]
 }
 BUTTON_COMMANDS = {
     "newgame": "/newgame",
+    "solo": "/solo",
+    "level_easy": "/solo_easy",
+    "level_medium": "/solo_medium",
+    "level_hard": "/solo_hard",
+    "level_all": "/solo_all",
     "hint": "/hint",
     "score": "/score",
     "next": "/next",
@@ -107,11 +118,11 @@ BUTTON_COMMANDS = {
 }
 
 
-def send(token: str, chat_id: int, text: str) -> None:
+def send(token: str, chat_id: int, text: str, keyboard: dict | None = None) -> None:
     call(token, "sendMessage", {
         "chat_id": chat_id,
         "text": text,
-        "reply_markup": json.dumps(INLINE_KEYBOARD, ensure_ascii=False),
+        "reply_markup": json.dumps(keyboard or INLINE_KEYBOARD, ensure_ascii=False),
     })
 
 
@@ -129,8 +140,21 @@ def difficulty_pool(round_number: int) -> tuple[str, list[dict]]:
 
 def start_round(token: str, chat_id: int, game: dict) -> None:
     game["round"] += 1
-    level, pool = difficulty_pool(game["round"])
+    if game.get("mode") == "solo":
+        solo_levels = {
+            "easy": ("Начальный", [c for c in COUNTRIES if c["iso"] in EASY_ISO]),
+            "medium": ("Средний", [c for c in COUNTRIES if c["iso"] not in EASY_ISO and c["iso"] not in TERRITORY_ISO]),
+            "hard": ("Продвинутый", [c for c in COUNTRIES if c["iso"] in TERRITORY_ISO]),
+            "all": ("Все флаги", COUNTRIES[:]),
+        }
+        level, pool = solo_levels[game["level"]]
+    else:
+        level, pool = difficulty_pool(game["round"])
     choices = [c for c in pool if c["iso"] not in game["used"]]
+    if not choices and game.get("mode") == "solo":
+        game["finished"] = True
+        send(token, chat_id, f"🎉 Уровень «{level}» пройден! Вы изучили все {len(pool)} флагов в этом уровне. Нажмите «Одиночная игра», чтобы выбрать другой уровень.")
+        return
     if not choices:
         choices = [c for c in COUNTRIES if c["iso"] not in game["used"]]
     if not choices:
@@ -165,11 +189,34 @@ def handle(token: str, message: dict) -> None:
     if user.get("id") not in ALLOWED_USERS:
         return
 
+    active_game = GAMES.get(chat_id)
+    if active_game and active_game.get("mode") in ("solo", "solo_setup") and active_game.get("owner") != user.get("id"):
+        return
+
     if command in ("/start", "/help"):
-        send(token, chat_id, "Привет! Угадывайте страны только по изображениям флагов 🗺️\n\n/newgame — начать новую игру\n/hint — взять подсказку (всего 5 за игру)\n/score — посмотреть счёт\n/next — пропустить вопрос\n/stop — завершить игру\n\nРаунды постепенно становятся сложнее. Первый правильный ответ получает очко!")
+        send(token, chat_id, "Привет! Угадывайте страны только по изображениям флагов 🗺️\n\n/newgame — игра вдвоём\n/solo — одиночная игра с выбором уровня\n/hint — взять подсказку (5 на игру)\n/score — посмотреть счёт\n/next — пропустить вопрос\n/stop — завершить игру\n\nВ одиночном режиме можно пройти выбранный уровень или изучить все флаги.")
+        return
+    if command == "/solo":
+        GAMES[chat_id] = {"mode": "solo_setup", "owner": user.get("id"), "scores": {}, "names": {}}
+        send(token, chat_id, "👤 Одиночная игра — выберите уровень:", SOLO_LEVEL_KEYBOARD)
+        return
+    if command in ("/solo_easy", "/solo_medium", "/solo_hard", "/solo_all"):
+        setup = GAMES.get(chat_id)
+        level_key = command.removeprefix("/solo_")
+        if not setup or setup.get("mode") != "solo_setup" or setup.get("owner") != user.get("id"):
+            send(token, chat_id, "Сначала нажмите «Одиночная игра» и выберите уровень.")
+            return
+        GAMES[chat_id] = {
+            "mode": "solo", "owner": user.get("id"), "level": level_key,
+            "scores": {user.get("id"): 0}, "names": {user.get("id"): name},
+            "used": set(), "round": 0, "answer": None, "answered": False,
+            "hints_left": 5, "round_hints": 0, "finished": False,
+        }
+        send(token, chat_id, f"Начинаем одиночное обучение: {level_key}. Угадывайте флаг!")
+        start_round(token, chat_id, GAMES[chat_id])
         return
     if command == "/newgame":
-        GAMES[chat_id] = {"scores": {}, "names": {}, "used": set(), "round": 0, "answer": None, "answered": False, "hints_left": 5}
+        GAMES[chat_id] = {"mode": "duo", "scores": {}, "names": {}, "used": set(), "round": 0, "answer": None, "answered": False, "hints_left": 5}
         send(token, chat_id, "🎉 Новая игра! Зовите друг друга и отвечайте в этом чате. Начинаем!")
         start_round(token, chat_id, GAMES[chat_id])
         return
@@ -186,16 +233,20 @@ def handle(token: str, message: dict) -> None:
         send(token, chat_id, score_text(game) if game else "Сейчас нет активной игры. Напишите /newgame.")
         return
     if command == "/next":
-        if game:
+        if game and game.get("answer") and not game.get("finished"):
             answer = game["answer"]
             send(token, chat_id, f"Ответ: {answer['name']} {answer['flag']}. Следующий раунд!")
             start_round(token, chat_id, game)
+        elif game and game.get("finished"):
+            send(token, chat_id, "Этот уровень уже завершён. Нажмите «Одиночная игра», чтобы выбрать другой.")
         else:
             send(token, chat_id, "Сначала начните игру командой /newgame.")
         return
     if command == "/hint":
-        if not game:
-            send(token, chat_id, "Сначала начните игру командой /newgame.")
+        if not game or not game.get("answer"):
+            send(token, chat_id, "Сначала начните игру командой /newgame или выберите уровень в одиночной игре.")
+        elif game.get("finished"):
+            send(token, chat_id, "Уровень уже завершён — выберите другой режим.")
         elif game["answered"]:
             send(token, chat_id, "Раунд уже завершён — дождитесь следующего флага.")
         elif game["hints_left"] <= 0:

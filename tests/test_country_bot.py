@@ -59,6 +59,33 @@ class CountryBotTests(unittest.TestCase):
 
     @patch.object(country_bot, "start_round")
     @patch.object(country_bot, "send")
+    def test_solo_mode_offers_levels_and_starts_selected_course(self, send, start_round):
+        country_bot.ALLOWED_USERS = {11, 22}
+        country_bot.GAMES.pop(999, None)
+        message = {"chat": {"id": 999}, "from": {"id": 11, "first_name": "Аня"}, "text": "/solo"}
+        country_bot.handle("token", message)
+        self.assertEqual(country_bot.GAMES[999]["mode"], "solo_setup")
+        message["text"] = "/solo_all"
+        country_bot.handle("token", message)
+        game = country_bot.GAMES[999]
+        self.assertEqual(game["mode"], "solo")
+        self.assertEqual(game["level"], "all")
+        self.assertEqual(game["scores"][11], 0)
+        start_round.assert_called_once()
+        country_bot.GAMES.pop(999, None)
+
+    @patch.object(country_bot, "send")
+    def test_solo_game_ignores_other_allowed_player(self, send):
+        country_bot.ALLOWED_USERS = {11, 22}
+        country_bot.GAMES[999] = {"mode": "solo", "owner": 11, "scores": {11: 0}, "names": {11: "Аня"}, "used": set(), "round": 1, "answer": {"name": "Япония", "flag": "🇯🇵", "iso": "jp"}, "answered": False}
+        message = {"chat": {"id": 999}, "from": {"id": 22, "first_name": "Борис"}, "text": "/next"}
+        country_bot.handle("token", message)
+        send.assert_not_called()
+        self.assertEqual(country_bot.GAMES[999]["round"], 1)
+        country_bot.GAMES.pop(999, None)
+
+    @patch.object(country_bot, "start_round")
+    @patch.object(country_bot, "send")
     def test_reply_keyboard_button_starts_a_game(self, send, start_round):
         country_bot.ALLOWED_USERS = {11, 22}
         country_bot.GAMES.pop(999, None)
@@ -77,7 +104,7 @@ class CountryBotTests(unittest.TestCase):
         markup = json.loads(payload["reply_markup"])
         self.assertIn("inline_keyboard", markup)
         buttons = [b for row in markup["inline_keyboard"] for b in row]
-        self.assertIn("🎮 Новая игра", [b["text"] for b in buttons])
+        self.assertIn("👤 Одиночная игра", [b["text"] for b in buttons])
         self.assertIn({"text": "⏭ Дальше", "callback_data": "next"}, buttons)
 
     @patch.object(country_bot, "handle")
