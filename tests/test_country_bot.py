@@ -10,7 +10,7 @@ class CountryBotTests(unittest.TestCase):
         self.assertEqual(len(country_bot.COUNTRIES), 244)
         codes = set()
         for country in country_bot.COUNTRIES:
-            self.assertEqual(set(country), {"iso", "name", "flag", "capital", "clue"})
+            self.assertEqual(set(country), {"iso", "name", "flag", "capital"})
             self.assertEqual(len(country["iso"]), 2)
             self.assertTrue(country["name"] and country["flag"] and country["capital"])
             self.assertTrue(any("а" <= char.lower() <= "я" or char.lower() == "ё" for char in country["name"]))
@@ -153,10 +153,10 @@ class CountryBotTests(unittest.TestCase):
 
     @patch.object(country_bot, "start_round")
     @patch.object(country_bot, "send")
-    def test_reply_keyboard_button_starts_a_game(self, send, start_round):
+    def test_newgame_command_starts_a_duo_round(self, send, start_round):
         country_bot.ALLOWED_USERS = {11, 22}
         country_bot.GAMES.pop(999, None)
-        message = {"chat": {"id": 999}, "from": {"id": 11, "first_name": "Аня"}, "text": "🎮 Новая игра"}
+        message = {"chat": {"id": 999}, "from": {"id": 11, "first_name": "Аня"}, "text": "/newgame"}
         country_bot.handle("token", message)
         self.assertIn(999, country_bot.GAMES)
         self.assertEqual(country_bot.GAMES[999]["hints_left"], 5)

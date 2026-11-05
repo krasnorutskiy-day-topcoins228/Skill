@@ -11,56 +11,32 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-# (country, flag, capital, clue)
-COUNTRIES = [
-    ("Япония", "🇯🇵", "Токио", "Страна восходящего солнца; её столица — Токио."),
-    ("Бразилия", "🇧🇷", "Бразилиа", "Самая большая страна Южной Америки; здесь говорят по-португальски."),
-    ("Исландия", "🇮🇸", "Рейкьявик", "Островное государство с гейзерами и северным сиянием."),
-    ("Египет", "🇪🇬", "Каир", "Здесь находятся пирамиды Гизы и река Нил."),
-    ("Канада", "🇨🇦", "Оттава", "Страна кленового листа и второй по площади территории в мире."),
-    ("Италия", "🇮🇹", "Рим", "Страна в форме сапога; её столица — Рим."),
-    ("Австралия", "🇦🇺", "Канберра", "Единственная страна, занимающая целый континент."),
-    ("Кения", "🇰🇪", "Найроби", "Восточноафриканская страна, известная сафари и марафонцами."),
-    ("Греция", "🇬🇷", "Афины", "Родина древней демократии и Олимпийских игр."),
-    ("Мексика", "🇲🇽", "Мехико", "Страна тако, майя и ацтеков."),
-    ("Норвегия", "🇳🇴", "Осло", "Скандинавская страна фьордов; её столица — Осло."),
-    ("Марокко", "🇲🇦", "Рабат", "Североафриканская страна, где находятся Марракеш и Атласские горы."),
-    ("Таиланд", "🇹🇭", "Бангкок", "Юго-восточноазиатская страна, известная храмами и уличной едой."),
-    ("Перу", "🇵🇪", "Лима", "В этой стране находятся Мачу-Пикчу и Анды."),
-    ("Южная Корея", "🇰🇷", "Сеул", "Родина K-pop, кимчи и города Сеул."),
-    ("Швейцария", "🇨🇭", "Берн", "Альпийская страна, известная часами, шоколадом и нейтралитетом."),
-    ("Португалия", "🇵🇹", "Лиссабон", "Европейская страна на берегу Атлантики; столица — Лиссабон."),
-    ("Новая Зеландия", "🇳🇿", "Веллингтон", "Островная страна, где снимали «Властелина колец»."),
-    ("Турция", "🇹🇷", "Анкара", "Страна, расположенная сразу в Европе и Азии."),
-    ("Аргентина", "🇦🇷", "Буэнос-Айрес", "Родина танго и футболиста Лионеля Месси."),
-]
-
-# Add every ISO-3166 entry with a capital; keep the hand-written Russian clues/names
-# for familiar countries, and use the full bundled dataset for the rest.
 def flag_for(iso: str) -> str:
     return "".join(chr(127397 + ord(letter)) for letter in iso.upper())
 
 
-def iso_for_flag(flag: str) -> str:
-    return "".join(chr(ord(letter) - 127397) for letter in flag).lower()
+def load_countries() -> list[dict]:
+    data_file = Path(__file__).resolve().parent / "data" / "countries.json"
+    try:
+        records = json.loads(data_file.read_text(encoding="utf-8"))
+        countries = []
+        seen = set()
+        for row in records:
+            iso = row["iso"].upper()
+            name = row.get("name_ru") or row["name"]
+            capital = row["capital"]
+            if len(iso) != 2 or iso in seen or not name or not isinstance(capital, str):
+                raise ValueError(f"Некорректная запись страны: {row!r}")
+            seen.add(iso)
+            countries.append({"iso": iso.lower(), "name": name, "flag": flag_for(iso), "capital": capital})
+        if len(countries) < 200:
+            raise ValueError(f"В data/countries.json найдено слишком мало стран: {len(countries)}")
+        return countries
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise RuntimeError(f"Не удалось загрузить список стран: {data_file}. Распакуйте вместе с ботом папку data.") from exc
 
 
-_curated = {iso_for_flag(row[1]): row for row in COUNTRIES}
-try:
-    records = json.loads((Path(__file__).parent / "data" / "countries.json").read_text(encoding="utf-8"))
-    COUNTRY_BY_ISO = {}
-    for item in records:
-        iso = item["iso"].lower()
-        flag = flag_for(iso)
-        curated = _curated.get(iso)
-        if curated:
-            name, _, capital, clue = curated
-        else:
-            name, capital, clue = item.get("name_ru", item["name"]), item["capital"], ""
-        COUNTRY_BY_ISO[iso] = {"iso": iso, "name": name, "flag": flag, "capital": capital, "clue": clue}
-except (OSError, ValueError, KeyError) as exc:
-    raise RuntimeError("Не удалось загрузить data/countries.json. Оставьте файл данных в папке data рядом с country_bot.py.") from exc
-COUNTRIES = list(COUNTRY_BY_ISO.values())
+COUNTRIES = load_countries()
 
 API = "https://api.telegram.org/bot{}/{}"
 GAMES: dict[int, dict] = {}
@@ -119,12 +95,6 @@ BUTTON_COMMANDS = {
     "score": "/score",
     "next": "/next",
     "stop": "/stop",
-    # Compatibility with the older reply keyboard.
-    "🎮 Новая игра": "/newgame",
-    "💡 Подсказка": "/hint",
-    "🏆 Счёт": "/score",
-    "⏭ Дальше": "/next",
-    "🛑 Стоп": "/stop",
 }
 
 
@@ -275,7 +245,6 @@ def handle(token: str, message: dict) -> None:
     user = message.get("from", {})
     name = user.get("first_name") or "Игрок"
     text = (message.get("text") or "").strip()
-    text = BUTTON_COMMANDS.get(text, text)
     command = text.split()[0].split("@")[0].lower() if text.startswith("/") else ""
 
     # This one onboarding command reveals only the caller's own Telegram ID.
