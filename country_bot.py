@@ -84,7 +84,13 @@ def call(token: str, method: str, data: dict | None = None) -> dict:
 
 MAIN_MENU_KEYBOARD = {
     "inline_keyboard": [
+        [{"text": "▶️ Начать игру", "callback_data": "start"}, {"text": "🏆 Счёт", "callback_data": "menu_score"}],
+    ]
+}
+MODE_MENU_KEYBOARD = {
+    "inline_keyboard": [
         [{"text": "🎮 Игра вдвоём", "callback_data": "newgame"}, {"text": "👤 Одиночная игра", "callback_data": "solo"}],
+        [{"text": "↩️ Назад", "callback_data": "back_menu"}],
     ]
 }
 GAME_KEYBOARD = {
@@ -100,6 +106,9 @@ SOLO_LEVEL_KEYBOARD = {
     ]
 }
 BUTTON_COMMANDS = {
+    "start": "/choose_mode",
+    "menu_score": "/menu_score",
+    "back_menu": "/main_menu",
     "newgame": "/newgame",
     "solo": "/solo",
     "level_easy": "/solo_easy",
@@ -120,11 +129,10 @@ BUTTON_COMMANDS = {
 
 
 def send(token: str, chat_id: int, text: str, keyboard: dict | None = None) -> dict:
-    return call(token, "sendMessage", {
-        "chat_id": chat_id,
-        "text": text,
-        "reply_markup": json.dumps(keyboard or GAME_KEYBOARD, ensure_ascii=False),
-    })
+    payload = {"chat_id": chat_id, "text": text}
+    if keyboard is not None:
+        payload["reply_markup"] = json.dumps(keyboard, ensure_ascii=False)
+    return call(token, "sendMessage", payload)
 
 
 TERRITORY_ISO = set("ai as aw ax bl bq cc ck cw cx eh fk fo gf gg gs gu hk hm im io je ky mf mq ms nc nf nu pf pm pn pr re sj sx tc tk um vg vi wf yt".split())
@@ -281,8 +289,21 @@ def handle(token: str, message: dict) -> None:
     if active_game and active_game.get("mode") in ("solo", "solo_setup") and active_game.get("owner") != user.get("id"):
         return
 
-    if command in ("/start", "/help"):
-        send(token, chat_id, "Привет! Угадывайте страны только по изображениям флагов 🗺️\n\n/newgame — игра вдвоём\n/solo — одиночная игра с выбором уровня\n/hint — взять подсказку (5 на игру)\n/score — посмотреть счёт\n/next — пропустить вопрос\n/stop — завершить игру\n\nВ одиночном режиме можно пройти выбранный уровень или изучить все флаги.", MAIN_MENU_KEYBOARD)
+    if command in ("/start", "/help", "/main_menu"):
+        send(token, chat_id, "Главное меню — начните игру или посмотрите счёт.", MAIN_MENU_KEYBOARD)
+        return
+    if command == "/choose_mode":
+        send(token, chat_id, "Выберите режим игры:", MODE_MENU_KEYBOARD)
+        return
+    if command == "/menu_score":
+        current = GAMES.get(chat_id)
+        if current and current.get("mode") == "solo":
+            text = "Одиночная тренировка не входит в общий игровой счёт."
+        elif current and current.get("mode") == "duo":
+            text = score_text(current)
+        else:
+            text = "Пока нет активной игры и счёта."
+        send(token, chat_id, text, MAIN_MENU_KEYBOARD)
         return
     if command == "/solo":
         GAMES[chat_id] = {"mode": "solo_setup", "owner": user.get("id"), "scores": {}, "names": {}}
@@ -409,6 +430,12 @@ def handle_callback(token: str, query: dict) -> None:
     data = query.get("data", "")
     if not message:
         return
+    if data in {"start", "newgame", "solo", "back_menu", "level_easy", "level_medium", "level_hard", "level_all"}:
+        call(token, "editMessageReplyMarkup", {
+            "chat_id": message["chat"]["id"],
+            "message_id": message["message_id"],
+            "reply_markup": json.dumps({"inline_keyboard": []}),
+        })
     if data.startswith("solo_answer:"):
         command = "/solo_answer " + data.split(":", 1)[1]
     else:

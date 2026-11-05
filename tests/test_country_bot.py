@@ -164,8 +164,9 @@ class CountryBotTests(unittest.TestCase):
         country_bot.GAMES.pop(999, None)
 
     @patch.object(country_bot, "call")
-    def test_game_messages_show_controls_not_the_game_selection_menu(self, api_call):
-        country_bot.send("token", 123, "Вопрос")
+    def test_duo_round_has_only_round_controls_not_mode_menu(self, api_call):
+        game = {"mode": "duo", "used": set(), "round": 0, "answered": False}
+        country_bot.start_round("token", 123, game)
         payload = api_call.call_args.args[2]
         import json
         markup = json.loads(payload["reply_markup"])
@@ -182,8 +183,27 @@ class CountryBotTests(unittest.TestCase):
         country_bot.handle("token", message)
         keyboard = send.call_args.args[3]
         labels = [b["text"] for row in keyboard["inline_keyboard"] for b in row]
-        self.assertIn("👤 Одиночная игра", labels)
-        self.assertIn("🎮 Игра вдвоём", labels)
+        self.assertEqual(labels, ["▶️ Начать игру", "🏆 Счёт"])
+
+    @patch.object(country_bot, "start_round")
+    @patch.object(country_bot, "send")
+    @patch.object(country_bot, "call")
+    def test_start_button_only_opens_mode_menu_and_duo_starts_after_choice(self, api_call, send, start_round):
+        country_bot.ALLOWED_USERS = {11, 22}
+        country_bot.GAMES.pop(321, None)
+        user = {"id": 11, "first_name": "Аня"}
+        start_query = {"id": "s", "data": "start", "from": user, "message": {"chat": {"id": 321}, "message_id": 1}}
+        country_bot.handle_callback("token", start_query)
+        self.assertNotIn(321, country_bot.GAMES)
+        start_round.assert_not_called()
+        menu = send.call_args.args[3]
+        labels = [b["text"] for row in menu["inline_keyboard"] for b in row]
+        self.assertEqual(labels[:2], ["🎮 Игра вдвоём", "👤 Одиночная игра"])
+        duo_query = {"id": "d", "data": "newgame", "from": user, "message": {"chat": {"id": 321}, "message_id": 2}}
+        country_bot.handle_callback("token", duo_query)
+        self.assertEqual(country_bot.GAMES[321]["mode"], "duo")
+        start_round.assert_called_once()
+        country_bot.GAMES.pop(321, None)
 
     @patch.object(country_bot, "handle")
     @patch.object(country_bot, "call")
