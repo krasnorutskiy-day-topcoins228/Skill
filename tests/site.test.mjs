@@ -501,6 +501,11 @@ test('contact section uses the supplied text and real contact links', () => {
   assert.match(css, /\.contact__icon svg\s*\{[^}]*stroke:\s*currentColor/, 'The icons are stroked, not filled');
   assert.doesNotMatch(css, /\.personal__rate strong\s*\{[^}]*font-size/, 'The rate line keeps one even size');
   assert.match(html, /footer__nav/, 'The footer carries its own navigation');
+  const footerBrand = html.match(/<a class="footer__brand"[\s\S]*?<\/a>/)?.[0] || '';
+  assert.match(footerBrand, /brand__monogram/, 'The footer opens with the logo monogram');
+  assert.match(footerBrand, /brand__name/, 'The footer logo repeats the name');
+  assert.match(footerBrand, /ЕЛИЗАВЕТА<br>КРАВЕЦ/, 'The footer name keeps the two-line lockup');
+  assert.doesNotMatch(footerBrand, /✳/, 'The plain text asterisk is gone from the footer');
   assert.equal((html.match(/<nav class="footer__nav"[^>]*>[\s\S]*?<\/nav>/) || [''])[0].match(/<a /g)?.length, 4, 'Footer links mirror the four sections');
   assert.match(html, /© 2026 Елизавета Кравец/, 'The footer states the authorship');
   assert.match(html, /footer__meta[\s\S]*?https:\/\/t\.me\/lizzieamo/, 'The footer repeats the Telegram contact');
