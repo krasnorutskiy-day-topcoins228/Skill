@@ -267,8 +267,9 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 .evidence__heading h3 em { font-family: var(--font-accent); font-size: 1.13em; font-style: italic; font-weight: 600; letter-spacing: -.02em; }
 .evidence__heading h3 span { font-style: normal; }
 .evidence__heading > p { max-width: 330px; font-size: 20px; line-height: 1.7; }
-.evidence__gallery { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 76%); gap: 12px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; scrollbar-width: thin; }
-.evidence-card { display: flex; min-width: 0; flex-direction: column; scroll-snap-align: start; }
+/* A flex track lets each card pick its own width: landscape stats read larger. */
+.evidence__gallery { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; scrollbar-width: thin; }
+.evidence-card { display: flex; min-width: 0; flex: 0 0 max(76%, 220px); flex-direction: column; scroll-snap-align: start; }
 /* Real screenshots keep their own proportions: no cropping, no letterboxing. */
 .evidence-card__screen { position: relative; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line-on-ice); border-radius: 17px; background: rgba(255, 255, 255, .10); box-shadow: 0 10px 26px rgba(25, 0, 9, .10); }
 @media (hover: hover) {
@@ -484,6 +485,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .why__list { gap: 22px; }
   .contact__copy { font-size: 18px; }
   .contact__copy h3 { font-size: 21px; }
+  .evidence-card:nth-child(-n+3) { flex-basis: max(96%, 260px); }
 }
 
 /* Only elements below the initial viewport are enhanced by JavaScript.
@@ -705,7 +707,14 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .metric__number { font-size: clamp(2.2rem, 3.4vw, 3.4rem); }
   .evidence { margin-top: 100px; }
   .evidence__heading { grid-template-columns: 1fr 300px; align-items: end; margin-bottom: 28px; }
-  .evidence__gallery { grid-auto-flow: initial; grid-auto-columns: initial; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; }
+  .evidence__gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; }
+  /* The three matching phone screenshots (04, 07, 08) share the second row;
+     the mixed pair (05, 06) closes the grid. DOM and phone order stay 01-08. */
+  .evidence-card:nth-child(4) { order: 1; }
+  .evidence-card:nth-child(7) { order: 2; }
+  .evidence-card:nth-child(8) { order: 3; }
+  .evidence-card:nth-child(5) { order: 4; }
+  .evidence-card:nth-child(6) { order: 5; }
   /* Phone screenshots are tall; cap their height so mixed cards stay in rhythm.
      The frame mats the sides instead of cropping the statistics. */
   .evidence-card__screen img { max-height: 440px; object-fit: contain; }

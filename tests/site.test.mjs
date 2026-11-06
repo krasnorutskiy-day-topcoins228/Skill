@@ -314,6 +314,9 @@ test('the supplied result and its evidence gallery are present', () => {
   assert.match(html, /<dialog class="evidence-lightbox"/, 'The lightbox dialog is present');
   assert.match(css, /\.evidence-card__screen img\s*\{[^}]*width:\s*100%/, 'Screenshots fill their cards without cropping');
   assert.match(css, /\.evidence-card__screen img\s*\{[^}]*max-height:\s*440px[^}]*object-fit:\s*contain/, 'Tall phone screenshots stay in rhythm without cropping');
+  assert.match(css, /\.evidence__gallery\s*\{[^}]*display:\s*flex/, 'The scroller flexes so each card picks its own width');
+  assert.match(css, /@media\s*\(min-width:\s*900px\)\s*\{[\s\S]*?\.evidence-card:nth-child\(4\)\s*\{[^}]*order:\s*1/, 'The matching phone screenshots gather beside 04');
+  assert.match(css, /@media\s*\(min-width:\s*900px\)\s*\{[\s\S]*?\.evidence-card:nth-child\(5\)\s*\{[^}]*order:\s*4/, 'The mixed pair drops to the third row');
 });
 
 test('both project categories open to show the requested case fields', () => {
@@ -730,6 +733,7 @@ test('phones read lighter and scroll less', () => {
   assert.match(phone, /main\s*\{[^}]*--vine-space:\s*116px/, 'The hedge reserves less room');
   assert.match(css, /\.site-menu-toggle\s*\{[^}]*width:\s*60px/, 'The burger button grows');
   assert.match(css, /\.site-menu-toggle__icon\s*\{[^}]*width:\s*34px/, 'The three bars grow with it');
+  assert.match(phone, /\.evidence-card:nth-child\(-n\+3\)\s*\{[^}]*flex-basis:\s*max\(96%,\s*260px\)/, 'The first three landscape screens read larger');
 });
 
 test('a lush flowering hedge softens section boundaries without covering the hero/about transition', () => {
