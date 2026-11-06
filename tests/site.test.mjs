@@ -354,7 +354,7 @@ test('personal brand support preserves the supplied scope, format, and monthly p
   ]);
   const groups = [...section.matchAll(/<details class="personal-feature"( open)?>([\s\S]*?)<\/details>/g)];
   assert.equal(groups.length, 5);
-  assert.ok(groups[0][1], 'The first group should show that the content can be expanded');
+  assert.ok(!groups.some(([, attr]) => attr), 'All groups start collapsed');
   const expectedGroups = [
     ['1. Анализ и позиционирование', [
       'Анализ текущего аккаунта.',
