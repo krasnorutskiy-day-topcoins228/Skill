@@ -94,12 +94,12 @@ test('navigation aligns with the logo and uses larger, separate glass buttons', 
   assert.match(desktop, /\.site-header__inner\s*\{[^}]*flex-wrap:\s*nowrap/);
   assert.match(desktop, /--desktop-nav-gap:\s*clamp\(36px,[^;]*56px\)/, 'Desktop gaps should be larger than before');
   assert.match(desktop, /\.site-nav\s*\{[^}]*gap:\s*var\(--desktop-nav-gap\)/);
-  assert.match(desktop, /width:\s*min\(calc\(660px\s*\+\s*var\(--desktop-nav-gap\)/, 'Reserve more width for the desktop buttons');
+  assert.match(desktop, /width:\s*min\(calc\(700px\s*\+\s*var\(--desktop-nav-gap\)/, 'Reserve more width for the desktop buttons');
   assert.match(desktop, /grid-template-columns:\s*minmax\(min-content,\s*1fr\)/, 'Narrow desktop widths must leave room for labels');
   const wide = css.match(/@media\s*\(min-width:\s*1220px\)\s*\{([\s\S]*?)\n\}/)?.[1];
-  assert.ok(wide, 'Centered navigation styles are missing');
-  assert.match(wide, /\.site-header__inner\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s+minmax\(0,\s*1fr\)/);
-  assert.match(wide, /\.site-nav\s*\{[^}]*width:\s*min\(828px,\s*calc\(100vw\s*-\s*486\.4px\)\)/);
+  assert.ok(wide, 'Wide-screen navigation styles are missing');
+  assert.match(wide, /\.site-header__inner\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1\.5fr\)\s+auto\s+minmax\(0,\s*\.5fr\)/, 'Wide-screen buttons sit right of center');
+  assert.match(wide, /\.site-nav\s*\{[^}]*width:\s*min\(880px,\s*calc\(100vw\s*-\s*486\.4px\)\)/, 'Wide-screen buttons are wider');
 });
 
 test('mobile menu uses simple bars and narrower, taller glass buttons without a rose', () => {

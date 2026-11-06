@@ -577,7 +577,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
     grid-template-columns: minmax(min-content, 1fr) minmax(min-content, 1.24fr) minmax(min-content, 1.03fr) minmax(min-content, .88fr);
     gap: var(--desktop-nav-gap);
     /* Wider pills and gaps grow only as far as the logo and viewport allow. */
-    width: min(calc(660px + var(--desktop-nav-gap) + var(--desktop-nav-gap) + var(--desktop-nav-gap)), calc(100% - 211.2px));
+    width: min(calc(700px + var(--desktop-nav-gap) + var(--desktop-nav-gap) + var(--desktop-nav-gap)), calc(100% - 211.2px));
     max-width: 100%; margin: 0 0 0 auto;
   }
   .hero, .hero__inner { min-height: max(760px, 100vh); min-height: max(760px, 100svh); }
@@ -646,12 +646,12 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .tariff-card__name { min-height: 2.6em; }
 }
 
-/* On wide screens the navigation is centered while sharing the logo's row. */
+/* On wide screens the navigation shares the logo's row, sitting just right of center. */
 @media (min-width: 1220px) {
-  .site-header__inner { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 24px; }
+  .site-header__inner { display: grid; grid-template-columns: minmax(0, 1.5fr) auto minmax(0, .5fr); gap: 24px; }
   .brand { grid-column: 1; }
-  /* Keep the wider buttons and gaps centered without overlapping the logo. */
-  .site-nav { grid-column: 2; width: min(828px, calc(100vw - 486.4px)); margin: 0; }
+  /* Wider buttons lean to the right while keeping clear of the logo. */
+  .site-nav { grid-column: 2; width: min(880px, calc(100vw - 486.4px)); margin: 0; }
 }
 
 /* Keep the long role legible against the cloche and petals at intermediate widths. */
