@@ -95,12 +95,14 @@ test('navigation is a modern segmented control with a gliding light thumb', () =
   const band = css.match(/@media\s*\(min-width:\s*900px\)\s*and\s*\(min-height:\s*501px\),\s*\(min-width:\s*1101px\)\s*\{([\s\S]*?)\n\}/)?.[1];
   assert.ok(band, 'The segmented navigation is missing');
   assert.match(band, /\.site-nav\s*\{[^}]*display:\s*inline-flex/, 'The links sit in one capsule');
-  assert.match(band, /\.site-nav\s*\{[^}]*backdrop-filter:\s*blur\(20px\)/);
+  assert.match(band, /\.site-nav\s*\{[^}]*backdrop-filter:\s*blur\(24px\)/);
+  assert.match(band, /\.site-nav\s*\{[^}]*inset 0 1px 0 rgba\(255,\s*255,\s*255/);
   assert.match(band, /\.site-nav__thumb\s*\{[^}]*border-radius:\s*999px/);
   assert.match(band, /\.site-nav__thumb\s*\{[^}]*transition:[^}]*transform/, 'The thumb glides on transform only');
   assert.match(band, /\.site-nav__thumb\s*\{[^}]*pointer-events:\s*none/, 'The thumb never blocks the links');
+  assert.match(band, /\.site-nav__thumb\s*\{[^}]*radial-gradient\(/, 'The thumb gets a glossy iOS highlight');
   assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*background:\s*none/, 'Desktop links drop the separate button frames');
-  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*min-height:\s*46px/);
+  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*min-height:\s*54px/, 'Keep the capsule tall and comfortable');
   assert.match(band, /\.site-nav\s+\.glass-pill\[aria-current="true"\]\s*\{[^}]*color:\s*var\(--ink-on-ice\)/, 'The active link inverts on the light thumb');
   assert.match(band, /\.site-nav\s+\.glass-pill:hover\s*\{[^}]*color:\s*var\(--ink-on-ice\)/, 'The hovered link inverts too');
   assert.match(band, /\.glass-pill__index\s*\{[^}]*display:\s*inline-block/);
