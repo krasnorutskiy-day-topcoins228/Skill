@@ -347,11 +347,12 @@
   const raf = typeof window.requestAnimationFrame === 'function' ? window.requestAnimationFrame.bind(window) : null;
   const reduce = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false;
   const glide = 'height .42s cubic-bezier(.22, 1, .36, 1)';
-  function settle(card, body) {
+  function settle(card, body, closing) {
     if (card.__glide) window.clearTimeout(card.__glide);
     card.__glide = window.setTimeout(() => {
       card.__glide = null;
       card.dataset.state = '';
+      if (closing) card.open = false;
       if (body) body.style.cssText = '';
     }, 450);
   }
@@ -360,11 +361,14 @@
     card.dataset.state = 'closing';
     const body = card.querySelector('.project-card__details');
     if (!body || !raf || reduce) { card.open = false; card.dataset.state = ''; return; }
+    const from = body.offsetHeight;
     body.style.transition = 'none';
-    body.style.height = body.offsetHeight + 'px';
+    body.style.height = from + 'px';
     body.style.overflow = 'hidden';
-    raf(() => { body.style.transition = glide; body.style.height = '0px'; });
-    settle(card, body);
+    void body.offsetHeight;
+    body.style.transition = glide;
+    body.style.height = '0px';
+    settle(card, body, true);
   }
   function expand(card) {
     if (card.dataset.state === 'opening') return;
@@ -372,11 +376,14 @@
     card.open = true;
     const body = card.querySelector('.project-card__details');
     if (!body || !raf || reduce) { card.dataset.state = ''; return; }
+    const from = card.__glide ? body.offsetHeight : 0;
     body.style.transition = 'none';
-    body.style.height = '0px';
+    body.style.height = from + 'px';
     body.style.overflow = 'hidden';
-    raf(() => { body.style.transition = glide; body.style.height = body.scrollHeight + 'px'; });
-    settle(card, body);
+    void body.offsetHeight;
+    body.style.transition = glide;
+    body.style.height = body.scrollHeight + 'px';
+    settle(card, body, false);
   }
   for (const card of cards) {
     const summary = card.querySelector('summary');
@@ -384,7 +391,8 @@
     summary.addEventListener('click', (event) => {
       if (event && typeof event.preventDefault === 'function') event.preventDefault();
       for (const other of cards) if (other !== card && other.open) collapse(other);
-      if (card.open && card.dataset.state !== 'opening') collapse(card);
+      const closing = card.dataset.state === 'closing';
+      if (card.open && !closing) collapse(card);
       else expand(card);
     });
   }

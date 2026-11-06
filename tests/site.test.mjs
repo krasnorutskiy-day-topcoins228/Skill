@@ -727,6 +727,7 @@ test('project cards open one at a time and glide', () => {
   assert.doesNotMatch(css, /\.metric__pending/);
   assert.match(js, /querySelector\('\.project-list'\)/, 'The cards learn accordion manners');
   assert.match(js, /other !== card && other\.open/, 'Opening one card folds the other');
+  assert.match(js, /if \(closing\) card\.open = false/, 'The glide ends by really closing the card');
   assert.match(js, /prefers-reduced-motion/, 'The glide respects reduced motion');
   assert.match(css, /@media\s*\(hover:\s*hover\)\s*\{[\s\S]*?\.project-card:hover\s*\{[^}]*translateY\(-3px\)/, 'Cards lift on hover');
   assert.match(css, /\.project-card__toggle\s*\{[^}]*linear-gradient\(/, 'The plus button sits on glass');
