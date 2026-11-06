@@ -242,6 +242,9 @@ test('the role is above the name without forced line breaks', () => {
   assert.equal(role[1].trim(), 'SMM-специалист / Стратегия, продвижение и создание контента');
   assert.match(css, /\.hero__role\s*\{[^}]*font-size:\s*21px/);
   assert.match(css, /\.hero__description\s*\{[^}]*font-size:\s*22px/);
+  assert.match(css, /\.hero__role\s*\{[^}]*font-size:\s*25px/, 'The desktop role grows with the layout');
+  assert.match(css, /\.hero h1\s*\{[^}]*font-size:\s*clamp\(5rem,\s*7\.7vw,\s*7\.5rem\)/, 'The name scales up on wide screens');
+  assert.match(css, /\.hero__description\s*\{[^}]*font-size:\s*25px/, 'The desktop description keeps pace');
 });
 
 test('phone hero keeps the cloche and still petals visible with readable, compact actions', () => {

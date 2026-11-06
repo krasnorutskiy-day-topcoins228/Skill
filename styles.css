@@ -580,9 +580,9 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .hero__image img { -webkit-mask-image: linear-gradient(90deg, transparent, #000 32%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 32%, #000 92%, transparent); }
   .hero__shade { background: linear-gradient(90deg, rgba(101, 14, 39, .96) 0%, rgba(101, 14, 39, .91) 29%, rgba(101, 14, 39, .47) 51%, rgba(101, 14, 39, .03) 73%), linear-gradient(0deg, var(--wine) 0%, transparent 24%); }
   .hero__inner { align-items: center; padding-top: 135px; padding-bottom: 150px; }
-  .hero__role { margin-bottom: 20px; font-size: 23px; }
-  .hero h1 { font-size: clamp(4.7rem, 7.2vw, 6.9rem); }
-  .hero__description { max-width: 500px; font-size: 23px; }
+  .hero__role { margin-bottom: 20px; font-size: 25px; }
+  .hero h1 { font-size: clamp(5rem, 7.7vw, 7.5rem); }
+  .hero__description { max-width: 540px; font-size: 25px; }
   .hero__petals { --petal-unit: clamp(68px, 8.8vh, 104px); }
   .hero__ground { --ground-unit: clamp(70px, 8vh, 104px); }
   .petal--one { left: 29%; top: 30%; }
