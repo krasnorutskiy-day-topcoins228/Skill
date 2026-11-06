@@ -120,26 +120,8 @@ h1, h2, h3, .project-card__title { font-family: var(--font-display); }
 .glass-pill::before { content: ""; position: absolute; z-index: -1; inset: 1px 3px 50%; border-radius: 999px; background: linear-gradient(to bottom, rgba(255, 255, 255, .14), transparent); pointer-events: none; }
 .glass-pill:hover { border-color: rgba(227, 243, 255, .72); transform: translateY(-2px); box-shadow: inset 0 1px 1px rgba(255, 255, 255, .7), inset 0 -2px 5px rgba(24, 0, 9, .2), 0 16px 30px rgba(25, 0, 9, .34), 0 3px 7px rgba(25, 0, 9, .22); }
 
-/* Serif indices echo the numbered section eyebrows; they appear once the pills have room. */
-.glass-pill__index {
-  display: none; align-self: center; margin-right: 9px; transform: translateY(-1px);
-  font-family: var(--font-accent); font-style: italic; font-weight: 600;
-  font-size: .68em; line-height: 1; color: var(--ice); opacity: .58;
-  transition: opacity .2s ease;
-}
-.glass-pill:hover .glass-pill__index,
-.glass-pill:focus-visible .glass-pill__index,
-.site-nav .glass-pill[aria-current="true"] .glass-pill__index { opacity: .92; }
-
-/* The section in view answers with a warmer edge and a fine hairline under its label. */
+/* The active link keeps a warmer edge where the drawer pills live. */
 .site-nav .glass-pill[aria-current="true"] { border-color: rgba(238, 248, 255, .85); color: #edf7ff; }
-.site-nav .glass-pill::after {
-  content: ""; position: absolute; left: 50%; bottom: 9px; width: 0; height: 1.5px; border-radius: 999px;
-  background: linear-gradient(90deg, transparent, rgba(213, 235, 255, .95), transparent);
-  transform: translateX(-50%); opacity: 0;
-  transition: width .3s ease, opacity .3s ease;
-}
-.site-nav .glass-pill[aria-current="true"]::after { width: 56%; opacity: 1; }
 
 /* Links stay visible without JavaScript; the drawer enhances small screens. */
 .site-nav { display: grid; grid-template-columns: minmax(0, 1fr); width: min(66.6667%, 260px); margin-inline: auto; gap: 24px; }
@@ -654,7 +636,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
    modern segmented control: one dark glass capsule, one gliding light thumb. */
 @media (min-width: 900px) and (min-height: 501px), (min-width: 1101px) {
   .site-nav {
-    position: relative; display: inline-flex; align-items: center; flex-wrap: nowrap; gap: 2px;
+    position: relative; display: inline-flex; align-items: center; flex-wrap: nowrap; gap: 8px;
     width: auto; max-width: 100%; margin: 0 0 0 auto; padding: 7px;
     border: 1px solid rgba(226, 243, 255, .30); border-radius: 999px;
     background:
@@ -691,7 +673,6 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .site-nav .glass-pill:hover { transform: none; box-shadow: none; color: var(--ink-on-ice); }
   .site-nav .glass-pill[aria-current="true"] { color: var(--ink-on-ice); }
   .site-nav .glass-pill:active { transform: translateY(1px); }
-  .glass-pill__index { display: inline-block; color: inherit; font-size: .74em; }
 }
 
 @media (min-width: 1200px) {

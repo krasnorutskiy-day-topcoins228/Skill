@@ -72,6 +72,7 @@ test('navigation is a modern segmented control with a gliding light thumb', () =
   const nav = html.match(/<nav class="site-nav"[\s\S]*?<\/nav>/)?.[0];
   assert.ok(nav, 'Navigation is missing');
   assert.equal((nav.match(/<a class="glass-pill"/g) || []).length, 4);
+  assert.doesNotMatch(nav, /glass-pill__index/, 'The desktop capsule carries no numbered indices');
   const rule = css.match(/\.site-nav\s*\{([^}]*)\}/)?.[1];
   const pill = css.match(/\.glass-pill\s*\{([^}]*)\}/)?.[1];
   const header = css.match(/\.site-header\s*\{([^}]*)\}/)?.[1];
@@ -95,6 +96,7 @@ test('navigation is a modern segmented control with a gliding light thumb', () =
   const band = css.match(/@media\s*\(min-width:\s*900px\)\s*and\s*\(min-height:\s*501px\),\s*\(min-width:\s*1101px\)\s*\{([\s\S]*?)\n\}/)?.[1];
   assert.ok(band, 'The segmented navigation is missing');
   assert.match(band, /\.site-nav\s*\{[^}]*display:\s*inline-flex/, 'The links sit in one capsule');
+  assert.match(band, /\.site-nav\s*\{[^}]*gap:\s*8px/, 'The links keep a touch more air between them');
   assert.match(band, /\.site-nav\s*\{[^}]*backdrop-filter:\s*blur\(24px\)/);
   assert.match(band, /\.site-nav\s*\{[^}]*inset 0 1px 0 rgba\(255,\s*255,\s*255/);
   assert.match(band, /\.site-nav__thumb\s*\{[^}]*border-radius:\s*999px/);
@@ -106,7 +108,6 @@ test('navigation is a modern segmented control with a gliding light thumb', () =
   assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*padding-inline:\s*clamp\(15px,\s*2vw,\s*42px\)/, 'The capsule grows long on wide screens');
   assert.match(band, /\.site-nav\s+\.glass-pill\[aria-current="true"\]\s*\{[^}]*color:\s*var\(--ink-on-ice\)/, 'The active link inverts on the light thumb');
   assert.match(band, /\.site-nav\s+\.glass-pill:hover\s*\{[^}]*color:\s*var\(--ink-on-ice\)/, 'The hovered link inverts too');
-  assert.match(band, /\.glass-pill__index\s*\{[^}]*display:\s*inline-block/);
   const wide = css.match(/@media\s*\(min-width:\s*1220px\)\s*\{([\s\S]*?)\n\}/)?.[1];
   assert.ok(wide, 'Wide-screen navigation styles are missing');
   assert.match(wide, /\.site-header__inner\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\b/, 'Wide-screen capsule hugs the right edge');
@@ -114,16 +115,9 @@ test('navigation is a modern segmented control with a gliding light thumb', () =
   assert.match(wide, /\.site-nav\s+\.glass-pill\s*\{[^}]*font-size:\s*19px/, 'Wide-screen labels grow with the capsule');
 });
 
-test('numbered links follow the section in view with a gliding thumb', () => {
+test('the gliding thumb follows the section in view without extra ornaments', () => {
   const js = read('script.js');
-  const indices = [...html.matchAll(/<span class="glass-pill__index" aria-hidden="true">(\d{2})<\/span>/g)].map((match) => match[1]);
-  assert.deepEqual(indices, ['01', '02', '03', '04'], 'Each link carries a decorative section number');
-  const index = css.match(/\.glass-pill__index\s*\{([^}]*)\}/)?.[1];
-  assert.ok(index, 'Index styles are missing');
-  assert.match(index, /display:\s*none/, 'Indices stay hidden where links are tight');
-  assert.match(index, /font-family:\s*var\(--font-accent\)/);
-  assert.match(index, /font-style:\s*italic/);
-  assert.match(css, /\.glass-pill__index\s*\{[^}]*display:\s*inline-block/, 'Indices appear inside the desktop capsule');
+  assert.doesNotMatch(html, /glass-pill__index/, 'The capsule drops the numbered indices');
   assert.match(css, /\.site-nav\s+\.glass-pill\[aria-current="true"\]\s*\{[^}]*border-color/, 'The drawer keeps its warm active edge');
   assert.match(js, /site-nav__thumb/, 'The thumb is created by the script');
   assert.match(js, /MutationObserver/, 'The thumb follows the section in view');
