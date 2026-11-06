@@ -105,7 +105,7 @@ test('navigation is a modern segmented control with a gliding light thumb', () =
   assert.match(band, /\.site-nav__thumb\s*\{[^}]*radial-gradient\(/, 'The thumb gets a glossy iOS highlight');
   assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*background:\s*none/, 'Desktop links drop the separate button frames');
   assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*min-height:\s*60px/, 'Keep the capsule tall and comfortable');
-  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*padding-inline:\s*clamp\(15px,\s*2vw,\s*42px\)/, 'The capsule grows long on wide screens');
+  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*padding-inline:\s*clamp\(15px,\s*3\.5vw,\s*72px\)/, 'The capsule grows long on wide screens');
   assert.match(band, /\.site-nav\s+\.glass-pill\[aria-current="true"\]\s*\{[^}]*color:\s*var\(--ink-on-ice\)/, 'The active link inverts on the light thumb');
   assert.match(band, /\.site-nav\s+\.glass-pill:hover\s*\{[^}]*color:\s*var\(--ink-on-ice\)/, 'The hovered link inverts too');
   const wide = css.match(/@media\s*\(min-width:\s*1220px\)\s*\{([\s\S]*?)\n\}/)?.[1];
