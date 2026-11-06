@@ -76,7 +76,7 @@
   const selectors = [
     '.about__heading', '.about__copy > p',
     '.section-heading > *', '.metrics > .metric',
-    '.evidence__heading > *', '.evidence__gallery', '.evidence__hint',
+    '.evidence__heading > *', '.evidence__gallery', '.evidence__hint', '.evidence__note',
     '.projects__intro', '.project-list > .project-card',
     '.tariffs > .tariff-card', '.services__extra',
     '.personal__title-wrap', '.personal__intro > *', '.personal__included-heading',

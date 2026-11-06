@@ -287,6 +287,13 @@ test('the supplied result and its evidence gallery are present', () => {
   assert.match(html, /metric--feature/);
   assert.match(html, /evidence__gallery/);
   assert.match(html, /Выращено с нуля/, 'The evidence heading tells the from-scratch story');
+  assert.match(html, /первый Reels/i, 'The first-Reels story is told');
+  assert.match(html, /8(?:\s|&nbsp;|&#160;)*000/, 'The 8,000-follower Reels figure is stated');
+  assert.match(html, /Не только подписчики/, 'The funnel note leads with its point');
+  assert.match(html, /воронк/i, 'The Reels funnel is named');
+  assert.match(html, /ПЕРВЫЙ REELS/, 'The last card is captioned as the debut Reels');
+  assert.equal((html.match(/Показатель уточняется/g) || []).length, 3, 'Only the unconfirmed metrics stay pending');
+  assert.match(css, /\.evidence__note\s*\{[^}]*background:\s*var\(--wine\)/, 'The funnel note is a wine callout');
   assert.doesNotMatch(html, /Место для/, 'No leftover screenshot placeholders');
   assert.equal((html.match(/assets\/account-0\d\.jpg/g) || []).length, 8, 'Eight real screenshots in the gallery');
   for (let i = 1; i <= 8; i += 1) {

@@ -276,6 +276,9 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 .evidence-card figcaption { display: flex; justify-content: space-between; gap: 10px; padding-top: 11px; margin-top: auto; font-size: 15px; font-weight: 700; letter-spacing: .04em; }
 .evidence__hint { margin-top: 13px; font-size: 18px; font-weight: 600; }
 .evidence__hint span { margin-left: 5px; font-size: 18px; }
+/* The funnel takeaway closes the proof block in the accent colour. */
+.evidence__note { margin-top: 28px; padding: 24px 28px; border-radius: 19px; background: var(--wine); color: var(--ice); font-size: 20px; line-height: 1.65; }
+.evidence__note strong { font-weight: 700; }
 
 /* Project cards use native details/summary so they work without JavaScript. */
 .projects__heading { margin-bottom: 43px; }
