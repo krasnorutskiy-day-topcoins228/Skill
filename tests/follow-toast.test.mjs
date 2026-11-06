@@ -7,19 +7,15 @@ const script = readFileSync('script.js', 'utf8');
 
 function setup() {
   const classes = new Set();
-  const counter = { textContent: '' };
-  const label = { textContent: '' };
+  const counters = [{ textContent: '' }, { textContent: '' }, { textContent: '' }];
   const toast = {
     classList: {
       add: (name) => classes.add(name),
       remove: (name) => classes.delete(name),
       contains: (name) => classes.has(name),
     },
-    querySelector: (selector) => {
-      if (selector === '.follow-toast__count') return counter;
-      if (selector === '.follow-toast__label') return label;
-      return null;
-    },
+    querySelector: () => null,
+    querySelectorAll: (selector) => (selector === '.follow-toast__count' ? counters : []),
   };
   const listeners = new Map();
   const button = {
@@ -53,46 +49,48 @@ function setup() {
     for (const callback of callbacks) callback();
   };
   return {
-    button, classes, counter, label, intervals,
+    button, classes, counters, intervals,
     tick: () => fireAll(intervals),
     fireTimeouts: () => fireAll(timeouts),
-    value: () => Number(counter.textContent.replace(/\D/g, '')),
+    values: () => counters.map((counter) => Number(counter.textContent.replace(/\D/g, ''))),
   };
 }
 
-test('the plaque arrives with a big count and climbs for five seconds', () => {
+test('the banner arrives with believable counts that climb for five seconds', () => {
   const t = setup();
   t.button.hover();
-  assert.ok(t.classes.has('is-visible'), 'the plaque shows up at once');
-  assert.equal(t.label.textContent, 'подписались на вас');
-  const start = t.value();
-  assert.ok(start >= 6400 && start <= 13800, 'the count starts big and believable');
-  assert.ok(!t.counter.textContent.includes('+'), 'the count is a plain number like the original');
+  assert.ok(t.classes.has('is-visible'), 'the banner shows up at once');
+  const start = t.values();
+  assert.equal(start.length, 3, 'three counts ride the banner');
+  assert.ok(start[0] >= 1100 && start[0] <= 2600, 'likes start high');
+  assert.ok(start[1] >= 28 && start[1] <= 92, 'comments keep a human scale');
+  assert.ok(start[2] >= 26 && start[2] <= 96, 'followers keep a human scale');
+  assert.ok(t.counters.every((counter) => !counter.textContent.includes('+')), 'plain numbers, like the reference');
 
   t.tick();
   t.tick();
-  assert.ok(t.value() > start, 'the count climbs while hovering');
+  const grown = t.values();
+  assert.ok(grown.every((value, i) => value > start[i]), 'every count climbs while hovering');
 
   t.fireTimeouts();
-  const frozen = t.value();
+  const frozen = t.values();
   t.tick();
-  assert.equal(t.value(), frozen, 'the climb stops after five seconds');
+  assert.deepEqual(t.values(), frozen, 'the climb stops after five seconds');
 });
 
-test('the count falls for five seconds and then the plaque departs', () => {
+test('the counts fall for five seconds and then the banner departs', () => {
   const t = setup();
   t.button.hover();
   t.fireTimeouts();
-  const peak = t.value();
+  const peak = t.values();
 
   t.button.leave();
-  assert.equal(t.label.textContent, 'отписываются…');
   t.tick();
   t.tick();
-  assert.ok(t.value() < peak, 'the count falls after the cursor leaves');
+  assert.ok(t.values().every((value, i) => value < peak[i]), 'every count falls after the cursor leaves');
 
   t.fireTimeouts();
-  assert.ok(!t.classes.has('is-visible'), 'the plaque departs five seconds after the cursor leaves');
+  assert.ok(!t.classes.has('is-visible'), 'the banner departs five seconds after the cursor leaves');
 });
 
 test('hovering again during the fall resumes the climb immediately', () => {
@@ -101,19 +99,18 @@ test('hovering again during the fall resumes the climb immediately', () => {
   t.fireTimeouts();
   t.button.leave();
   t.tick();
-  const fallen = t.value();
-  assert.ok(fallen > 0, 'the count has not drained to zero yet');
+  const fallen = t.values();
+  assert.ok(fallen.every((value) => value > 0), 'the counts have not drained to zero yet');
 
   t.button.hover();
-  assert.equal(t.label.textContent, 'подписались на вас');
   assert.ok(t.classes.has('is-visible'));
-  assert.equal(t.value(), fallen, 'the climb resumes from the current count');
+  assert.deepEqual(t.values(), fallen, 'the climb resumes from the current counts');
 
   t.tick();
-  assert.ok(t.value() > fallen, 'the count climbs again without waiting');
+  assert.ok(t.values().every((value, i) => value > fallen[i]), 'the counts climb again without waiting');
 });
 
-test('a fresh hover after the plaque departs starts a new count', () => {
+test('a fresh hover after the banner departs starts new counts', () => {
   const t = setup();
   t.button.hover();
   t.button.leave();
@@ -122,6 +119,7 @@ test('a fresh hover after the plaque departs starts a new count', () => {
   assert.ok(!t.classes.has('is-visible'));
 
   t.button.hover();
-  assert.ok(t.value() >= 6400, 'a fresh big count arrives');
+  const fresh = t.values();
+  assert.ok(fresh[0] >= 1100, 'a fresh likes count arrives');
   assert.ok(t.classes.has('is-visible'));
 });

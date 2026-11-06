@@ -271,26 +271,33 @@
   // A click on the dimmed backdrop closes the viewer as well.
   dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
 })();
-// An Instagram-style fan toast plays over the cooperation buttons. The red
-// plaque arrives at once with a big follower count, the count climbs for
-// five seconds, falls when the cursor leaves, and the plaque departs five
-// seconds after that. Hovering again resumes the climb from the current
-// count, so nobody waits for it to drain to zero.
+// An Instagram-style fan toast plays over the cooperation buttons: a bright
+// red banner carrying likes, comments, and follower counts. The plaque
+// arrives at once, the counts climb for five seconds, fall when the cursor
+// leaves, and the plaque departs five seconds after that. Hovering again
+// resumes the climb from the current counts, so nobody waits for a drain
+// to zero.
 (() => {
   'use strict';
   const toast = document.querySelector('.follow-toast');
   if (!toast || typeof toast.querySelector !== 'function' || typeof document.querySelectorAll !== 'function') return;
   if (!window.matchMedia || !window.matchMedia('(hover: hover)').matches) return;
-  const counter = toast.querySelector('.follow-toast__count');
-  const label = toast.querySelector('.follow-toast__label');
-  if (!counter || !label) return;
+  const counters = [...(typeof toast.querySelectorAll === 'function' ? toast.querySelectorAll('.follow-toast__count') : [])]
+    .filter((element) => element && typeof element.textContent === 'string');
+  if (!counters.length) return;
   const buttons = [...document.querySelectorAll('a[href^="https://t.me/"]')]
     .filter((link) => /сотрудничество/i.test(String(link.textContent || '')));
   if (!buttons.length) return;
   const GROW_MS = 5000;
   const FALL_MS = 5000;
   const TICK_MS = 600;
-  let fans = 0;
+  // Likes run high; comments and followers keep a human scale.
+  const rhythms = [
+    { seed: () => 1100 + Math.floor(Math.random() * 1500), up: () => 24 + Math.floor(Math.random() * 160), down: () => 9 + Math.floor(Math.random() * 60) },
+    { seed: () => 28 + Math.floor(Math.random() * 64), up: () => 1 + Math.floor(Math.random() * 5), down: () => 1 + Math.floor(Math.random() * 2) },
+    { seed: () => 26 + Math.floor(Math.random() * 70), up: () => 1 + Math.floor(Math.random() * 6), down: () => 1 + Math.floor(Math.random() * 2) },
+  ];
+  const stats = counters.map((element, index) => ({ element, ...rhythms[index % rhythms.length], value: 0 }));
   let live = false;
   let ticker = null;
   let phaseTimer = null;
@@ -299,16 +306,20 @@
     if (ticker) { window.clearInterval(ticker); ticker = null; }
     if (phaseTimer) { window.clearTimeout(phaseTimer); phaseTimer = null; }
   };
-  const render = () => { counter.textContent = fans.toLocaleString('ru-RU'); };
+  const render = () => {
+    for (const stat of stats) stat.element.textContent = stat.value.toLocaleString('ru-RU');
+  };
   function pour() {
     if (fadeTimer) { window.clearTimeout(fadeTimer); fadeTimer = null; }
     stop();
-    if (!live) { fans = 6400 + Math.floor(Math.random() * 7400); live = true; }
-    label.textContent = 'подписались на вас';
+    if (!live) {
+      live = true;
+      for (const stat of stats) stat.value = stat.seed();
+    }
     toast.classList.add('is-visible');
     render();
     ticker = window.setInterval(() => {
-      fans += 160 + Math.floor(Math.random() * 1340);
+      for (const stat of stats) stat.value += stat.up();
       render();
     }, TICK_MS);
     phaseTimer = window.setTimeout(() => {
@@ -318,15 +329,14 @@
   function drain() {
     stop();
     if (!live) return;
-    label.textContent = 'отписываются…';
     ticker = window.setInterval(() => {
-      fans = Math.max(0, fans - (90 + Math.floor(Math.random() * 720)));
+      for (const stat of stats) stat.value = Math.max(0, stat.value - stat.down());
       render();
     }, TICK_MS);
     phaseTimer = window.setTimeout(() => {
       stop();
       toast.classList.remove('is-visible');
-      fadeTimer = window.setTimeout(() => { fans = 0; live = false; fadeTimer = null; }, 400);
+      fadeTimer = window.setTimeout(() => { live = false; fadeTimer = null; }, 400);
     }, FALL_MS);
   }
   for (const button of buttons) {
