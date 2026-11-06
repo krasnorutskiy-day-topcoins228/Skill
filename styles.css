@@ -131,15 +131,30 @@ h1, h2, h3, .project-card__title { font-family: var(--font-display); }
 .glass-pill:focus-visible .glass-pill__index,
 .site-nav .glass-pill[aria-current="true"] .glass-pill__index { opacity: .92; }
 
+/* Each label hides a second, italic self in the site's accent hand. The copy
+   stays in the accessibility tree; only its pixels step aside. */
+.glass-pill__label { position: relative; display: inline-block; transition: opacity .28s ease; }
+.glass-pill__label-em {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  pointer-events: none; white-space: nowrap;
+  font-family: var(--font-accent); font-style: italic; font-weight: 600; font-size: 1.2em; line-height: 1.2;
+  color: #f2f9ff; opacity: 0; transform: translateY(3px);
+  transition: opacity .28s ease, transform .28s ease;
+}
+.glass-pill:hover .glass-pill__label, .glass-pill:focus-visible .glass-pill__label,
+.site-nav .glass-pill[aria-current="true"] .glass-pill__label { opacity: 0; }
+.glass-pill:hover .glass-pill__label-em, .glass-pill:focus-visible .glass-pill__label-em,
+.site-nav .glass-pill[aria-current="true"] .glass-pill__label-em { opacity: 1; transform: translateY(0); }
+
 /* The section in view answers with a warmer edge and a fine hairline under its label. */
 .site-nav .glass-pill[aria-current="true"] { border-color: rgba(238, 248, 255, .85); color: #edf7ff; }
 .site-nav .glass-pill::after {
-  content: ""; position: absolute; left: 50%; bottom: 13px; width: 0; height: 1.5px; border-radius: 999px;
+  content: ""; position: absolute; left: 50%; bottom: 9px; width: 0; height: 1.5px; border-radius: 999px;
   background: linear-gradient(90deg, transparent, rgba(213, 235, 255, .95), transparent);
   transform: translateX(-50%); opacity: 0;
   transition: width .3s ease, opacity .3s ease;
 }
-.site-nav .glass-pill[aria-current="true"]::after { width: 44%; opacity: 1; }
+.site-nav .glass-pill[aria-current="true"]::after { width: 56%; opacity: 1; }
 
 /* Links stay visible without JavaScript; the drawer enhances small screens. */
 .site-nav { display: grid; grid-template-columns: minmax(0, 1fr); width: min(66.6667%, 260px); margin-inline: auto; gap: 24px; }
@@ -593,14 +608,6 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   main { --vine-space: 165px; }
   main > .section:not(.about) { --vine-height: 260px; }
   .site-header__inner { width: min(calc(100% - 64px), 1300px); flex-wrap: nowrap; gap: 24px; }
-  .site-nav {
-    --desktop-nav-gap: clamp(36px, calc(8vw - 36px), 56px);
-    grid-template-columns: minmax(min-content, 1fr) minmax(min-content, 1.24fr) minmax(min-content, 1.03fr) minmax(min-content, .88fr);
-    gap: var(--desktop-nav-gap);
-    /* Wider pills and gaps grow only as far as the logo and viewport allow. */
-    width: min(calc(700px + var(--desktop-nav-gap) + var(--desktop-nav-gap) + var(--desktop-nav-gap)), calc(100% - 211.2px));
-    max-width: 100%; margin: 0 0 0 auto;
-  }
   .hero, .hero__inner { min-height: max(760px, 100vh); min-height: max(760px, 100svh); }
   .hero__image, .hero__petals { right: 3%; width: min(58%, max(506px, 66.667vh)); width: min(58%, max(506px, 66.667svh)); }
   .hero__image img { -webkit-mask-image: linear-gradient(90deg, transparent, #000 32%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 32%, #000 92%, transparent); }
@@ -656,6 +663,32 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 
 @media (min-width: 1100px) {
   .hero__actions { flex-direction: row; flex-wrap: wrap; }
+}
+
+/* From 900px, outside the short-screen drawer zone, the four links share one
+   quiet glass band — a menu card — instead of four identical button frames. */
+@media (min-width: 900px) and (min-height: 501px), (min-width: 1101px) {
+  .site-nav {
+    display: flex; align-items: center; flex-wrap: nowrap; gap: 0;
+    width: auto; max-width: 100%; margin: 0 0 0 auto; padding: 7px;
+    border: 1px solid rgba(221, 240, 255, .20); border-radius: 999px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, .08), transparent 60%), rgba(72, 7, 27, .42);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10), 0 14px 30px rgba(25, 0, 9, .28);
+    -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%);
+  }
+  .site-nav .glass-pill {
+    flex: 0 0 auto; min-height: 50px; padding-inline: clamp(14px, 2.2vw, 24px);
+    border: 0; border-radius: 999px; background: none;
+    box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none;
+    font-size: 18px; letter-spacing: .01em;
+  }
+  .site-nav .glass-pill:hover { transform: none; box-shadow: none; background-color: rgba(199, 229, 255, .10); }
+  .site-nav .glass-pill:active { transform: translateY(1px); }
+  .site-nav .glass-pill + .glass-pill::before {
+    content: ""; position: absolute; inset: auto; left: 0; top: 50%; width: 1px; height: 22px;
+    transform: translateY(-50%); border-radius: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(199, 229, 255, .38), transparent);
+  }
   .glass-pill__index { display: inline-block; }
 }
 
@@ -672,8 +705,8 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 @media (min-width: 1220px) {
   .site-header__inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; }
   .brand { grid-column: 1; }
-  /* Wider buttons hug the right edge; the extra width also funds the serif indices. */
-  .site-nav { grid-column: 2; width: min(880px, calc(100vw - 430px)); margin: 0; }
+  /* The band hugs the right edge; its width follows the labels. */
+  .site-nav { grid-column: 2; margin: 0; }
 }
 
 /* Keep the long role legible against the cloche and petals at intermediate widths. */

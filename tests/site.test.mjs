@@ -68,7 +68,7 @@ test('navigation and internal links point to existing sections', () => {
   }
 });
 
-test('navigation aligns with the logo and uses larger, separate glass buttons', () => {
+test('navigation shares one quiet glass band and keeps the drawer pills intact', () => {
   const nav = html.match(/<nav class="site-nav"[\s\S]*?<\/nav>/)?.[0];
   assert.ok(nav, 'Navigation is missing');
   assert.equal((nav.match(/<a class="glass-pill"/g) || []).length, 4);
@@ -78,7 +78,7 @@ test('navigation aligns with the logo and uses larger, separate glass buttons', 
   assert.ok(rule && pill && header);
   assert.match(rule, /gap:\s*24px/);
   const height = Number(pill.match(/min-height:\s*([\d.]+)px/)?.[1]);
-  assert.ok(Math.abs(height * 1.5 - 104) < 0.001, 'Keep the requested smaller button height');
+  assert.ok(Math.abs(height * 1.5 - 104) < 0.001, 'Keep the requested smaller drawer button height');
   assert.ok(height >= 44, 'Keep a comfortable touch target');
   assert.match(pill, /font-size:\s*20px/);
   assert.match(pill, /border:\s*1px solid/);
@@ -92,14 +92,19 @@ test('navigation aligns with the logo and uses larger, separate glass buttons', 
   const desktop = css.match(/@media\s*\(min-width:\s*900px\)\s*\{([\s\S]*?)\n\}/)?.[1];
   assert.ok(desktop, 'Desktop navigation styles are missing');
   assert.match(desktop, /\.site-header__inner\s*\{[^}]*flex-wrap:\s*nowrap/);
-  assert.match(desktop, /--desktop-nav-gap:\s*clamp\(36px,[^;]*56px\)/, 'Desktop gaps should be larger than before');
-  assert.match(desktop, /\.site-nav\s*\{[^}]*gap:\s*var\(--desktop-nav-gap\)/);
-  assert.match(desktop, /width:\s*min\(calc\(700px\s*\+\s*var\(--desktop-nav-gap\)/, 'Reserve more width for the desktop buttons');
-  assert.match(desktop, /grid-template-columns:\s*minmax\(min-content,\s*1fr\)/, 'Narrow desktop widths must leave room for labels');
+  const band = css.match(/@media\s*\(min-width:\s*900px\)\s*and\s*\(min-height:\s*501px\),\s*\(min-width:\s*1101px\)\s*\{([\s\S]*?)\n\}/)?.[1];
+  assert.ok(band, 'The shared navigation band is missing');
+  assert.match(band, /\.site-nav\s*\{[^}]*display:\s*flex/, 'Desktop links sit in one shared band');
+  assert.match(band, /\.site-nav\s*\{[^}]*backdrop-filter:\s*blur\(18px\)/);
+  assert.match(band, /\.site-nav\s*\{[^}]*border-radius:\s*999px/);
+  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*background:\s*none/, 'Desktop links drop the separate button frames');
+  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*min-height:\s*50px/);
+  assert.match(band, /\.site-nav\s+\.glass-pill\s+\+\s*\.glass-pill::before\s*\{[^}]*width:\s*1px/, 'Hairline dividers separate the links');
+  assert.match(band, /\.glass-pill__index\s*\{[^}]*display:\s*inline-block/);
   const wide = css.match(/@media\s*\(min-width:\s*1220px\)\s*\{([\s\S]*?)\n\}/)?.[1];
   assert.ok(wide, 'Wide-screen navigation styles are missing');
-  assert.match(wide, /\.site-header__inner\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\b/, 'Wide-screen buttons hug the right edge');
-  assert.match(wide, /\.site-nav\s*\{[^}]*width:\s*min\(880px,\s*calc\(100vw\s*-\s*430px\)\)/, 'Wide-screen buttons are wider');
+  assert.match(wide, /\.site-header__inner\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\b/, 'Wide-screen band hugs the right edge');
+  assert.match(wide, /\.site-nav\s*\{[^}]*grid-column:\s*2/);
 });
 
 test('numbered pills follow the section in view with a quiet hairline', () => {
@@ -111,11 +116,17 @@ test('numbered pills follow the section in view with a quiet hairline', () => {
   assert.match(index, /display:\s*none/, 'Indices stay hidden where pills are tight');
   assert.match(index, /font-family:\s*var\(--font-accent\)/);
   assert.match(index, /font-style:\s*italic/);
-  const roomy = css.match(/@media\s*\(min-width:\s*1100px\)\s*\{([\s\S]*?)\n\}/)?.[1];
-  assert.match(roomy, /\.glass-pill__index\s*\{[^}]*display:\s*inline-block/, 'Indices appear once the pills have room');
+  const labels = [...html.matchAll(/<span class="glass-pill__label">([^<]+)<span class="glass-pill__label-em" aria-hidden="true">/g)].map((match) => match[1]);
+  assert.deepEqual(labels, ['Обо мне', 'Результаты', 'Проекты', 'Услуги'], 'Every label carries an italic accent copy');
+  const em = css.match(/\.glass-pill__label-em\s*\{([^}]*)\}/)?.[1];
+  assert.ok(em, 'The italic label layer is missing');
+  assert.match(em, /font-family:\s*var\(--font-accent\)/);
+  assert.match(em, /font-style:\s*italic/);
+  assert.match(css, /\.glass-pill__index\s*\{[^}]*display:\s*inline-block/, 'Indices appear inside the desktop band');
+  assert.match(css, /\.site-nav\s+\.glass-pill\[aria-current="true"\]\s+\.glass-pill__label-em\s*\{[^}]*opacity:\s*1/, 'The section in view keeps the accent hand');
   assert.match(css, /\.site-nav\s+\.glass-pill\[aria-current="true"\]\s*\{[^}]*border-color:\s*rgba\(238,\s*248,\s*255/);
   assert.match(css, /\.site-nav\s+\.glass-pill::after\s*\{[^}]*height:\s*1\.5px/);
-  assert.match(css, /\.site-nav\s+\.glass-pill\[aria-current="true"\]::after\s*\{[^}]*width:\s*44%/);
+  assert.match(css, /\.site-nav\s+\.glass-pill\[aria-current="true"\]::after\s*\{[^}]*width:\s*56%/);
   assert.match(js, /requestAnimationFrame/, 'Section tracking is throttled to animation frames');
   assert.match(js, /setAttribute\('aria-current',\s*'true'\)/);
   assert.match(js, /removeAttribute\('aria-current'\)/);
