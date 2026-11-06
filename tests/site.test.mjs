@@ -485,7 +485,7 @@ test('contact section uses the supplied text and real contact links', () => {
   assert.match(section, /<h3>Связаться со мной:<\/h3>/);
   const channels = section.match(/<dl class="contact__channels">([\s\S]*?)<\/dl>/)?.[1];
   assert.ok(channels);
-  assert.deepEqual([...channels.matchAll(/<dt>([\s\S]*?)<\/dt><dd><a href="([^"]+)">([\s\S]*?)<\/a><\/dd>/g)]
+  assert.deepEqual([...channels.matchAll(/<dt>([\s\S]*?)<\/dt>\s*<dd><a href="([^"]+)">([\s\S]*?)<\/a><\/dd>/g)]
     .map(([, name, href, value]) => [text(name), href, text(value)]), [
     ['Telegram', 'https://t.me/lizzieamo', '@lizzieamo'],
     ['Телефон', 'tel:+79697007993', '+7 (969) 700-79-93'],
@@ -496,6 +496,14 @@ test('contact section uses the supplied text and real contact links', () => {
   assert.match(css, /\.contact__channels a\s*\{[^}]*min-height:\s*44px/);
   assert.match(css, /\.contact__channels a\s*\{[^}]*text-decoration:\s*underline/);
   assert.match(css, /\.contact__cta\s*\{[^}]*background:\s*var\(--wine\)/);
+  assert.equal((section.match(/class="contact__icon"/g) || []).length, 3, 'Every channel carries a line icon');
+  assert.match(css, /\.contact__icon\s*\{[^}]*background:\s*var\(--wine\)/, 'The icons sit in wine badges');
+  assert.match(css, /\.contact__icon svg\s*\{[^}]*stroke:\s*currentColor/, 'The icons are stroked, not filled');
+  assert.doesNotMatch(css, /\.personal__rate strong\s*\{[^}]*font-size/, 'The rate line keeps one even size');
+  assert.match(html, /footer__nav/, 'The footer carries its own navigation');
+  assert.equal((html.match(/<nav class="footer__nav"[^>]*>[\s\S]*?<\/nav>/) || [''])[0].match(/<a /g)?.length, 4, 'Footer links mirror the four sections');
+  assert.match(html, /© 2026 Елизавета Кравец/, 'The footer states the authorship');
+  assert.match(html, /footer__meta[\s\S]*?https:\/\/t\.me\/lizzieamo/, 'The footer repeats the Telegram contact');
 });
 
 test('every collaboration call to action goes directly to the supplied Telegram', () => {
