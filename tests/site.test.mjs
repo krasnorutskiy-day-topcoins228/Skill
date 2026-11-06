@@ -104,15 +104,16 @@ test('navigation is a modern segmented control with a gliding light thumb', () =
   assert.match(band, /\.site-nav__thumb\s*\{[^}]*pointer-events:\s*none/, 'The thumb never blocks the links');
   assert.match(band, /\.site-nav__thumb\s*\{[^}]*radial-gradient\(/, 'The thumb gets a glossy iOS highlight');
   assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*background:\s*none/, 'Desktop links drop the separate button frames');
-  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*min-height:\s*60px/, 'Keep the capsule tall and comfortable');
-  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*padding-inline:\s*clamp\(15px,\s*3\.5vw,\s*72px\)/, 'The capsule grows long on wide screens');
+  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*min-height:\s*68px/, 'Keep the capsule tall and comfortable');
+  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*padding-inline:\s*clamp\(16px,\s*3\.6vw,\s*84px\)/, 'The capsule grows long on wide screens');
   assert.match(band, /\.site-nav\s+\.glass-pill\[aria-current="true"\]\s*\{[^}]*color:\s*var\(--ink-on-ice\)/, 'The active link inverts on the light thumb');
   assert.match(band, /\.site-nav\s+\.glass-pill:hover\s*\{[^}]*color:\s*var\(--ink-on-ice\)/, 'The hovered link inverts too');
   const wide = css.match(/@media\s*\(min-width:\s*1220px\)\s*\{([\s\S]*?)\n\}/)?.[1];
   assert.ok(wide, 'Wide-screen navigation styles are missing');
   assert.match(wide, /\.site-header__inner\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\b/, 'Wide-screen capsule hugs the right edge');
   assert.match(wide, /\.site-nav\s*\{[^}]*grid-column:\s*2/);
-  assert.match(wide, /\.site-nav\s+\.glass-pill\s*\{[^}]*font-size:\s*19px/, 'Wide-screen labels grow with the capsule');
+  assert.match(wide, /\.brand\s*\{[^}]*margin-left:\s*min\(0px,\s*calc\(\(1364px\s*-\s*100vw\)\s*\/\s*4\)\)/, 'The logo drifts toward the left edge on wide screens');
+  assert.match(wide, /\.site-nav\s+\.glass-pill\s*\{[^}]*font-size:\s*21px/, 'Wide-screen labels grow with the capsule');
   assert.match(css, /@media\s*\(min-width:\s*1101px\)\s*\{[^}]*\.site-nav\s*\{[^}]*margin-right:\s*clamp\(80px,\s*8vw,\s*144px\)/, 'The capsule keeps a breath of air from the right edge');
 });
 

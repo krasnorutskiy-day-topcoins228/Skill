@@ -571,7 +571,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 }
 
 @media (min-width: 900px) {
-  :root { --page-gutter: 60px; --header-offset: 120px; }
+  :root { --page-gutter: 60px; --header-offset: 132px; }
   main { --vine-space: 165px; }
   main > .section:not(.about) { --vine-height: 260px; }
   .site-header__inner { width: min(calc(100% - 64px), 1300px); flex-wrap: nowrap; gap: 24px; }
@@ -637,7 +637,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 @media (min-width: 900px) and (min-height: 501px), (min-width: 1101px) {
   .site-nav {
     position: relative; display: inline-flex; align-items: center; flex-wrap: nowrap; gap: 8px;
-    width: auto; max-width: 100%; margin: 0 0 0 auto; padding: 7px;
+    width: auto; max-width: 100%; margin: 0 0 0 auto; padding: 8px;
     border: 1px solid rgba(226, 243, 255, .30); border-radius: 999px;
     background:
       linear-gradient(to bottom, rgba(255, 255, 255, .10), rgba(255, 255, 255, .02) 38%, transparent 62%),
@@ -650,7 +650,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
     -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%);
   }
   .site-nav__thumb {
-    position: absolute; z-index: 0; top: 7px; bottom: 7px; left: 0; width: 0;
+    position: absolute; z-index: 0; top: 8px; bottom: 8px; left: 0; width: 0;
     border-radius: 999px; opacity: 0; pointer-events: none;
     background:
       radial-gradient(120% 90% at 32% -22%, rgba(255, 255, 255, .95), transparent 55%),
@@ -664,7 +664,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
     transition: transform .38s cubic-bezier(.3, .9, .25, 1), width .38s cubic-bezier(.3, .9, .25, 1), opacity .2s ease;
   }
   .site-nav .glass-pill {
-    position: relative; z-index: 1; flex: 0 0 auto; min-height: 60px; padding-inline: clamp(15px, 3.5vw, 72px);
+    position: relative; z-index: 1; flex: 0 0 auto; min-height: 68px; padding-inline: clamp(16px, 3.6vw, 84px);
     border: 0; border-radius: 999px; background: none;
     box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none;
     font-size: 18px; letter-spacing: .01em;
@@ -687,10 +687,12 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 /* On wide screens the navigation shares the logo's row, aligned with the right edge. */
 @media (min-width: 1220px) {
   .site-header__inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; }
-  .brand { grid-column: 1; }
+  /* On wide screens the centered column leaves dead space at the edges; let the
+     logo drift left into it (never closer than the header's own side gap). */
+  .brand { grid-column: 1; margin-left: min(0px, calc((1364px - 100vw) / 4)); }
   /* The band rides beside the right edge; its width follows the labels. */
   .site-nav { grid-column: 2; margin: 0; }
-  .site-nav .glass-pill { font-size: 19px; }
+  .site-nav .glass-pill { font-size: 21px; }
 }
 
 /* Once there is room to spare, the capsule keeps a breath of air away from the right edge. */
