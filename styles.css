@@ -262,7 +262,6 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 .metric__unit { margin-top: 6px; font-size: 18px; font-weight: 700; line-height: 1.35; }
 .metric--feature .metric__unit { font-size: 20px; }
 .metric__caption { margin-top: 12px; font-size: 20px; line-height: 1.5; }
-.metric__pending { margin-top: 13px; font-size: 18px; line-height: 1.35; }
 .evidence { margin-top: 68px; }
 .evidence__heading { display: grid; gap: 13px; margin-bottom: 23px; }
 .evidence__heading h3 { font-size: clamp(2rem, 6.4vw, 3.4rem); font-weight: 600; letter-spacing: -.035em; line-height: 1.15; }
@@ -302,18 +301,37 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 .projects__intro { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 14px; font-size: 15px; font-weight: 700; letter-spacing: .06em; }
 .projects__intro span:last-child { text-align: right; }
 .project-list { display: grid; gap: 12px; }
-.project-card { min-width: 0; overflow: hidden; border: 1px solid var(--line-on-wine); border-radius: 19px; background: rgba(199, 229, 255, .075); }
-.project-card--light { border-color: transparent; background: var(--ice); color: var(--ink-on-ice); font-weight: 600; }
+.project-card {
+  min-width: 0; overflow: hidden; border: 1px solid rgba(221, 240, 255, .32); border-radius: 19px;
+  background:
+    radial-gradient(120% 90% at 16% -20%, rgba(255, 255, 255, .09), transparent 55%),
+    linear-gradient(155deg, rgba(216, 238, 255, .13), rgba(216, 238, 255, .04) 52%, rgba(42, 2, 17, .16)),
+    rgba(101, 14, 39, .34);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), 0 12px 28px rgba(25, 0, 9, .18);
+}
+.project-card--light { border-color: transparent; background: var(--ice); color: var(--ink-on-ice); font-weight: 600; box-shadow: 0 12px 28px rgba(25, 0, 9, .16), inset 0 1px 0 rgba(255, 255, 255, .65); }
+@media (hover: hover) {
+  .project-card { transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+  .project-card:hover { transform: translateY(-3px); border-color: rgba(235, 247, 255, .52); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), 0 20px 40px rgba(25, 0, 9, .26); }
+  .project-card--light:hover { border-color: transparent; }
+}
 .project-card summary { display: flex; flex-direction: column; min-height: 325px; padding: 23px 20px; list-style: none; }
 .project-card summary::-webkit-details-marker { display: none; }
 .project-card summary::marker { content: ""; }
-.project-card summary:hover .project-card__toggle { transform: rotate(90deg); }
+.project-card summary:hover .project-card__toggle { transform: scale(1.08); border-color: rgba(235, 247, 255, .6); }
 .project-card__number { font-size: 15px; font-weight: 700; letter-spacing: .07em; }
 .project-card__title { display: block; margin-top: 42px; overflow-wrap: anywhere; font-size: clamp(2.18rem, 8.3vw, 4.2rem); font-weight: 700; letter-spacing: -.055em; line-height: 1.1; }
 .project-card__title > span { font-weight: 700; }
 .project-card__description { display: block; max-width: 440px; margin-top: 18px; font-size: 20px; line-height: 1.7; }
 .project-card__bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 30px; font-size: 15px; font-weight: 700; letter-spacing: .07em; }
-.project-card__toggle { display: grid; flex: 0 0 auto; place-items: center; width: 44px; height: 44px; border: 1px solid currentColor; border-radius: 50%; transition: transform .2s ease; }
+.project-card__toggle {
+  display: grid; flex: 0 0 auto; place-items: center; width: 44px; height: 44px;
+  border: 1px solid rgba(221, 240, 255, .42); border-radius: 50%;
+  background: linear-gradient(145deg, rgba(216, 238, 255, .20), rgba(216, 238, 255, .05));
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .28), 0 5px 14px rgba(25, 0, 9, .22);
+  transition: transform .2s ease, border-color .2s ease;
+}
+.project-card--light .project-card__toggle { border-color: transparent; background: var(--wine); color: var(--ice); box-shadow: 0 5px 14px rgba(25, 0, 9, .26); }
 .project-card__toggle svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; }
 .project-card[open] .project-card__toggle { transform: rotate(45deg); }
 .project-card__details { padding: 0 20px 24px; font-size: 20px; }

@@ -298,7 +298,7 @@ test('the supplied result and its evidence gallery are present', () => {
   assert.match(html, /Не только подписчики/, 'The funnel note leads with its point');
   assert.match(html, /воронк/i, 'The Reels funnel is named');
   assert.match(html, /ПЕРВЫЙ REELS/, 'The last card is captioned as the debut Reels');
-  assert.equal((html.match(/Показатель уточняется/g) || []).length, 3, 'Only the unconfirmed metrics stay pending');
+  assert.equal((html.match(/Показатель уточняется/g) || []).length, 0, 'The pending captions are retired');
   assert.match(css, /\.evidence__note\s*\{[^}]*background:\s*var\(--wine\)/, 'The funnel note is a wine callout');
   assert.match(css, /\.evidence-card__screen\s*\{[^}]*box-shadow/, 'The screenshot cards rest on a soft shadow');
   assert.match(css, /@media \(hover: hover\)\s*\{[\s\S]*?\.evidence-card:hover \.evidence-card__screen\s*\{[^}]*translateY\(-4px\)/, 'Cards lift gently on hover');
@@ -715,12 +715,21 @@ test('light-blue surfaces use stronger, readable burgundy text', () => {
     assert.match(rule(selector), /color:\s*var\(--ice\)/);
     assert.match(rule(selector), /font-weight:\s*400/);
   }
-  for (const selector of ['.metric__pending', '.evidence__hint']) {
-    assert.doesNotMatch(rule(selector), /opacity:\s*(?:0?\.\d+)/, `${selector} must not fade text`);
-  }
+  assert.doesNotMatch(rule('.evidence__hint'), /opacity:\s*(?:0?\.\d+)/, 'The hint must not fade text');
   assert.match(rule('.project-card--light .project-card__details dd'), /opacity:\s*1/);
-  assert.match(rule('.metric__pending'), /font-size:\s*18px/);
   assert.match(rule('.evidence__hint'), /font-size:\s*18px/);
+});
+
+test('project cards open one at a time and glide', () => {
+  const js = read('script.js');
+  assert.doesNotMatch(html, /Показатель уточняется/, 'The pending captions are retired');
+  assert.doesNotMatch(html, /metric__pending/);
+  assert.doesNotMatch(css, /\.metric__pending/);
+  assert.match(js, /querySelector\('\.project-list'\)/, 'The cards learn accordion manners');
+  assert.match(js, /other !== card && other\.open/, 'Opening one card folds the other');
+  assert.match(js, /prefers-reduced-motion/, 'The glide respects reduced motion');
+  assert.match(css, /@media\s*\(hover:\s*hover\)\s*\{[\s\S]*?\.project-card:hover\s*\{[^}]*translateY\(-3px\)/, 'Cards lift on hover');
+  assert.match(css, /\.project-card__toggle\s*\{[^}]*linear-gradient\(/, 'The plus button sits on glass');
 });
 
 test('phones read lighter and scroll less', () => {

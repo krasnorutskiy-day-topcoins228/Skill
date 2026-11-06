@@ -333,3 +333,59 @@
     button.addEventListener('blur', drain);
   }
 })();
+
+// Project cards behave like a polite accordion: opening one folds the other,
+// and the case details glide in and out by height. Native <details> keeps
+// working without scripting; reduced motion skips the glide entirely.
+(() => {
+  'use strict';
+  const list = typeof document.querySelector === 'function' ? document.querySelector('.project-list') : null;
+  if (!list || typeof list.querySelectorAll !== 'function') return;
+  const cards = [...list.querySelectorAll('.project-card')]
+    .filter((card) => card && typeof card.querySelector === 'function' && card.querySelector('summary'));
+  if (!cards.length) return;
+  const raf = typeof window.requestAnimationFrame === 'function' ? window.requestAnimationFrame.bind(window) : null;
+  const reduce = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false;
+  const glide = 'height .42s cubic-bezier(.22, 1, .36, 1)';
+  function settle(card, body) {
+    if (card.__glide) window.clearTimeout(card.__glide);
+    card.__glide = window.setTimeout(() => {
+      card.__glide = null;
+      card.dataset.state = '';
+      if (body) body.style.cssText = '';
+    }, 450);
+  }
+  function collapse(card) {
+    if (card.dataset.state === 'closing') return;
+    card.dataset.state = 'closing';
+    const body = card.querySelector('.project-card__details');
+    if (!body || !raf || reduce) { card.open = false; card.dataset.state = ''; return; }
+    body.style.transition = 'none';
+    body.style.height = body.offsetHeight + 'px';
+    body.style.overflow = 'hidden';
+    raf(() => { body.style.transition = glide; body.style.height = '0px'; });
+    settle(card, body);
+  }
+  function expand(card) {
+    if (card.dataset.state === 'opening') return;
+    card.dataset.state = 'opening';
+    card.open = true;
+    const body = card.querySelector('.project-card__details');
+    if (!body || !raf || reduce) { card.dataset.state = ''; return; }
+    body.style.transition = 'none';
+    body.style.height = '0px';
+    body.style.overflow = 'hidden';
+    raf(() => { body.style.transition = glide; body.style.height = body.scrollHeight + 'px'; });
+    settle(card, body);
+  }
+  for (const card of cards) {
+    const summary = card.querySelector('summary');
+    if (!summary || typeof summary.addEventListener !== 'function') continue;
+    summary.addEventListener('click', (event) => {
+      if (event && typeof event.preventDefault === 'function') event.preventDefault();
+      for (const other of cards) if (other !== card && other.open) collapse(other);
+      if (card.open && card.dataset.state !== 'opening') collapse(card);
+      else expand(card);
+    });
+  }
+})();
