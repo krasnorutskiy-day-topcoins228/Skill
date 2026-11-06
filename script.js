@@ -271,11 +271,11 @@
   // A click on the dimmed backdrop closes the viewer as well.
   dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
 })();
-
-// A playful Instagram-style fan toast: hovering the cooperation buttons makes
-// "new subscribers" pour in with random big numbers; moving away flips the
-// card to unsubscribing, and it fades a few seconds later. Pure decoration -
-// the count means nothing, and only hover-capable devices ever see it.
+// An Instagram-style fan toast plays over the cooperation buttons. The red
+// plaque arrives at once with a big follower count, the count climbs for
+// five seconds, falls when the cursor leaves, and the plaque departs five
+// seconds after that. Hovering again resumes the climb from the current
+// count, so nobody waits for it to drain to zero.
 (() => {
   'use strict';
   const toast = document.querySelector('.follow-toast');
@@ -283,48 +283,51 @@
   if (!window.matchMedia || !window.matchMedia('(hover: hover)').matches) return;
   const counter = toast.querySelector('.follow-toast__count');
   const label = toast.querySelector('.follow-toast__label');
-  const stamp = toast.querySelector('.follow-toast__time');
-  if (!counter || !label || !stamp) return;
+  if (!counter || !label) return;
   const buttons = [...document.querySelectorAll('a[href^="https://t.me/"]')]
     .filter((link) => /сотрудничество/i.test(String(link.textContent || '')));
   if (!buttons.length) return;
+  const GROW_MS = 5000;
+  const FALL_MS = 5000;
+  const TICK_MS = 600;
   let fans = 0;
-  let shownAt = 0;
+  let live = false;
   let ticker = null;
+  let phaseTimer = null;
   let fadeTimer = null;
-  const seed = () => { fans = 4800 + Math.floor(Math.random() * 7400); };
-  const render = (sign) => { counter.textContent = (sign ? '+' : '') + fans.toLocaleString('ru-RU'); };
-  const restamp = () => {
-    const seconds = Math.max(0, Math.round((Date.now() - shownAt) / 1000));
-    stamp.textContent = seconds < 1 ? 'сейчас' : seconds + ' с';
+  const stop = () => {
+    if (ticker) { window.clearInterval(ticker); ticker = null; }
+    if (phaseTimer) { window.clearTimeout(phaseTimer); phaseTimer = null; }
   };
+  const render = () => { counter.textContent = fans.toLocaleString('ru-RU'); };
   function pour() {
-    if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
-    if (!shownAt) { shownAt = Date.now(); seed(); }
+    if (fadeTimer) { window.clearTimeout(fadeTimer); fadeTimer = null; }
+    stop();
+    if (!live) { fans = 6400 + Math.floor(Math.random() * 7400); live = true; }
     label.textContent = 'подписались на вас';
     toast.classList.add('is-visible');
-    if (!ticker) ticker = setInterval(() => {
-      fans += 130 + Math.floor(Math.random() * 2900);
-      render(true);
-      restamp();
-    }, 780);
-    render(true);
-    restamp();
+    render();
+    ticker = window.setInterval(() => {
+      fans += 160 + Math.floor(Math.random() * 1340);
+      render();
+    }, TICK_MS);
+    phaseTimer = window.setTimeout(() => {
+      if (ticker) { window.clearInterval(ticker); ticker = null; }
+    }, GROW_MS);
   }
   function drain() {
-    if (ticker) { clearInterval(ticker); ticker = null; }
+    stop();
+    if (!live) return;
     label.textContent = 'отписываются…';
-    ticker = setInterval(() => {
-      fans = Math.max(0, fans - (80 + Math.floor(Math.random() * 900)));
-      render(false);
-      restamp();
-    }, 620);
-    if (fadeTimer) clearTimeout(fadeTimer);
-    fadeTimer = setTimeout(() => {
-      if (ticker) { clearInterval(ticker); ticker = null; }
+    ticker = window.setInterval(() => {
+      fans = Math.max(0, fans - (90 + Math.floor(Math.random() * 720)));
+      render();
+    }, TICK_MS);
+    phaseTimer = window.setTimeout(() => {
+      stop();
       toast.classList.remove('is-visible');
-      fadeTimer = setTimeout(() => { shownAt = 0; }, 1000);
-    }, 2800);
+      fadeTimer = window.setTimeout(() => { fans = 0; live = false; fadeTimer = null; }, 400);
+    }, FALL_MS);
   }
   for (const button of buttons) {
     button.addEventListener('mouseenter', pour);
