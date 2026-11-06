@@ -102,7 +102,8 @@ test('navigation is a modern segmented control with a gliding light thumb', () =
   assert.match(band, /\.site-nav__thumb\s*\{[^}]*pointer-events:\s*none/, 'The thumb never blocks the links');
   assert.match(band, /\.site-nav__thumb\s*\{[^}]*radial-gradient\(/, 'The thumb gets a glossy iOS highlight');
   assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*background:\s*none/, 'Desktop links drop the separate button frames');
-  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*min-height:\s*54px/, 'Keep the capsule tall and comfortable');
+  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*min-height:\s*60px/, 'Keep the capsule tall and comfortable');
+  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*padding-inline:\s*clamp\(15px,\s*2vw,\s*42px\)/, 'The capsule grows long on wide screens');
   assert.match(band, /\.site-nav\s+\.glass-pill\[aria-current="true"\]\s*\{[^}]*color:\s*var\(--ink-on-ice\)/, 'The active link inverts on the light thumb');
   assert.match(band, /\.site-nav\s+\.glass-pill:hover\s*\{[^}]*color:\s*var\(--ink-on-ice\)/, 'The hovered link inverts too');
   assert.match(band, /\.glass-pill__index\s*\{[^}]*display:\s*inline-block/);
@@ -110,6 +111,7 @@ test('navigation is a modern segmented control with a gliding light thumb', () =
   assert.ok(wide, 'Wide-screen navigation styles are missing');
   assert.match(wide, /\.site-header__inner\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\b/, 'Wide-screen capsule hugs the right edge');
   assert.match(wide, /\.site-nav\s*\{[^}]*grid-column:\s*2/);
+  assert.match(wide, /\.site-nav\s+\.glass-pill\s*\{[^}]*font-size:\s*19px/, 'Wide-screen labels grow with the capsule');
 });
 
 test('numbered links follow the section in view with a gliding thumb', () => {

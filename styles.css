@@ -589,7 +589,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 }
 
 @media (min-width: 900px) {
-  :root { --page-gutter: 60px; --header-offset: 110px; }
+  :root { --page-gutter: 60px; --header-offset: 120px; }
   main { --vine-space: 165px; }
   main > .section:not(.about) { --vine-height: 260px; }
   .site-header__inner { width: min(calc(100% - 64px), 1300px); flex-wrap: nowrap; gap: 24px; }
@@ -655,7 +655,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 @media (min-width: 900px) and (min-height: 501px), (min-width: 1101px) {
   .site-nav {
     position: relative; display: inline-flex; align-items: center; flex-wrap: nowrap; gap: 2px;
-    width: auto; max-width: 100%; margin: 0 0 0 auto; padding: 6px;
+    width: auto; max-width: 100%; margin: 0 0 0 auto; padding: 7px;
     border: 1px solid rgba(226, 243, 255, .30); border-radius: 999px;
     background:
       linear-gradient(to bottom, rgba(255, 255, 255, .10), rgba(255, 255, 255, .02) 38%, transparent 62%),
@@ -668,7 +668,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
     -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%);
   }
   .site-nav__thumb {
-    position: absolute; z-index: 0; top: 6px; bottom: 6px; left: 0; width: 0;
+    position: absolute; z-index: 0; top: 7px; bottom: 7px; left: 0; width: 0;
     border-radius: 999px; opacity: 0; pointer-events: none;
     background:
       radial-gradient(120% 90% at 32% -22%, rgba(255, 255, 255, .95), transparent 55%),
@@ -682,7 +682,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
     transition: transform .38s cubic-bezier(.3, .9, .25, 1), width .38s cubic-bezier(.3, .9, .25, 1), opacity .2s ease;
   }
   .site-nav .glass-pill {
-    position: relative; z-index: 1; flex: 0 0 auto; min-height: 54px; padding-inline: clamp(15px, 2vw, 28px);
+    position: relative; z-index: 1; flex: 0 0 auto; min-height: 60px; padding-inline: clamp(15px, 2vw, 42px);
     border: 0; border-radius: 999px; background: none;
     box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none;
     font-size: 18px; letter-spacing: .01em;
@@ -709,6 +709,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .brand { grid-column: 1; }
   /* The band hugs the right edge; its width follows the labels. */
   .site-nav { grid-column: 2; margin: 0; }
+  .site-nav .glass-pill { font-size: 19px; }
 }
 
 /* Keep the long role legible against the cloche and petals at intermediate widths. */
