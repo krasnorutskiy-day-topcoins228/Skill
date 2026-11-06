@@ -579,6 +579,8 @@ test('ground petals stay still and span the hero without stretching', () => {
   assert.doesNotMatch(rule[1], /animation|scale\s*\(/i, 'Ground petals should stay still and retain their proportions');
   assert.match(css, /\.ground-petal::after\s*\{[^}]*background-size:\s*contain/);
   assert.match(css, /\.ground-petal::before\s*\{[^}]*filter:\s*blur\(/);
+  assert.match(css, /\.hero__ground\s*\{[^}]*--ground-unit:\s*clamp\(58px,\s*16\.5vw,\s*82px\)/, 'Ground petals grow a touch');
+  assert.match(css, /--ground-unit:\s*clamp\(78px,\s*9vh,\s*116px\)/, 'Ground petals keep pace on tall desktop screens');
 
   const mobilePositions = ['one', 'two', 'three', 'four', 'five'].map((name) => {
     const entry = css.match(new RegExp(`\\.ground-petal--${name}\\s*\\{([^}]*)\\}`));

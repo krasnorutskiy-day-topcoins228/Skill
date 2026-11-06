@@ -173,7 +173,7 @@ html.menu-is-open, html.menu-is-open body { overflow: hidden; }
 }
 
 /* The foreground petals stay still. A soft contact shadow makes them rest on the surface. */
-.hero__ground { z-index: -1; inset: auto 0 0; height: 190px; --ground-unit: clamp(52px, 15vw, 74px); }
+.hero__ground { z-index: -1; inset: auto 0 0; height: 205px; --ground-unit: clamp(58px, 16.5vw, 82px); }
 /* Fade the floor shadow out at the bottom so the next wine section matches the hero. */
 .hero__ground::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, transparent 0%, rgba(33, 0, 10, .18) 34%, transparent 88%); }
 .ground-petal { position: absolute; display: block; width: var(--size); height: var(--size); transform: rotate(var(--angle)); opacity: .92; }
@@ -584,7 +584,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .hero h1 { font-size: clamp(5rem, 7.7vw, 7.5rem); }
   .hero__description { max-width: 540px; font-size: 25px; }
   .hero__petals { --petal-unit: clamp(68px, 8.8vh, 104px); }
-  .hero__ground { --ground-unit: clamp(70px, 8vh, 104px); }
+  .hero__ground { --ground-unit: clamp(78px, 9vh, 116px); }
   .petal--one { left: 29%; top: 30%; }
   .petal--two { left: 27%; top: 52%; --size: calc(var(--petal-unit) * .88); }
   .petal--four { left: 91%; top: 51%; }
