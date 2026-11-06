@@ -288,11 +288,14 @@ test('the supplied result and its evidence gallery are present', () => {
   assert.match(html, /evidence__gallery/);
   assert.match(html, /Выращено с нуля/, 'The evidence heading tells the from-scratch story');
   assert.doesNotMatch(html, /Место для/, 'No leftover screenshot placeholders');
-  assert.equal((html.match(/assets\/account-0\d\.jpg/g) || []).length, 3, 'Three real screenshots in the gallery');
-  for (const asset of ['account-01.jpg', 'account-02.jpg', 'account-03.jpg']) {
+  assert.equal((html.match(/assets\/account-0\d\.jpg/g) || []).length, 8, 'Eight real screenshots in the gallery');
+  for (let i = 1; i <= 8; i += 1) {
+    const asset = `account-0${i}.jpg`;
     assert.ok(existsSync(`assets/${asset}`), `Missing screenshot: ${asset}`);
+    assert.ok(html.includes(`assets/${asset}`), `${asset} must be shown in the gallery`);
   }
   assert.match(css, /\.evidence-card__screen img\s*\{[^}]*width:\s*100%/, 'Screenshots fill their cards without cropping');
+  assert.match(css, /\.evidence-card__screen img\s*\{[^}]*max-height:\s*440px[^}]*object-fit:\s*contain/, 'Tall phone screenshots stay in rhythm without cropping');
 });
 
 test('both project categories open to show the requested case fields', () => {

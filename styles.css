@@ -606,6 +606,9 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .evidence { margin-top: 100px; }
   .evidence__heading { grid-template-columns: 1fr 300px; align-items: end; margin-bottom: 28px; }
   .evidence__gallery { grid-auto-flow: initial; grid-auto-columns: initial; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; }
+  /* Phone screenshots are tall; cap their height so mixed cards stay in rhythm.
+     The frame mats the sides instead of cropping the statistics. */
+  .evidence-card__screen img { max-height: 440px; object-fit: contain; }
   .evidence__hint { display: none; }
   .projects__heading { margin-bottom: 70px; }
   .project-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
