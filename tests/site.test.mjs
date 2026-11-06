@@ -99,7 +99,28 @@ test('navigation aligns with the logo and uses larger, separate glass buttons', 
   const wide = css.match(/@media\s*\(min-width:\s*1220px\)\s*\{([\s\S]*?)\n\}/)?.[1];
   assert.ok(wide, 'Wide-screen navigation styles are missing');
   assert.match(wide, /\.site-header__inner\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\b/, 'Wide-screen buttons hug the right edge');
-  assert.match(wide, /\.site-nav\s*\{[^}]*width:\s*min\(880px,\s*calc\(100vw\s*-\s*486\.4px\)\)/, 'Wide-screen buttons are wider');
+  assert.match(wide, /\.site-nav\s*\{[^}]*width:\s*min\(880px,\s*calc\(100vw\s*-\s*430px\)\)/, 'Wide-screen buttons are wider');
+});
+
+test('numbered pills follow the section in view with a quiet hairline', () => {
+  const js = read('script.js');
+  const indices = [...html.matchAll(/<span class="glass-pill__index" aria-hidden="true">(\d{2})<\/span>/g)].map((match) => match[1]);
+  assert.deepEqual(indices, ['01', '02', '03', '04'], 'Each pill carries a decorative section number');
+  const index = css.match(/\.glass-pill__index\s*\{([^}]*)\}/)?.[1];
+  assert.ok(index, 'Index styles are missing');
+  assert.match(index, /display:\s*none/, 'Indices stay hidden where pills are tight');
+  assert.match(index, /font-family:\s*var\(--font-accent\)/);
+  assert.match(index, /font-style:\s*italic/);
+  const roomy = css.match(/@media\s*\(min-width:\s*1100px\)\s*\{([\s\S]*?)\n\}/)?.[1];
+  assert.match(roomy, /\.glass-pill__index\s*\{[^}]*display:\s*inline-block/, 'Indices appear once the pills have room');
+  assert.match(css, /\.site-nav\s+\.glass-pill\[aria-current="true"\]\s*\{[^}]*border-color:\s*rgba\(238,\s*248,\s*255/);
+  assert.match(css, /\.site-nav\s+\.glass-pill::after\s*\{[^}]*height:\s*1\.5px/);
+  assert.match(css, /\.site-nav\s+\.glass-pill\[aria-current="true"\]::after\s*\{[^}]*width:\s*44%/);
+  assert.match(js, /requestAnimationFrame/, 'Section tracking is throttled to animation frames');
+  assert.match(js, /setAttribute\('aria-current',\s*'true'\)/);
+  assert.match(js, /removeAttribute\('aria-current'\)/);
+  assert.match(js, /--header-offset/);
+  assert.match(js, /\{ passive: true \}/);
 });
 
 test('mobile menu uses simple bars and narrower, taller glass buttons without a rose', () => {

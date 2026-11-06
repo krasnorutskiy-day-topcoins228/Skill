@@ -136,3 +136,40 @@
     observer.observe(element);
   });
 })();
+
+// Light the pill of the section currently under the header. The highlight is
+// advisory only: without scripting the pills stay neutral, and measurements
+// are throttled to a single pass per animation frame while scrolling.
+(() => {
+  if (!window.requestAnimationFrame || !window.getComputedStyle || typeof document.querySelectorAll !== 'function') return;
+  const links = [...document.querySelectorAll('.site-nav a[href^="#"]')];
+  const sections = links
+    .map((link) => document.getElementById(link.getAttribute('href').slice(1)))
+    .filter(Boolean);
+  if (!links.length || sections.length !== links.length) return;
+  const tracked = [...document.querySelectorAll('main section[id]')];
+  let frame = null;
+
+  function sync() {
+    frame = null;
+    // The line rests just below the fixed header, where the eye is reading.
+    const offset = parseFloat(window.getComputedStyle(document.documentElement).getPropertyValue('--header-offset'));
+    const line = (Number.isFinite(offset) ? offset : 92) + 24;
+    let current = null;
+    for (const section of tracked) {
+      const rect = section.getBoundingClientRect();
+      if (rect.top <= line && rect.bottom > line) { current = '#' + section.id; break; }
+    }
+    for (const link of links) {
+      if (current && link.getAttribute('href') === current) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
+    }
+  }
+
+  function schedule() {
+    if (frame === null) frame = window.requestAnimationFrame(sync);
+  }
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule, { passive: true });
+  sync();
+})();
