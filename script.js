@@ -237,3 +237,37 @@
   if (document.fonts && document.fonts.ready && document.fonts.ready.then) document.fonts.ready.then(schedule);
   schedule();
 })();
+
+// Clicking a screenshot opens it large in a dialog. The link keeps working on
+// its own without scripting: it simply shows the image file in a new tab.
+(() => {
+  'use strict';
+  const dialog = document.querySelector('.evidence-lightbox');
+  if (!dialog || typeof dialog.showModal !== 'function' || typeof document.querySelectorAll !== 'function') return;
+  const image = dialog.querySelector('.evidence-lightbox__image');
+  const caption = dialog.querySelector('.evidence-lightbox__caption');
+  const closeButton = dialog.querySelector('.evidence-lightbox__close');
+  const links = [...document.querySelectorAll('.evidence-card__link')];
+  if (!image || !caption || !closeButton || !links.length) return;
+  for (const link of links) {
+    link.addEventListener('click', (event) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const thumb = link.querySelector('img');
+      if (!thumb) return;
+      event.preventDefault();
+      image.alt = thumb.getAttribute('alt') || '';
+      const width = parseInt(thumb.getAttribute('width'), 10);
+      const height = parseInt(thumb.getAttribute('height'), 10);
+      if (width > 0 && height > 0) { image.width = width; image.height = height; }
+      image.src = link.getAttribute('href');
+      const card = link.closest('.evidence-card');
+      const label = card ? card.querySelector('figcaption') : null;
+      const parts = label ? [...label.querySelectorAll('span')] : [];
+      caption.textContent = parts.map((part) => part.textContent.trim()).filter(Boolean).join(' · ');
+      if (!dialog.open) dialog.showModal();
+    });
+  }
+  closeButton.addEventListener('click', () => dialog.close());
+  // A click on the dimmed backdrop closes the viewer as well.
+  dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+})();

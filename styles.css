@@ -264,21 +264,35 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 .evidence { margin-top: 68px; }
 .evidence__heading { display: grid; gap: 13px; margin-bottom: 23px; }
 .evidence__heading h3 { font-size: clamp(2rem, 6.4vw, 3.4rem); font-weight: 600; letter-spacing: -.035em; line-height: 1.15; }
+.evidence__heading h3 em { font-family: var(--font-accent); font-size: 1.13em; font-style: italic; font-weight: 600; letter-spacing: -.02em; }
 .evidence__heading h3 span { font-style: normal; }
 .evidence__heading > p { max-width: 330px; font-size: 20px; line-height: 1.7; }
 .evidence__gallery { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 76%); gap: 12px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; scrollbar-width: thin; }
 .evidence-card { display: flex; min-width: 0; flex-direction: column; scroll-snap-align: start; }
 /* Real screenshots keep their own proportions: no cropping, no letterboxing. */
-.evidence-card__screen { position: relative; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line-on-ice); border-radius: 17px; background: rgba(255, 255, 255, .10); }
-.evidence-card__bar { display: flex; gap: 4px; padding: 14px; }
+.evidence-card__screen { position: relative; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line-on-ice); border-radius: 17px; background: rgba(255, 255, 255, .10); box-shadow: 0 10px 26px rgba(25, 0, 9, .10); }
+@media (hover: hover) {
+  .evidence-card__screen { transition: transform .2s ease, box-shadow .2s ease; }
+  .evidence-card:hover .evidence-card__screen { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(25, 0, 9, .18); }
+}
+.evidence-card__bar { display: flex; gap: 4px; padding: 10px 14px; border-bottom: 1px solid var(--line-on-ice); }
 .evidence-card__bar span { width: 4px; height: 4px; border-radius: 50%; background: var(--wine); opacity: .46; }
-.evidence-card__screen img { display: block; width: 100%; height: auto; }
-.evidence-card figcaption { display: flex; justify-content: space-between; gap: 10px; padding-top: 11px; margin-top: auto; font-size: 15px; font-weight: 700; letter-spacing: .04em; }
+.evidence-card__link { display: block; }
+.evidence-card__link:focus-visible { outline: 2px solid var(--wine); outline-offset: 3px; border-radius: 12px; }
+.evidence-card__screen img { display: block; width: 100%; height: auto; max-height: 62vh; object-fit: contain; }
+.evidence-card figcaption { display: flex; justify-content: space-between; gap: 10px; padding-top: 11px; margin-top: auto; border-top: 1px solid var(--line-on-ice); font-size: 15px; font-weight: 700; letter-spacing: .04em; }
 .evidence__hint { margin-top: 13px; font-size: 18px; font-weight: 600; }
 .evidence__hint span { margin-left: 5px; font-size: 18px; }
 /* The funnel takeaway closes the proof block in the accent colour. */
-.evidence__note { margin-top: 28px; padding: 24px 28px; border-radius: 19px; background: var(--wine); color: var(--ice); font-size: 20px; line-height: 1.65; }
-.evidence__note strong { font-weight: 700; }
+.evidence__note { margin-top: 28px; padding: 26px 30px; border-radius: 22px; background: var(--wine); color: var(--ice); font-size: 20px; line-height: 1.65; }
+.evidence__note strong { display: block; margin-bottom: 8px; font-family: var(--font-accent); font-size: 1.55em; font-style: italic; font-weight: 600; letter-spacing: -.01em; line-height: 1.15; }
+/* Clicking a screenshot opens it large; without scripting the link shows the file itself. */
+.evidence-lightbox { width: min(calc(100% - 24px), 1080px); max-height: 92vh; padding: 0; border: 0; border-radius: 22px; overflow: hidden; background: var(--wine); color: var(--ice); }
+.evidence-lightbox::backdrop { background: rgba(26, 0, 10, .74); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.evidence-lightbox__figure { margin: 0; }
+.evidence-lightbox__image { display: block; width: 100%; height: auto; max-height: 80vh; object-fit: contain; }
+.evidence-lightbox__caption { padding: 14px 20px 18px; font-size: 16px; font-weight: 700; letter-spacing: .04em; text-align: center; }
+.evidence-lightbox__close { position: absolute; top: 14px; right: 14px; display: grid; place-items: center; width: 46px; height: 46px; border: 1px solid rgba(221, 240, 255, .45); border-radius: 50%; background: var(--wine); color: var(--ice); font-size: 19px; line-height: 1; cursor: pointer; }
 
 /* Project cards use native details/summary so they work without JavaScript. */
 .projects__heading { margin-bottom: 43px; }
@@ -613,6 +627,8 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
      The frame mats the sides instead of cropping the statistics. */
   .evidence-card__screen img { max-height: 440px; object-fit: contain; }
   .evidence__hint { display: none; }
+  .evidence__note { display: grid; grid-template-columns: minmax(230px, 1fr) minmax(0, 1.7fr); gap: 10px 56px; align-items: center; padding: 30px 38px; }
+  .evidence__note strong { margin-bottom: 0; }
   .projects__heading { margin-bottom: 70px; }
   .project-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .project-card summary { min-height: 400px; padding: 35px; }
