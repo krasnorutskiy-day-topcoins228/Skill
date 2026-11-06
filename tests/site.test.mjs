@@ -105,7 +105,7 @@ test('navigation is a modern segmented control with a gliding light thumb', () =
   assert.match(band, /\.site-nav__thumb\s*\{[^}]*pointer-events:\s*none/, 'The thumb never blocks the links');
   assert.match(band, /\.site-nav__thumb\s*\{[^}]*radial-gradient\(/, 'The thumb gets a glossy iOS highlight');
   assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*background:\s*none/, 'Desktop links drop the separate button frames');
-  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*min-height:\s*68px/, 'Keep the capsule tall and comfortable');
+  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*min-height:\s*76px/, 'Keep the capsule tall and comfortable');
   assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*padding-inline:\s*clamp\(14px,\s*1\.8vw,\s*48px\)/, 'Five pills stay compact enough to share one row');
   assert.match(band, /\.site-nav\s+\.glass-pill\[aria-current="true"\]\s*\{[^}]*color:\s*var\(--ink-on-ice\)/, 'The active link inverts on the light thumb');
   assert.match(band, /\.site-nav\s+\.glass-pill:hover\s*\{[^}]*color:\s*var\(--ink-on-ice\)/, 'The hovered link inverts too');
@@ -116,6 +116,7 @@ test('navigation is a modern segmented control with a gliding light thumb', () =
   assert.match(wide, /\.brand\s*\{[^}]*margin-left:\s*min\(0px,\s*calc\(\(1364px\s*-\s*100vw\)\s*\/\s*4\)\)/, 'The logo drifts toward the left edge on wide screens');
   assert.match(wide, /\.site-nav\s+\.glass-pill\s*\{[^}]*font-size:\s*21px/, 'Wide-screen labels grow with the capsule');
   assert.match(css, /@media\s*\(min-width:\s*1101px\)\s*\{[^}]*\.site-nav\s*\{[^}]*margin-right:\s*clamp\(80px,\s*8vw,\s*144px\)/, 'The capsule keeps a breath of air from the right edge');
+  assert.match(css, /@media\s*\(min-width:\s*1101px\)\s*\{[\s\S]*?\.site-nav\s+\.glass-pill\s*\{[^}]*padding-inline:\s*clamp\(20px,\s*2\.2vw,\s*50px\)/, 'The capsule stretches longer once the screen has room');
 });
 
 test('the gliding thumb follows the section in view without extra ornaments', () => {
@@ -511,6 +512,10 @@ test('contact section uses the supplied text and real contact links', () => {
   assert.equal((html.match(/<nav class="footer__nav"[^>]*>[\s\S]*?<\/nav>/) || [''])[0].match(/<a /g)?.length, 4, 'Footer links mirror the four sections');
   assert.match(html, /© 2026 Елизавета Кравец/, 'The footer states the authorship');
   assert.match(html, /footer__meta[\s\S]*?https:\/\/t\.me\/lizzieamo/, 'The footer repeats the Telegram contact');
+  assert.match(css, /\.footer\s*\{[^}]*border-top:\s*1px solid var\(--line-on-wine\)/, 'A hairline separates the footer band');
+  assert.match(css, /\.footer::before\s*\{[^}]*radial-gradient\(/, 'A soft sheen lights the footer');
+  assert.match(css, /\.footer__nav a\s*\{[^}]*min-height:\s*44px/, 'Footer links rest in comfortable glass chips');
+  assert.match(css, /\.footer__top\s*\{[^}]*border-radius:\s*999px/, 'Back-to-top becomes a glass button');
 });
 
 test('every collaboration call to action goes directly to the supplied Telegram', () => {
