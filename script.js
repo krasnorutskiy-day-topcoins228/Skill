@@ -173,3 +173,53 @@
   window.addEventListener('resize', schedule, { passive: true });
   sync();
 })();
+
+// A light thumb glides inside the navigation capsule: it previews the hovered
+// or focused link and settles on the section in view. Decorative only — the
+// links behave exactly the same without it.
+(() => {
+  if (!window.requestAnimationFrame || !window.matchMedia || typeof MutationObserver === 'undefined' || typeof document.querySelectorAll !== 'function' || typeof document.createElement !== 'function') return;
+  const nav = document.querySelector('.site-nav');
+  if (!nav || typeof nav.appendChild !== 'function') return;
+  const links = [...nav.querySelectorAll('a[href^="#"]')];
+  if (!links.length) return;
+  const roomy = window.matchMedia('(min-width: 900px) and (min-height: 501px), (min-width: 1101px)');
+  const thumb = document.createElement('span');
+  thumb.className = 'site-nav__thumb';
+  thumb.setAttribute('aria-hidden', 'true');
+  nav.appendChild(thumb);
+  let frame = null;
+  let preview = null;
+
+  function currentLink() {
+    return links.find((link) => link.getAttribute('aria-current') === 'true') || null;
+  }
+  function place(target) {
+    if (!target) { thumb.style.opacity = '0'; return; }
+    thumb.style.width = target.offsetWidth + 'px';
+    thumb.style.transform = 'translateX(' + target.offsetLeft + 'px)';
+    thumb.style.opacity = '1';
+  }
+  function settle() {
+    frame = null;
+    place(roomy.matches ? (preview || currentLink()) : null);
+  }
+  function schedule() {
+    if (frame === null) frame = window.requestAnimationFrame(settle);
+  }
+  for (const link of links) {
+    link.addEventListener('mouseenter', () => { preview = link; schedule(); });
+    link.addEventListener('focus', () => { preview = link; schedule(); });
+    link.addEventListener('mouseleave', () => { if (preview === link) { preview = null; schedule(); } });
+    link.addEventListener('blur', () => { if (preview === link) { preview = null; schedule(); } });
+  }
+  // The scroll spy rewrites aria-current; the thumb quietly follows.
+  const changes = new MutationObserver(schedule);
+  for (const link of links) changes.observe(link, { attributes: true, attributeFilter: ['aria-current'] });
+  if (roomy.addEventListener) roomy.addEventListener('change', schedule);
+  else if (roomy.addListener) roomy.addListener(schedule);
+  window.addEventListener('resize', schedule, { passive: true });
+  // Link widths settle only once the fonts are in; re-measure then.
+  if (document.fonts && document.fonts.ready && document.fonts.ready.then) document.fonts.ready.then(schedule);
+  schedule();
+})();
