@@ -768,10 +768,15 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .site-nav .glass-pill { font-size: 21px; }
 }
 
+/* In the 1000-1100px band the logo leaves spare room; let the buttons stretch. */
+@media (min-width: 1000px) and (max-width: 1100px) {
+  .site-nav .glass-pill { padding-inline: clamp(20px, 2.6vw, 34px); }
+}
+
 /* Once there is room to spare, the capsule keeps a breath of air away from the right edge. */
 @media (min-width: 1101px) {
-  .site-nav { margin-right: clamp(80px, 8vw, 144px); }
-  .site-nav .glass-pill { padding-inline: clamp(20px, 2.2vw, 50px); }
+  .site-nav { margin-right: clamp(56px, 6vw, 112px); }
+  .site-nav .glass-pill { padding-inline: clamp(24px, 2.6vw, 60px); }
 }
 
 /* Keep the long role legible against the cloche and petals at intermediate widths. */

@@ -115,8 +115,9 @@ test('navigation is a modern segmented control with a gliding light thumb', () =
   assert.match(wide, /\.site-nav\s*\{[^}]*grid-column:\s*2/);
   assert.match(wide, /\.brand\s*\{[^}]*margin-left:\s*min\(0px,\s*calc\(\(1364px\s*-\s*100vw\)\s*\/\s*4\)\)/, 'The logo drifts toward the left edge on wide screens');
   assert.match(wide, /\.site-nav\s+\.glass-pill\s*\{[^}]*font-size:\s*21px/, 'Wide-screen labels grow with the capsule');
-  assert.match(css, /@media\s*\(min-width:\s*1101px\)\s*\{[^}]*\.site-nav\s*\{[^}]*margin-right:\s*clamp\(80px,\s*8vw,\s*144px\)/, 'The capsule keeps a breath of air from the right edge');
-  assert.match(css, /@media\s*\(min-width:\s*1101px\)\s*\{[\s\S]*?\.site-nav\s+\.glass-pill\s*\{[^}]*padding-inline:\s*clamp\(20px,\s*2\.2vw,\s*50px\)/, 'The capsule stretches longer once the screen has room');
+  assert.match(css, /@media\s*\(min-width:\s*1101px\)\s*\{[^}]*\.site-nav\s*\{[^}]*margin-right:\s*clamp\(56px,\s*6vw,\s*112px\)/, 'The capsule keeps a breath of air from the right edge');
+  assert.match(css, /@media\s*\(min-width:\s*1101px\)\s*\{[\s\S]*?\.site-nav\s+\.glass-pill\s*\{[^}]*padding-inline:\s*clamp\(24px,\s*2\.6vw,\s*60px\)/, 'The capsule stretches longer once the screen has room');
+  assert.match(css, /@media\s*\(min-width:\s*1000px\)\s*and\s*\(max-width:\s*1100px\)\s*\{[^}]*\.site-nav\s+\.glass-pill\s*\{[^}]*padding-inline:\s*clamp\(20px,\s*2\.6vw,\s*34px\)/, 'The mid-band buttons stretch too');
 });
 
 test('the gliding thumb follows the section in view without extra ornaments', () => {
