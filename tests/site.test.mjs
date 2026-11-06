@@ -60,7 +60,7 @@ test('navigation and internal links point to existing sections', () => {
   for (const id of ['about', 'results', 'projects', 'services', 'personal-brand', 'contact']) {
     assert.match(html, new RegExp(`id=["']${id}["']`));
   }
-  for (const id of ['about', 'results', 'projects', 'services', 'personal-brand']) {
+  for (const id of ['about', 'results', 'projects', 'services', 'personal-brand', 'contact']) {
     assert.match(html, new RegExp(`href=["']#${id}["']`));
   }
   for (const [, id] of html.matchAll(/href=["']#([^"']+)["']/g)) {
@@ -71,7 +71,8 @@ test('navigation and internal links point to existing sections', () => {
 test('navigation is a modern segmented control with a gliding light thumb', () => {
   const nav = html.match(/<nav class="site-nav"[\s\S]*?<\/nav>/)?.[0];
   assert.ok(nav, 'Navigation is missing');
-  assert.equal((nav.match(/<a class="glass-pill"/g) || []).length, 4);
+  assert.equal((nav.match(/<a class="glass-pill"/g) || []).length, 5);
+  assert.match(nav, /<a class="glass-pill" href="#contact">Контакты<\/a>/, 'The capsule ends with a contacts link');
   assert.doesNotMatch(nav, /glass-pill__index/, 'The desktop capsule carries no numbered indices');
   const rule = css.match(/\.site-nav\s*\{([^}]*)\}/)?.[1];
   const pill = css.match(/\.glass-pill\s*\{([^}]*)\}/)?.[1];
@@ -105,7 +106,7 @@ test('navigation is a modern segmented control with a gliding light thumb', () =
   assert.match(band, /\.site-nav__thumb\s*\{[^}]*radial-gradient\(/, 'The thumb gets a glossy iOS highlight');
   assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*background:\s*none/, 'Desktop links drop the separate button frames');
   assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*min-height:\s*68px/, 'Keep the capsule tall and comfortable');
-  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*padding-inline:\s*clamp\(16px,\s*3\.6vw,\s*84px\)/, 'The capsule grows long on wide screens');
+  assert.match(band, /\.site-nav\s+\.glass-pill\s*\{[^}]*padding-inline:\s*clamp\(14px,\s*1\.8vw,\s*48px\)/, 'Five pills stay compact enough to share one row');
   assert.match(band, /\.site-nav\s+\.glass-pill\[aria-current="true"\]\s*\{[^}]*color:\s*var\(--ink-on-ice\)/, 'The active link inverts on the light thumb');
   assert.match(band, /\.site-nav\s+\.glass-pill:hover\s*\{[^}]*color:\s*var\(--ink-on-ice\)/, 'The hovered link inverts too');
   const wide = css.match(/@media\s*\(min-width:\s*1220px\)\s*\{([\s\S]*?)\n\}/)?.[1];
@@ -150,7 +151,8 @@ test('mobile menu uses simple bars and narrower, taller glass buttons without a 
   assert.doesNotMatch(button, /<span>Меню<\/span>/, 'Keep the visible control as an icon');
   const nav = html.match(/<nav class="site-nav" id="primary-navigation"[\s\S]*?<\/nav>/)?.[0];
   assert.ok(nav);
-  assert.doesNotMatch(nav, /РАЗДЕЛЫ|КОНТАКТЫ|site-nav__eyebrow|site-nav__contacts/i);
+  assert.doesNotMatch(nav, /РАЗДЕЛЫ|site-nav__eyebrow|site-nav__contacts/i, 'No old eyebrow headings or contact blocks in the menu');
+  assert.doesNotMatch(nav, /<h[1-6][^>]*>[^<]*КОНТАКТЫ/i, 'The menu keeps its retired headline style retired');
   const social = [...nav.matchAll(/<a class="site-nav__social"[^>]*>[\s\S]*?<\/a>/g)].map(match => match[0]);
   assert.equal(social.length, 2);
   assert.match(social[0], /href="https:\/\/t\.me\/lizzieamo"[^>]*aria-label="[^"]+"/);

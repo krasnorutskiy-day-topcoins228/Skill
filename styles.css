@@ -702,7 +702,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
     transition: transform .38s cubic-bezier(.3, .9, .25, 1), width .38s cubic-bezier(.3, .9, .25, 1), opacity .2s ease;
   }
   .site-nav .glass-pill {
-    position: relative; z-index: 1; flex: 0 0 auto; min-height: 68px; padding-inline: clamp(16px, 3.6vw, 84px);
+    position: relative; z-index: 1; flex: 0 0 auto; min-height: 68px; padding-inline: clamp(14px, 1.8vw, 48px);
     border: 0; border-radius: 999px; background: none;
     box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none;
     font-size: 18px; letter-spacing: .01em;
