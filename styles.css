@@ -646,11 +646,11 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .tariff-card__name { min-height: 2.6em; }
 }
 
-/* On wide screens the navigation shares the logo's row, sitting just right of center. */
+/* On wide screens the navigation shares the logo's row, aligned with the right edge. */
 @media (min-width: 1220px) {
-  .site-header__inner { display: grid; grid-template-columns: minmax(0, 1.5fr) auto minmax(0, .5fr); gap: 24px; }
+  .site-header__inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; }
   .brand { grid-column: 1; }
-  /* Wider buttons lean to the right while keeping clear of the logo. */
+  /* Wider buttons hug the right edge while keeping clear of the logo. */
   .site-nav { grid-column: 2; width: min(880px, calc(100vw - 486.4px)); margin: 0; }
 }
 

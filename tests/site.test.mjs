@@ -98,7 +98,7 @@ test('navigation aligns with the logo and uses larger, separate glass buttons', 
   assert.match(desktop, /grid-template-columns:\s*minmax\(min-content,\s*1fr\)/, 'Narrow desktop widths must leave room for labels');
   const wide = css.match(/@media\s*\(min-width:\s*1220px\)\s*\{([\s\S]*?)\n\}/)?.[1];
   assert.ok(wide, 'Wide-screen navigation styles are missing');
-  assert.match(wide, /\.site-header__inner\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1\.5fr\)\s+auto\s+minmax\(0,\s*\.5fr\)/, 'Wide-screen buttons sit right of center');
+  assert.match(wide, /\.site-header__inner\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\b/, 'Wide-screen buttons hug the right edge');
   assert.match(wide, /\.site-nav\s*\{[^}]*width:\s*min\(880px,\s*calc\(100vw\s*-\s*486\.4px\)\)/, 'Wide-screen buttons are wider');
 });
 
