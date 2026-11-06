@@ -688,9 +688,14 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 @media (min-width: 1220px) {
   .site-header__inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; }
   .brand { grid-column: 1; }
-  /* The band hugs the right edge; its width follows the labels. */
+  /* The band rides beside the right edge; its width follows the labels. */
   .site-nav { grid-column: 2; margin: 0; }
   .site-nav .glass-pill { font-size: 19px; }
+}
+
+/* Once there is room to spare, the capsule keeps a breath of air away from the right edge. */
+@media (min-width: 1101px) {
+  .site-nav { margin-right: clamp(20px, 2vw, 36px); }
 }
 
 /* Keep the long role legible against the cloche and petals at intermediate widths. */
