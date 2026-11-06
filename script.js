@@ -271,3 +271,65 @@
   // A click on the dimmed backdrop closes the viewer as well.
   dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
 })();
+
+// A playful Instagram-style fan toast: hovering the cooperation buttons makes
+// "new subscribers" pour in with random big numbers; moving away flips the
+// card to unsubscribing, and it fades a few seconds later. Pure decoration -
+// the count means nothing, and only hover-capable devices ever see it.
+(() => {
+  'use strict';
+  const toast = document.querySelector('.follow-toast');
+  if (!toast || typeof toast.querySelector !== 'function' || typeof document.querySelectorAll !== 'function') return;
+  if (!window.matchMedia || !window.matchMedia('(hover: hover)').matches) return;
+  const counter = toast.querySelector('.follow-toast__count');
+  const label = toast.querySelector('.follow-toast__label');
+  const stamp = toast.querySelector('.follow-toast__time');
+  if (!counter || !label || !stamp) return;
+  const buttons = [...document.querySelectorAll('a[href^="https://t.me/"]')]
+    .filter((link) => /сотрудничество/i.test(String(link.textContent || '')));
+  if (!buttons.length) return;
+  let fans = 0;
+  let shownAt = 0;
+  let ticker = null;
+  let fadeTimer = null;
+  const seed = () => { fans = 4800 + Math.floor(Math.random() * 7400); };
+  const render = (sign) => { counter.textContent = (sign ? '+' : '') + fans.toLocaleString('ru-RU'); };
+  const restamp = () => {
+    const seconds = Math.max(0, Math.round((Date.now() - shownAt) / 1000));
+    stamp.textContent = seconds < 1 ? 'сейчас' : seconds + ' с';
+  };
+  function pour() {
+    if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
+    if (!shownAt) { shownAt = Date.now(); seed(); }
+    label.textContent = 'подписались на вас';
+    toast.classList.add('is-visible');
+    if (!ticker) ticker = setInterval(() => {
+      fans += 130 + Math.floor(Math.random() * 2900);
+      render(true);
+      restamp();
+    }, 780);
+    render(true);
+    restamp();
+  }
+  function drain() {
+    if (ticker) { clearInterval(ticker); ticker = null; }
+    label.textContent = 'отписываются…';
+    ticker = setInterval(() => {
+      fans = Math.max(0, fans - (80 + Math.floor(Math.random() * 900)));
+      render(false);
+      restamp();
+    }, 620);
+    if (fadeTimer) clearTimeout(fadeTimer);
+    fadeTimer = setTimeout(() => {
+      if (ticker) { clearInterval(ticker); ticker = null; }
+      toast.classList.remove('is-visible');
+      fadeTimer = setTimeout(() => { shownAt = 0; }, 1000);
+    }, 2800);
+  }
+  for (const button of buttons) {
+    button.addEventListener('mouseenter', pour);
+    button.addEventListener('focus', pour);
+    button.addEventListener('mouseleave', drain);
+    button.addEventListener('blur', drain);
+  }
+})();

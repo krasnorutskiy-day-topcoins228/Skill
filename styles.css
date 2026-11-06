@@ -490,6 +490,33 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .evidence-card:nth-child(-n+3) { flex-basis: max(96%, 260px); }
 }
 
+/* An Instagram-style fan toast plays in the corner while the cooperation
+   buttons are hovered: random "subscribers" pour in, then drift away.
+   Pure decoration - never a real metric, and touch screens never see it. */
+.follow-toast {
+  position: fixed; right: 22px; bottom: 22px; z-index: 60;
+  display: flex; align-items: center; gap: 12px;
+  max-width: min(88vw, 340px); margin: 0; padding: 11px 18px 11px 12px;
+  border-radius: 14px; background: #fff; color: #262626;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .14), 0 16px 40px rgba(0, 0, 0, .22);
+  font-size: 14px; line-height: 1.35;
+  opacity: 0; visibility: hidden; transform: translateY(14px) scale(.97);
+  transition: opacity .28s ease, transform .28s ease, visibility 0s linear .28s;
+  pointer-events: none;
+}
+.follow-toast.is-visible { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+.follow-toast__avatar { position: relative; flex: 0 0 auto; width: 46px; height: 46px; border-radius: 50%;
+  background: conic-gradient(from 210deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5, #feda75); }
+.follow-toast__avatar::after { content: ""; position: absolute; inset: 3px; border-radius: 50%;
+  background: url("assets/rose-cloche.jpg") center 32% / cover no-repeat; }
+.follow-toast__text { margin: 0; min-width: 0; }
+.follow-toast__count { font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+.follow-toast__time { color: #8e8e8e; white-space: nowrap; }
+.follow-toast__time::before { content: "·"; margin-right: 4px; }
+@media (hover: none) {
+  .follow-toast { display: none; }
+}
+
 /* Only elements below the initial viewport are enhanced by JavaScript.
    Without motion support, JavaScript, or IntersectionObserver, everything stays visible. */
 @media (prefers-reduced-motion: no-preference) {

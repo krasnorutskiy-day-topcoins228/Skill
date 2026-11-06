@@ -831,3 +831,20 @@ test('all local images and fonts referenced by the page exist', () => {
     assert.ok(existsSync(asset), `Missing local asset: ${asset}`);
   }
 });
+
+test('a playful Instagram-style fan toast follows the cooperation buttons', () => {
+  const js = read('script.js');
+  assert.match(html, /<div class="follow-toast" aria-hidden="true">/, 'The decorative toast exists and stays silent for screen readers');
+  assert.match(html, /follow-toast__avatar/);
+  assert.match(html, /follow-toast__count/);
+  assert.match(html, /follow-toast__label/);
+  assert.match(css, /\.follow-toast\s*\{[^}]*position:\s*fixed/, 'The toast lives in a corner');
+  assert.match(css, /\.follow-toast\s*\{[^}]*background:\s*#fff/, 'The toast wears the white Instagram card');
+  assert.match(css, /\.follow-toast__avatar\s*\{[^}]*conic-gradient\(/, 'The avatar sits in a story ring');
+  assert.match(css, /@media\s*\(hover:\s*none\)\s*\{[^}]*\.follow-toast\s*\{[^}]*display:\s*none/, 'Touch screens never see the toast');
+  assert.match(js, /querySelector\('\.follow-toast'\)/, 'The script finds the toast early and bails without it');
+  assert.match(js, /подписались на вас/, 'Hovering announces new subscribers');
+  assert.match(js, /отписываются/, 'Leaving announces the drain');
+  assert.match(js, /mouseenter/);
+  assert.match(js, /mouseleave/);
+});
