@@ -125,6 +125,8 @@ test('the gliding thumb follows the section in view without extra ornaments', ()
   assert.match(js, /offsetLeft/, 'The thumb measures its target link');
   assert.match(js, /document\.fonts/, 'The thumb re-measures once fonts load');
   assert.match(js, /requestAnimationFrame/, 'Section tracking is throttled to animation frames');
+  assert.match(js, /lockedId/, 'Clicking a link locks the highlight while its smooth scroll runs');
+  assert.match(js, /lockedId = null;\s*schedule\(\)/, 'The lock releases once the scroll comes to rest');
   assert.match(js, /setAttribute\('aria-current',\s*'true'\)/);
   assert.match(js, /removeAttribute\('aria-current'\)/);
   assert.match(js, /--header-offset/);

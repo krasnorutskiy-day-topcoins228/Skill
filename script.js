@@ -149,7 +149,17 @@
   if (!links.length || sections.length !== links.length) return;
   const tracked = [...document.querySelectorAll('main section[id]')];
   let frame = null;
+  // Clicking a link commits the highlight to it while its smooth scroll runs,
+  // so the marker glides straight to the chosen pill instead of sweeping
+  // through the sections the page passes on its way. The lock releases once
+  // the scroll comes to rest, and plain section tracking takes over again.
+  let lockedId = null;
+  let idleTimer = null;
 
+  function holdLock() {
+    window.clearTimeout(idleTimer);
+    idleTimer = window.setTimeout(() => { lockedId = null; schedule(); }, 150);
+  }
   function sync() {
     frame = null;
     // The line rests just below the fixed header, where the eye is reading.
@@ -160,6 +170,7 @@
       const rect = section.getBoundingClientRect();
       if (rect.top <= line && rect.bottom > line) { current = '#' + section.id; break; }
     }
+    if (lockedId) current = lockedId;
     for (const link of links) {
       if (current && link.getAttribute('href') === current) link.setAttribute('aria-current', 'true');
       else link.removeAttribute('aria-current');
@@ -169,7 +180,10 @@
   function schedule() {
     if (frame === null) frame = window.requestAnimationFrame(sync);
   }
-  window.addEventListener('scroll', schedule, { passive: true });
+  for (const link of links) {
+    link.addEventListener('click', () => { lockedId = link.getAttribute('href'); holdLock(); schedule(); });
+  }
+  window.addEventListener('scroll', () => { if (lockedId) holdLock(); schedule(); }, { passive: true });
   window.addEventListener('resize', schedule, { passive: true });
   sync();
 })();
