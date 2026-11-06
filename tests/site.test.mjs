@@ -541,7 +541,10 @@ test('hero uses a high-resolution cloche image and more moving, decorative petal
     assert.ok(existsSync(`assets/rose-petal-${asset}.png`), `Missing ${asset} petal asset`);
   }
   assert.ok((html.match(/class="petal petal--/g) || []).length >= 6);
-  assert.ok((html.match(/class="ground-petal ground-petal--/g) || []).length >= 5);
+  assert.ok((html.match(/class="ground-petal ground-petal--/g) || []).length >= 9, 'The floor carries a generous scatter of resting petals');
+  assert.match(css, /@media\s*\(min-width:\s*900px\)\s*\{[\s\S]*?\.ground-petal--eight\s*\{[^}]*display:\s*block/, 'Extra resting petals appear on desktop');
+  assert.match(css, /@media\s*\(min-width:\s*900px\)\s*\{[\s\S]*?\.ground-petal--eleven\s*\{[^}]*display:\s*block/, 'The desktop floor ends with the eleventh petal');
+  assert.match(css, /\.ground-petal--eight,\s*\.ground-petal--nine,\s*\.ground-petal--ten,\s*\.ground-petal--eleven\s*\{[^}]*display:\s*none/, 'The extra petals stay hidden below desktop');
   assert.match(html, /class="hero__petals" aria-hidden="true"/);
   assert.match(html, /class="hero__ground" aria-hidden="true"/);
   assert.match(css, /\.hero__image,\s*\.hero__petals\s*\{[^}]*aspect-ratio:\s*2\s*\/\s*3/);
@@ -620,7 +623,7 @@ test('flying petals remain large and staggered on tablet and desktop', () => {
 
 test('ground petals stay still and span the hero without stretching', () => {
   const groundPetals = [...html.matchAll(/<span\s+class="ground-petal\s+ground-petal--[^>]+>/g)];
-  assert.equal(groundPetals.length, 7);
+  assert.equal(groundPetals.length, 11, 'Seven base petals plus four desktop-only ones');
   const rule = css.match(/\.ground-petal\s*\{([^}]*)\}/);
   assert.ok(rule, 'Ground petal rule is missing');
   assert.match(rule[1], /width:\s*var\(--size\)/);

@@ -187,7 +187,9 @@ html.menu-is-open, html.menu-is-open body { overflow: hidden; }
 .ground-petal--three { left: 38%; bottom: 66px; --size: calc(var(--ground-unit) * 1.03); --angle: 20deg; }
 .ground-petal--four { left: 61%; bottom: 88px; --size: calc(var(--ground-unit) * .9); --angle: -12deg; }
 .ground-petal--five { left: 83%; bottom: 62px; --size: calc(var(--ground-unit) * 1.15); --angle: -9deg; }
-.ground-petal--six, .ground-petal--seven { display: none; }
+/* Six and seven wait for tablets; eight through eleven are desktop-only floor petals. */
+.ground-petal--six, .ground-petal--seven,
+.ground-petal--eight, .ground-petal--nine, .ground-petal--ten, .ground-petal--eleven { display: none; }
 
 /* Reserve space below the logo and four navigation buttons. */
 .hero__inner { position: relative; display: flex; align-items: flex-start; padding-top: 472px; padding-bottom: 180px; }
@@ -687,6 +689,11 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .hero__description { max-width: 540px; font-size: 25px; }
   .hero__petals { --petal-unit: clamp(68px, 8.8vh, 104px); }
   .hero__ground { --ground-unit: clamp(78px, 9vh, 116px); }
+  /* The wider floor scatters four more resting petals into the gaps. */
+  .ground-petal--eight { display: block; left: 9%; bottom: 42px; --size: calc(var(--ground-unit) * .68); --angle: -18deg; }
+  .ground-petal--nine { display: block; left: 26%; bottom: 110px; --size: calc(var(--ground-unit) * .74); --angle: 7deg; }
+  .ground-petal--ten { display: block; left: 45%; bottom: 58px; --size: calc(var(--ground-unit) * .88); --angle: -14deg; }
+  .ground-petal--eleven { display: block; left: 73%; bottom: 100px; --size: calc(var(--ground-unit) * .62); --angle: 16deg; }
   .petal--one { left: 29%; top: 30%; }
   .petal--two { left: 27%; top: 52%; --size: calc(var(--petal-unit) * .88); }
   .petal--four { left: 91%; top: 51%; }
