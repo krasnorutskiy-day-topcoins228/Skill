@@ -281,10 +281,18 @@ test('the logo is proportionally smaller and every section keeps a larger label'
 });
 
 test('the supplied result and its evidence gallery are present', () => {
-  assert.match(html, /10(?:\s|&nbsp;|&#160;)*000/);
-  assert.match(html, /один месяц/i);
+  assert.match(html, /3(?:\s|&nbsp;|&#160;)*000/);
+  assert.match(html, /с нуля/i);
+  assert.match(html, /два месяца/i);
   assert.match(html, /metric--feature/);
   assert.match(html, /evidence__gallery/);
+  assert.match(html, /Выращено с нуля/, 'The evidence heading tells the from-scratch story');
+  assert.doesNotMatch(html, /Место для/, 'No leftover screenshot placeholders');
+  assert.equal((html.match(/assets\/account-0\d\.jpg/g) || []).length, 3, 'Three real screenshots in the gallery');
+  for (const asset of ['account-01.jpg', 'account-02.jpg', 'account-03.jpg']) {
+    assert.ok(existsSync(`assets/${asset}`), `Missing screenshot: ${asset}`);
+  }
+  assert.match(css, /\.evidence-card__screen img\s*\{[^}]*width:\s*100%/, 'Screenshots fill their cards without cropping');
 });
 
 test('both project categories open to show the requested case fields', () => {
@@ -663,12 +671,11 @@ test('light-blue surfaces use stronger, readable burgundy text', () => {
     assert.match(rule(selector), /color:\s*var\(--ice\)/);
     assert.match(rule(selector), /font-weight:\s*400/);
   }
-  for (const selector of ['.metric__pending', '.evidence-card__placeholder', '.evidence__hint']) {
+  for (const selector of ['.metric__pending', '.evidence__hint']) {
     assert.doesNotMatch(rule(selector), /opacity:\s*(?:0?\.\d+)/, `${selector} must not fade text`);
   }
   assert.match(rule('.project-card--light .project-card__details dd'), /opacity:\s*1/);
   assert.match(rule('.metric__pending'), /font-size:\s*18px/);
-  assert.match(rule('.evidence-card__placeholder'), /font-size:\s*20px/);
   assert.match(rule('.evidence__hint'), /font-size:\s*18px/);
 });
 
