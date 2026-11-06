@@ -59,7 +59,7 @@
   --line-on-wine: rgba(199, 229, 255, .28);
   --line-on-ice: rgba(101, 14, 39, .24);
   --page-gutter: 20px;
-  --header-offset: 92px;
+  --header-offset: 98px;
   --font-body: "Onest", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   --font-display: var(--font-body);
   --font-accent: "Cormorant Garamond", Georgia, "Times New Roman", serif;
@@ -129,16 +129,16 @@ h1, h2, h3, .project-card__title { font-family: var(--font-display); }
 .site-nav__extras { display: none; }
 .site-menu-toggle {
   position: relative; z-index: 4; display: grid; place-items: center; flex: 0 0 auto;
-  width: 52px; height: 52px; padding: 0; border: 0; background: transparent; color: var(--ice);
+  width: 60px; height: 60px; padding: 0; border: 0; background: transparent; color: var(--ice);
 }
-.site-menu-toggle__icon { position: relative; display: block; width: 28px; height: 20px; }
-.site-menu-toggle__icon i { position: absolute; left: 0; display: block; width: 100%; height: 2.5px; border-radius: 999px; background: currentColor; transition: transform .28s ease, opacity .2s ease; }
+.site-menu-toggle__icon { position: relative; display: block; width: 34px; height: 24px; }
+.site-menu-toggle__icon i { position: absolute; left: 0; display: block; width: 100%; height: 3px; border-radius: 999px; background: currentColor; transition: transform .28s ease, opacity .2s ease; }
 .site-menu-toggle__icon i:first-child { top: 0; }
-.site-menu-toggle__icon i:nth-child(2) { top: 8.75px; }
-.site-menu-toggle__icon i:last-child { top: 17.5px; }
-.site-menu-toggle[aria-expanded="true"] .site-menu-toggle__icon i:first-child { transform: translateY(8.75px) rotate(45deg); }
+.site-menu-toggle__icon i:nth-child(2) { top: 10.5px; }
+.site-menu-toggle__icon i:last-child { top: 21px; }
+.site-menu-toggle[aria-expanded="true"] .site-menu-toggle__icon i:first-child { transform: translateY(10.5px) rotate(45deg); }
 .site-menu-toggle[aria-expanded="true"] .site-menu-toggle__icon i:nth-child(2) { opacity: 0; }
-.site-menu-toggle[aria-expanded="true"] .site-menu-toggle__icon i:last-child { transform: translateY(-8.75px) rotate(-45deg); }
+.site-menu-toggle[aria-expanded="true"] .site-menu-toggle__icon i:last-child { transform: translateY(-10.5px) rotate(-45deg); }
 .site-menu-toggle[hidden], .site-nav[hidden] { display: none !important; }
 html.menu-is-open, html.menu-is-open body { overflow: hidden; }
 .site-header.is-menu-open { position: fixed; }
@@ -453,6 +453,38 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 }
 .footer__meta { position: relative; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line-on-wine); font-size: 15px; }
 .footer__meta p { margin: 0; }
+
+/* Phones: calmer type and a tighter rhythm, so the page scrolls less.
+   The hero keeps its sizes; tablets and up are untouched. */
+@media (max-width: 599px) {
+  body { font-size: 18px; }
+  .section { padding-block: 62px; }
+  main { --vine-space: 116px; }
+  .section-heading__copy { font-size: 18px; }
+  .about__copy { gap: 16px; font-size: 19px; }
+  .metric__caption { font-size: 18px; }
+  .evidence__heading > p { font-size: 18px; }
+  .evidence__note { padding: 22px 24px; font-size: 18px; }
+  .project-card__description { font-size: 18px; }
+  .project-card__details { font-size: 18px; }
+  .services__related { font-size: 18px; }
+  .tariff-card__details { font-size: 18px; }
+  .tariff-card__description { font-size: 18px; }
+  .services__extra-copy { font-size: 18px; }
+  .personal__rate { font-size: 18px; }
+  .personal__intro { font-size: 18px; }
+  .personal__intro h3 { font-size: 22px; }
+  .personal-feature summary { min-height: 64px; padding-block: 14px; font-size: 19px; }
+  .personal-feature__content { padding-bottom: 20px; font-size: 18px; }
+  .personal__format-copy { font-size: 18px; }
+  .personal__offer { font-size: 18px; }
+  .why__intro-copy { font-size: 18px; }
+  .why__item h4 { font-size: 21px; }
+  .why__item p { font-size: 18px; }
+  .why__list { gap: 22px; }
+  .contact__copy { font-size: 18px; }
+  .contact__copy h3 { font-size: 21px; }
+}
 
 /* Only elements below the initial viewport are enhanced by JavaScript.
    Without motion support, JavaScript, or IntersectionObserver, everything stays visible. */
@@ -787,7 +819,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 }
 
 @media (max-width: 1100px) and (max-height: 500px) {
-  :root { --header-offset: 78px; }
+  :root { --header-offset: 84px; }
   .has-menu .site-header__inner { padding-top: 10px; padding-bottom: 10px; }
 }
 

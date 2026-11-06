@@ -717,6 +717,21 @@ test('light-blue surfaces use stronger, readable burgundy text', () => {
   assert.match(rule('.evidence__hint'), /font-size:\s*18px/);
 });
 
+test('phones read lighter and scroll less', () => {
+  const phone = [...css.matchAll(/@media\s*\(max-width:\s*599px\)\s*\{([\s\S]*?)\n\}/g)]
+    .map(([, body]) => body)
+    .find((body) => /body\s*\{/.test(body));
+  assert.ok(phone, 'The compact phone styles are missing');
+  assert.match(phone, /body\s*\{[^}]*font-size:\s*18px/, 'Phone body text steps down');
+  assert.match(phone, /\.about__copy\s*\{[^}]*font-size:\s*19px/, 'The five about paragraphs shrink together');
+  assert.match(phone, /\.contact__copy\s*\{[^}]*font-size:\s*18px/);
+  assert.doesNotMatch(phone, /hero__description|hero__role/, 'The hero keeps its sizes');
+  assert.match(phone, /\.section\s*\{[^}]*padding-block:\s*62px/, 'Sections breathe tighter');
+  assert.match(phone, /main\s*\{[^}]*--vine-space:\s*116px/, 'The hedge reserves less room');
+  assert.match(css, /\.site-menu-toggle\s*\{[^}]*width:\s*60px/, 'The burger button grows');
+  assert.match(css, /\.site-menu-toggle__icon\s*\{[^}]*width:\s*34px/, 'The three bars grow with it');
+});
+
 test('a lush flowering hedge softens section boundaries without covering the hero/about transition', () => {
   const sections = [...html.matchAll(/<section\b[^>]*id="([^"]+)"/g)].map(([, id]) => id);
   assert.deepEqual(sections, ['top', 'about', 'results', 'projects', 'services', 'personal-brand', 'why-smm', 'contact']);
