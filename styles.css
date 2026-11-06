@@ -695,7 +695,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 
 /* Once there is room to spare, the capsule keeps a breath of air away from the right edge. */
 @media (min-width: 1101px) {
-  .site-nav { margin-right: clamp(20px, 2vw, 36px); }
+  .site-nav { margin-right: clamp(40px, 4vw, 72px); }
 }
 
 /* Keep the long role legible against the cloche and petals at intermediate widths. */

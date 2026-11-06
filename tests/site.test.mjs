@@ -113,7 +113,7 @@ test('navigation is a modern segmented control with a gliding light thumb', () =
   assert.match(wide, /\.site-header__inner\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\b/, 'Wide-screen capsule hugs the right edge');
   assert.match(wide, /\.site-nav\s*\{[^}]*grid-column:\s*2/);
   assert.match(wide, /\.site-nav\s+\.glass-pill\s*\{[^}]*font-size:\s*19px/, 'Wide-screen labels grow with the capsule');
-  assert.match(css, /@media\s*\(min-width:\s*1101px\)\s*\{[^}]*\.site-nav\s*\{[^}]*margin-right:\s*clamp\(20px,\s*2vw,\s*36px\)/, 'The capsule keeps a breath of air from the right edge');
+  assert.match(css, /@media\s*\(min-width:\s*1101px\)\s*\{[^}]*\.site-nav\s*\{[^}]*margin-right:\s*clamp\(40px,\s*4vw,\s*72px\)/, 'The capsule keeps a breath of air from the right edge');
 });
 
 test('the gliding thumb follows the section in view without extra ornaments', () => {
