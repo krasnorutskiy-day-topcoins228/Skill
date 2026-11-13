@@ -33,6 +33,7 @@ test('about copy keeps every paragraph at the introduction size without the expe
   assert.match(copy, /<strong>Елизавета Кравец\.<\/strong>/);
   assert.match(copy, /<p class="about__statement">/);
   assert.match(css, /\.about__copy\s*\{[^}]*font-size:\s*23px/);
+  assert.match(css, /\.about__copy\s*\{[^}]*gap:\s*12px/, 'The about paragraphs sit close together');
   assert.match(css, /--text-on-wine:\s*#eaf4ff/, 'Wine surfaces get a brighter ink for readability');
   assert.match(css, /\.section--wine\s*\{[^}]*color:\s*var\(--text-on-wine\)/, 'Wine sections use the brighter ink');
   assert.match(css, /\.about__lead\s*\{[^}]*font-size:\s*inherit/);
@@ -758,6 +759,7 @@ test('phones read lighter and scroll less', () => {
   assert.ok(phone, 'The compact phone styles are missing');
   assert.match(phone, /body\s*\{[^}]*font-size:\s*18px/, 'Phone body text steps down');
   assert.match(phone, /\.about__copy\s*\{[^}]*font-size:\s*19px/, 'The about paragraphs shrink together on phones');
+  assert.match(phone, /\.about__copy\s*\{[^}]*gap:\s*11px/, 'The about paragraphs tighten on phones');
   assert.match(phone, /\.about__extra\s*\{[^}]*display:\s*none/, 'The two extra paragraphs stay off phones');
   assert.match(phone, /\.contact__copy\s*\{[^}]*font-size:\s*18px/);
   assert.doesNotMatch(phone, /hero__description|hero__role/, 'The hero keeps its sizes');
