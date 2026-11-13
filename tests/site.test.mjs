@@ -53,10 +53,13 @@ test('about copy keeps every paragraph at the introduction size without the expe
   assert.match(css, /\.about__photo--offset\s*\{[^}]*margin-top:\s*18px/, 'On phones the second photo drops just a touch');
   assert.match(css, /\.about__photo img\s*\{[^}]*border-radius:\s*20px/);
   assert.match(tabletRules, /\.about__photos\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\)/, 'From tablets the photos stack into the diagonal cascade');
+  assert.match(tabletRules, /\.about__photos\s*\{[^}]*margin-top:\s*12px/, 'The cascade hugs the heading instead of adding a big gap');
+  assert.match(tabletRules, /\.about__photos\s*\{[^}]*gap:\s*16px/, 'Cascade photos sit close together');
   assert.match(tabletRules, /\.about__photo\s*\{[^}]*width:\s*60%/, 'In the cascade the first photo keeps left');
   assert.match(tabletRules, /\.about__photo--offset\s*\{[^}]*justify-self:\s*end/, 'In the cascade the second photo swings right');
   assert.doesNotMatch(tabletRules, /\.about__copy\s*\{[^}]*gap/, 'Tablets keep the original rhythm');
   assert.doesNotMatch(desktopRules, /\.about__copy\s*\{[^}]*line-height/, 'Desktop keeps the original line height');
+  assert.match(desktopRules, /\.about__photos\s*\{[^}]*margin-top:\s*12px/, 'Desktop photos hug the heading too');
 });
 
 test('the requested decorative captions are absent while the introduction remains', () => {
