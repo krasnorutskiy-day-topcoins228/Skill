@@ -753,6 +753,11 @@ test('phones read lighter and scroll less', () => {
   assert.match(phone, /\.section\s*\{[^}]*padding-block:\s*62px/, 'Sections breathe tighter');
   assert.match(phone, /main\s*\{[^}]*--vine-space:\s*116px/, 'The hedge reserves less room');
   assert.match(css, /\.site-menu-toggle\s*\{[^}]*width:\s*60px/, 'The burger button grows');
+  assert.match(phone, /\.footer__inner\s*\{[^}]*flex-direction:\s*column/, 'The phone footer stacks in a column');
+  assert.match(phone, /\.footer__main\s*\{[^}]*align-self:\s*center/, 'The footer logo block sits in the middle');
+  assert.match(phone, /\.footer__top\s*\{[^}]*align-self:\s*center/, 'The back-to-top button centres too');
+  assert.match(phone, /\.tariff-card\s*\{[^}]*padding:\s*18px/, 'Tariff cards tighten up on phones');
+  assert.match(phone, /\.tariff-card__price\s*\{[^}]*font-size:\s*28px/, 'The tariff price shrinks on phones');
   assert.match(css, /\.site-menu-toggle__icon\s*\{[^}]*width:\s*34px/, 'The three bars grow with it');
   assert.match(phone, /\.evidence-card:nth-child\(-n\+3\)\s*\{[^}]*flex-basis:\s*max\(96%,\s*260px\)/, 'The first three landscape screens read larger');
 });

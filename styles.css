@@ -492,8 +492,14 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .project-card__description { font-size: 18px; }
   .project-card__details { font-size: 18px; }
   .services__related { font-size: 18px; }
-  .tariff-card__details { font-size: 18px; }
-  .tariff-card__description { font-size: 18px; }
+  .tariffs { gap: 10px; }
+  .tariff-card { padding: 18px; border-radius: 17px; }
+  .tariff-card__name { font-size: 18px; }
+  .tariff-card__price { margin-top: 10px; font-size: 28px; }
+  .tariff-card__volume { margin-top: 14px; font-size: 21px; }
+  .tariff-card__details { margin-top: 8px; font-size: 18px; }
+  .tariff-card__description { margin-top: 12px; font-size: 18px; }
+  .tariff-card__package { margin-top: 14px; padding: 5px 11px; font-size: 16px; }
   .services__extra-copy { font-size: 18px; }
   .personal__rate { font-size: 18px; }
   .personal__intro { font-size: 18px; }
@@ -509,6 +515,10 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .contact__copy { font-size: 18px; }
   .contact__copy h3 { font-size: 21px; }
   .evidence-card:nth-child(-n+3) { flex-basis: max(96%, 260px); }
+  /* The phone footer stacks: the logo block and the back-to-top button move to the middle. */
+  .footer__inner { flex-direction: column; }
+  .footer__main { max-width: none; align-self: center; text-align: center; }
+  .footer__top { align-self: center; }
 }
 
 /* An Instagram-style fan toast plays in the corner while the cooperation
