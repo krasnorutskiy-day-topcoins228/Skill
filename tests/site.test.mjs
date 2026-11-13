@@ -42,6 +42,16 @@ test('about copy keeps every paragraph at the introduction size without the expe
   assert.ok(tabletRules && desktopRules, 'Responsive about styles are missing');
   assert.match(tabletRules, /\.about__copy\s*\{[^}]*font-size:\s*24px/);
   assert.match(desktopRules, /\.about__copy\s*\{[^}]*font-size:\s*25px/);
+  const photos = about.match(/<div class="about__photos">([\s\S]*?)<\/div>/)?.[1];
+  assert.ok(photos, 'The about photos block is missing');
+  assert.equal((photos.match(/<figure class="about__photo/g) || []).length, 2, 'Two photos accompany the heading');
+  assert.match(photos, /assets\/about-photo-01\.jpg/);
+  assert.match(photos, /assets\/about-photo-02\.jpg/);
+  assert.match(photos, /loading="lazy"/);
+  assert.match(css, /\.about__photos\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1\.2fr\) minmax\(0, 1fr\)/, 'The collage pairs a larger photo with a narrower one');
+  assert.match(css, /\.about__photo img\s*\{[^}]*border-radius:\s*20px/);
+  assert.match(css, /\.about__photo--offset\s*\{[^}]*margin-top:\s*18px/, 'The second photo drops lower on phones');
+  assert.match(tabletRules, /\.about__photo--offset\s*\{[^}]*margin-top:\s*46px/, 'The stagger deepens on tablets and up');
 });
 
 test('the requested decorative captions are absent while the introduction remains', () => {
