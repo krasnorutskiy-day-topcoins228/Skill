@@ -762,7 +762,7 @@ test('phones read lighter and scroll less', () => {
   assert.ok(phone, 'The compact phone styles are missing');
   assert.match(phone, /body\s*\{[^}]*font-size:\s*18px/, 'Phone body text steps down');
   assert.match(phone, /\.about__copy\s*\{[^}]*font-size:\s*19px/, 'The about paragraphs shrink together on phones');
-  assert.match(phone, /\.about__copy\s*\{[^}]*gap:\s*8px/, 'The about paragraphs tighten on phones');
+  assert.match(phone, /\.about__copy\s*\{[^}]*gap:\s*12px/, 'Phone paragraphs keep a little air');
   assert.match(phone, /\.about__extra\s*\{[^}]*display:\s*none/, 'The two extra paragraphs stay off phones');
   assert.match(phone, /\.contact__copy\s*\{[^}]*font-size:\s*18px/);
   assert.doesNotMatch(phone, /hero__description|hero__role/, 'The hero keeps its sizes');
