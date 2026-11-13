@@ -48,10 +48,11 @@ test('about copy keeps every paragraph at the introduction size without the expe
   assert.match(photos, /assets\/about-photo-01\.jpg/);
   assert.match(photos, /assets\/about-photo-02\.jpg/);
   assert.match(photos, /loading="lazy"/);
-  assert.match(css, /\.about__photos\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1\.2fr\) minmax\(0, 1fr\)/, 'The collage pairs a larger photo with a narrower one');
+  assert.match(css, /\.about__photos\s*\{[^}]*gap:\s*26px/, 'The photos stack with air between them');
+  assert.match(css, /\.about__photo\s*\{[^}]*width:\s*60%/, 'The first photo keeps to the left of the column');
+  assert.match(css, /\.about__photo--offset\s*\{[^}]*justify-self:\s*end/, 'The second photo swings to the right edge');
   assert.match(css, /\.about__photo img\s*\{[^}]*border-radius:\s*20px/);
-  assert.match(css, /\.about__photo--offset\s*\{[^}]*margin-top:\s*18px/, 'The second photo drops lower on phones');
-  assert.match(tabletRules, /\.about__photo--offset\s*\{[^}]*margin-top:\s*46px/, 'The stagger deepens on tablets and up');
+  assert.match(tabletRules, /\.about__photos\s*\{[^}]*gap:\s*40px/, 'The cascade breathes wider on tablets and up');
 });
 
 test('the requested decorative captions are absent while the introduction remains', () => {
