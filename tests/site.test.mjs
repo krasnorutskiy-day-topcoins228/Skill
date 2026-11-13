@@ -496,6 +496,7 @@ test('contact section uses the supplied text and real contact links', () => {
   assert.deepEqual([...channels.matchAll(/<dt>([\s\S]*?)<\/dt>\s*<dd><a href="([^"]+)">([\s\S]*?)<\/a><\/dd>/g)]
     .map(([, name, href, value]) => [text(name), href, text(value)]), [
     ['Telegram', 'https://t.me/lizzieamo', '@lizzieamo'],
+    ['WhatsApp', 'https://wa.me/79697007993', '+7 (969) 700-79-93'],
     ['Телефон', 'tel:+79697007993', '+7 (969) 700-79-93'],
     ['Почта', 'mailto:unicorn.lyyy@gmail.com', 'unicorn.lyyy@gmail.com'],
   ]);
@@ -504,7 +505,7 @@ test('contact section uses the supplied text and real contact links', () => {
   assert.match(css, /\.contact__channels a\s*\{[^}]*min-height:\s*44px/);
   assert.match(css, /\.contact__channels a\s*\{[^}]*text-decoration:\s*underline/);
   assert.match(css, /\.contact__cta\s*\{[^}]*background:\s*var\(--wine\)/);
-  assert.equal((section.match(/class="contact__icon"/g) || []).length, 3, 'Every channel carries a line icon');
+  assert.equal((section.match(/class="contact__icon"/g) || []).length, 4, 'Every channel carries a line icon');
   assert.match(css, /\.contact__icon\s*\{[^}]*background:\s*var\(--wine\)/, 'The icons sit in wine badges');
   assert.match(css, /\.contact__icon svg\s*\{[^}]*stroke:\s*currentColor/, 'The icons are stroked, not filled');
   assert.doesNotMatch(css, /\.personal__rate strong\s*\{[^}]*font-size/, 'The rate line keeps one even size');
