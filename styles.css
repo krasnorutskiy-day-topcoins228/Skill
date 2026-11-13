@@ -779,8 +779,9 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .section-heading__copy { font-size: 21px; }
   .about__grid { grid-template-columns: minmax(0, .95fr) minmax(0, 1fr); gap: 80px; }
   .about__photos { margin-top: 48px; }
-  .about__copy { padding-top: 42px; font-size: 25px; gap: 4px; }
-  .about__statement { margin-top: 10px; }
+  .about__copy { padding-top: 42px; font-size: 25px; gap: 4px; line-height: 1.5; }
+  .about__lead { line-height: 1.5; }
+  .about__statement { margin-top: 10px; line-height: 1.5; }
   .results__heading { margin-bottom: 54px; }
   .metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .metric { min-height: 250px; padding: 25px; }

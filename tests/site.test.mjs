@@ -57,6 +57,8 @@ test('about copy keeps every paragraph at the introduction size without the expe
   assert.match(tabletRules, /\.about__photo--offset\s*\{[^}]*justify-self:\s*end/, 'In the cascade the second photo swings right');
   assert.match(tabletRules, /\.about__copy\s*\{[^}]*gap:\s*6px/, 'Tablet paragraphs tighten');
   assert.match(desktopRules, /\.about__copy\s*\{[^}]*gap:\s*4px/, 'Desktop paragraphs sit tight');
+  assert.match(desktopRules, /\.about__copy\s*\{[^}]*line-height:\s*1\.5/, 'Desktop lines tighten up');
+  assert.match(desktopRules, /\.about__lead\s*\{[^}]*line-height:\s*1\.5/, 'The lead paragraph matches the tighter rhythm');
 });
 
 test('the requested decorative captions are absent while the introduction remains', () => {
