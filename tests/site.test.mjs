@@ -291,6 +291,10 @@ test('the supplied result and its evidence gallery are present', () => {
   assert.match(html, /с нуля/i);
   assert.match(html, /два месяца/i);
   assert.match(html, /metric--feature/);
+  assert.match(html, /2(?:\s|&nbsp;|&#160;)*900(?:\s|&nbsp;|&#160;)*000/, 'The Reels views figure is stated');
+  assert.match(html, /1(?:\s|&nbsp;|&#160;)*500(?:\s|&nbsp;|&#160;)*000/, 'The total reach figure is stated');
+  assert.doesNotMatch(html, /ХХХ/, 'No placeholder figures remain');
+  assert.doesNotMatch(html, /ЭФФЕКТИВНОСТЬ|Другой результат проекта/, 'The generic efficiency metric stays retired');
   assert.match(html, /evidence__gallery/);
   assert.match(html, /Выращено\s*<em>с нуля<\/em>/, 'The evidence heading tells the from-scratch story with an italic accent');
   assert.match(html, /первый Reels/i, 'The first-Reels story is told');
