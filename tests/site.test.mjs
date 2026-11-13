@@ -758,6 +758,8 @@ test('phones read lighter and scroll less', () => {
   assert.match(phone, /\.footer__top\s*\{[^}]*align-self:\s*center/, 'The back-to-top button centres too');
   assert.match(phone, /\.tariff-card\s*\{[^}]*padding:\s*18px/, 'Tariff cards tighten up on phones');
   assert.match(phone, /\.tariff-card__price\s*\{[^}]*font-size:\s*28px/, 'The tariff price shrinks on phones');
+  assert.match(phone, /\.contact__channels > div\s*\{[^}]*flex-direction:\s*column/, 'Channel cards stack their lines on phones');
+  assert.match(phone, /\.contact__channels dd\s*\{[^}]*margin:\s*0 0 0 59px/, 'The value lines up under the channel name');
   assert.match(css, /\.site-menu-toggle__icon\s*\{[^}]*width:\s*34px/, 'The three bars grow with it');
   assert.match(phone, /\.evidence-card:nth-child\(-n\+3\)\s*\{[^}]*flex-basis:\s*max\(96%,\s*260px\)/, 'The first three landscape screens read larger');
 });

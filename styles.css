@@ -514,6 +514,9 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .why__list { gap: 22px; }
   .contact__copy { font-size: 18px; }
   .contact__copy h3 { font-size: 21px; }
+  /* Channel cards read as two tidy lines: the name first, the value right under it. */
+  .contact__channels > div { flex-direction: column; align-items: flex-start; gap: 4px 16px; }
+  .contact__channels dd { margin: 0 0 0 59px; }
   .evidence-card:nth-child(-n+3) { flex-basis: max(96%, 260px); }
   /* The phone footer stacks: the logo block and the back-to-top button move to the middle. */
   .footer__inner { flex-direction: column; }
