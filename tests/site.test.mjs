@@ -33,7 +33,7 @@ test('about copy keeps every paragraph at the introduction size without the expe
   assert.match(copy, /<strong>Елизавета Кравец\.<\/strong>/);
   assert.match(copy, /<p class="about__statement">/);
   assert.match(css, /\.about__copy\s*\{[^}]*font-size:\s*23px/);
-  assert.match(css, /\.about__copy\s*\{[^}]*gap:\s*8px/, 'The about paragraphs sit close together');
+  assert.match(css, /\.about__copy\s*\{[^}]*gap:\s*19px/, 'The about text keeps its original paragraph rhythm');
   assert.match(css, /--text-on-wine:\s*#eaf4ff/, 'Wine surfaces get a brighter ink for readability');
   assert.match(css, /\.section--wine\s*\{[^}]*color:\s*var\(--text-on-wine\)/, 'Wine sections use the brighter ink');
   assert.match(css, /\.about__lead\s*\{[^}]*font-size:\s*inherit/);
@@ -55,10 +55,8 @@ test('about copy keeps every paragraph at the introduction size without the expe
   assert.match(tabletRules, /\.about__photos\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\)/, 'From tablets the photos stack into the diagonal cascade');
   assert.match(tabletRules, /\.about__photo\s*\{[^}]*width:\s*60%/, 'In the cascade the first photo keeps left');
   assert.match(tabletRules, /\.about__photo--offset\s*\{[^}]*justify-self:\s*end/, 'In the cascade the second photo swings right');
-  assert.match(tabletRules, /\.about__copy\s*\{[^}]*gap:\s*6px/, 'Tablet paragraphs tighten');
-  assert.match(desktopRules, /\.about__copy\s*\{[^}]*gap:\s*4px/, 'Desktop paragraphs sit tight');
-  assert.match(desktopRules, /\.about__copy\s*\{[^}]*line-height:\s*1\.5/, 'Desktop lines tighten up');
-  assert.match(desktopRules, /\.about__lead\s*\{[^}]*line-height:\s*1\.5/, 'The lead paragraph matches the tighter rhythm');
+  assert.doesNotMatch(tabletRules, /\.about__copy\s*\{[^}]*gap/, 'Tablets keep the original rhythm');
+  assert.doesNotMatch(desktopRules, /\.about__copy\s*\{[^}]*line-height/, 'Desktop keeps the original line height');
 });
 
 test('the requested decorative captions are absent while the introduction remains', () => {
@@ -764,7 +762,7 @@ test('phones read lighter and scroll less', () => {
   assert.ok(phone, 'The compact phone styles are missing');
   assert.match(phone, /body\s*\{[^}]*font-size:\s*18px/, 'Phone body text steps down');
   assert.match(phone, /\.about__copy\s*\{[^}]*font-size:\s*19px/, 'The about paragraphs shrink together on phones');
-  assert.match(phone, /\.about__copy\s*\{[^}]*gap:\s*12px/, 'Phone paragraphs keep a little air');
+  assert.match(phone, /\.about__copy\s*\{[^}]*gap:\s*16px/, 'Phone text keeps its original rhythm');
   assert.match(phone, /\.about__extra\s*\{[^}]*display:\s*none/, 'The two extra paragraphs stay off phones');
   assert.match(phone, /\.contact__copy\s*\{[^}]*font-size:\s*18px/);
   assert.doesNotMatch(phone, /hero__description|hero__role/, 'The hero keeps its sizes');
