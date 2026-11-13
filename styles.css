@@ -244,13 +244,12 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 .about__lead { color: var(--text-on-wine); font-size: inherit; line-height: 1.65; }
 .about__lead strong { font-weight: 700; }
 .about__statement { margin-top: 4px; padding-left: 18px; border-left: 2px solid var(--ice); color: var(--text-on-wine); font-size: inherit; font-weight: 600; line-height: 1.7; }
-/* Two personal photos step diagonally down the column, as in the user's reference:
-   the first hugs the top-left corner, the second drops below and swings to the
-   right edge, so the dark wine breathes in the top-right and bottom-left. */
-.about__photos { display: grid; gap: 26px; margin: 34px 0 0; }
-.about__photo { margin: 0; width: 60%; }
+/* Two personal photos pair up under the heading on phones; from tablets up they
+   step diagonally down the column, as in the user's reference. */
+.about__photos { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px 18px; align-items: start; margin: 34px 0 0; }
+.about__photo { margin: 0; }
 .about__photo img { display: block; width: 100%; height: auto; border-radius: 20px; border: 1px solid var(--line-on-wine); box-shadow: 0 16px 36px rgba(25, 0, 9, .26); }
-.about__photo--offset { width: 62%; justify-self: end; }
+.about__photo--offset { margin-top: 18px; }
 @media (hover: hover) {
   .about__photo { transition: transform .2s ease; }
   .about__photo:hover { transform: translateY(-3px); }
@@ -725,8 +724,10 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
     opacity: .45;
   }
   .section { padding-block: 104px; }
-  .about__copy { font-size: 24px; }
-  .about__photos { margin-top: 42px; gap: 40px; }
+  .about__copy { font-size: 24px; gap: 6px; }
+  .about__photos { margin-top: 42px; grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .about__photo { width: 60%; }
+  .about__photo--offset { margin-top: 0; width: 62%; justify-self: end; }
   .metrics { gap: 12px; }
   .metric { min-height: 220px; padding: 22px; }
   .metric--feature { min-height: 245px; padding: 27px; }
@@ -778,7 +779,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .section-heading__copy { font-size: 21px; }
   .about__grid { grid-template-columns: minmax(0, .95fr) minmax(0, 1fr); gap: 80px; }
   .about__photos { margin-top: 48px; }
-  .about__copy { padding-top: 42px; font-size: 25px; }
+  .about__copy { padding-top: 42px; font-size: 25px; gap: 4px; }
   .about__statement { margin-top: 10px; }
   .results__heading { margin-bottom: 54px; }
   .metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }

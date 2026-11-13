@@ -49,11 +49,14 @@ test('about copy keeps every paragraph at the introduction size without the expe
   assert.match(photos, /assets\/about-photo-01\.jpg/);
   assert.match(photos, /assets\/about-photo-02\.jpg/);
   assert.match(photos, /loading="lazy"/);
-  assert.match(css, /\.about__photos\s*\{[^}]*gap:\s*26px/, 'The photos stack with air between them');
-  assert.match(css, /\.about__photo\s*\{[^}]*width:\s*60%/, 'The first photo keeps to the left of the column');
-  assert.match(css, /\.about__photo--offset\s*\{[^}]*justify-self:\s*end/, 'The second photo swings to the right edge');
+  assert.match(css, /\.about__photos\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1\.2fr\) minmax\(0, 1fr\)/, 'On phones the photos pair up side by side');
+  assert.match(css, /\.about__photo--offset\s*\{[^}]*margin-top:\s*18px/, 'On phones the second photo drops just a touch');
   assert.match(css, /\.about__photo img\s*\{[^}]*border-radius:\s*20px/);
-  assert.match(tabletRules, /\.about__photos\s*\{[^}]*gap:\s*40px/, 'The cascade breathes wider on tablets and up');
+  assert.match(tabletRules, /\.about__photos\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\)/, 'From tablets the photos stack into the diagonal cascade');
+  assert.match(tabletRules, /\.about__photo\s*\{[^}]*width:\s*60%/, 'In the cascade the first photo keeps left');
+  assert.match(tabletRules, /\.about__photo--offset\s*\{[^}]*justify-self:\s*end/, 'In the cascade the second photo swings right');
+  assert.match(tabletRules, /\.about__copy\s*\{[^}]*gap:\s*6px/, 'Tablet paragraphs tighten');
+  assert.match(desktopRules, /\.about__copy\s*\{[^}]*gap:\s*4px/, 'Desktop paragraphs sit tight');
 });
 
 test('the requested decorative captions are absent while the introduction remains', () => {
