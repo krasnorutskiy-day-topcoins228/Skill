@@ -33,6 +33,8 @@ test('about copy keeps every paragraph at the introduction size without the expe
   assert.match(copy, /<strong>Елизавета Кравец\.<\/strong>/);
   assert.match(copy, /<p class="about__statement">/);
   assert.match(css, /\.about__copy\s*\{[^}]*font-size:\s*23px/);
+  assert.match(css, /--text-on-wine:\s*#eaf4ff/, 'Wine surfaces get a brighter ink for readability');
+  assert.match(css, /\.section--wine\s*\{[^}]*color:\s*var\(--text-on-wine\)/, 'Wine sections use the brighter ink');
   assert.match(css, /\.about__lead\s*\{[^}]*font-size:\s*inherit/);
   assert.match(css, /\.about__statement\s*\{[^}]*font-size:\s*inherit/);
   const tabletRules = css.match(/@media\s*\(min-width:\s*600px\)\s*\{([\s\S]*?)\n\}/)?.[1];
@@ -711,9 +713,13 @@ test('light-blue surfaces use stronger, readable burgundy text', () => {
   assert.match(rule('.button--ice'), /color:\s*var\(--ink-on-ice\)/);
   for (const selector of ['.metric--feature', '.personal__format']) {
     assert.match(rule(selector), /background:\s*var\(--wine\)/);
-    assert.match(rule(selector), /color:\s*var\(--ice\)/);
+    assert.match(rule(selector), /color:\s*var\(--text-on-wine\)/);
     assert.match(rule(selector), /font-weight:\s*400/);
   }
+  const textOnWine = css.match(/--text-on-wine:\s*(#[\da-f]{6})\b/i)?.[1];
+  assert.ok(textOnWine, 'Missing the wine-surface ink token');
+  assert.ok(contrast(textOnWine, wine) >= 8.5, 'Wine-surface text should stay crisp');
+  assert.ok(contrast(textOnWine, wine) > contrast(ice, wine), 'The wine ink reads brighter than the pastel ice');
   assert.doesNotMatch(rule('.evidence__hint'), /opacity:\s*(?:0?\.\d+)/, 'The hint must not fade text');
   assert.match(rule('.project-card--light .project-card__details dd'), /opacity:\s*1/);
   assert.match(rule('.evidence__hint'), /font-size:\s*18px/);
@@ -730,6 +736,7 @@ test('project cards open one at a time and glide', () => {
   assert.match(js, /prefers-reduced-motion/, 'The glide respects reduced motion');
   assert.match(css, /@media\s*\(hover:\s*hover\)\s*\{[\s\S]*?\.project-card:hover\s*\{[^}]*translateY\(-3px\)/, 'Cards lift on hover');
   assert.match(css, /\.project-card__toggle\s*\{[^}]*linear-gradient\(/, 'The plus button sits on glass');
+  assert.doesNotMatch(css, /\n\s*\.project-card__details dd\s*\{[^}]*opacity/, 'The case values read at full strength');
 });
 
 test('phones read lighter and scroll less', () => {
