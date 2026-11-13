@@ -483,6 +483,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   main { --vine-space: 116px; }
   .section-heading__copy { font-size: 18px; }
   .about__copy { gap: 16px; font-size: 19px; }
+  .about__extra { display: none; }
   .metric__caption { font-size: 18px; }
   .evidence__heading > p { font-size: 18px; }
   .evidence__note { padding: 22px 24px; font-size: 18px; }

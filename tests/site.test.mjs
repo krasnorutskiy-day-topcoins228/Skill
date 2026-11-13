@@ -25,6 +25,8 @@ test('about copy keeps every paragraph at the introduction size without the expe
     .map(([, content]) => content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim());
   assert.deepEqual(paragraphs, [
     'Меня зовут Елизавета Кравец. Я работаю в сфере SMM и digital-маркетинга с 2019 года.',
+    'За это время успела поработать с проектами на российском и зарубежном рынках, сотрудничать с digital-агентствами, развивать собственные проекты и выстраивать работу собственной команды.',
+    'За 7 лет в профессии я прошла путь от создания контента до комплексного управления SMM-проектами. Постоянно слежу за изменениями digital-среды, изучаю новые инструменты продвижения и адаптирую стратегии под современные алгоритмы социальных сетей.',
     'В своей работе объединяю аналитику, стратегическое планирование, креатив и создание контента. Для меня SMM — это не просто регулярные публикации, а системная работа над узнаваемостью бренда, развитием аудитории и достижением бизнес-целей.',
     'Помогаю бизнесу и личным брендам развиваться в социальных сетях: от разработки SMM-стратегии до реализации контента и анализа результатов.',
   ]);
@@ -737,7 +739,8 @@ test('phones read lighter and scroll less', () => {
     .find((body) => /body\s*\{/.test(body));
   assert.ok(phone, 'The compact phone styles are missing');
   assert.match(phone, /body\s*\{[^}]*font-size:\s*18px/, 'Phone body text steps down');
-  assert.match(phone, /\.about__copy\s*\{[^}]*font-size:\s*19px/, 'The three about paragraphs shrink together');
+  assert.match(phone, /\.about__copy\s*\{[^}]*font-size:\s*19px/, 'The about paragraphs shrink together on phones');
+  assert.match(phone, /\.about__extra\s*\{[^}]*display:\s*none/, 'The two extra paragraphs stay off phones');
   assert.match(phone, /\.contact__copy\s*\{[^}]*font-size:\s*18px/);
   assert.doesNotMatch(phone, /hero__description|hero__role/, 'The hero keeps its sizes');
   assert.match(phone, /\.section\s*\{[^}]*padding-block:\s*62px/, 'Sections breathe tighter');
