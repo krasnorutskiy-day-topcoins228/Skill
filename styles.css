@@ -240,7 +240,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 /* About */
 .about__grid { display: grid; gap: 35px; }
 /* All paragraphs inherit the introductory paragraph's responsive size. */
-.about__copy { display: grid; gap: 12px; max-width: 680px; color: var(--text-on-wine); font-size: 23px; line-height: 1.65; }
+.about__copy { display: grid; gap: 8px; max-width: 680px; color: var(--text-on-wine); font-size: 23px; line-height: 1.65; }
 .about__lead { color: var(--text-on-wine); font-size: inherit; line-height: 1.65; }
 .about__lead strong { font-weight: 700; }
 .about__statement { margin-top: 4px; padding-left: 18px; border-left: 2px solid var(--ice); color: var(--text-on-wine); font-size: inherit; font-weight: 600; line-height: 1.7; }
@@ -495,7 +495,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .section { padding-block: 62px; }
   main { --vine-space: 116px; }
   .section-heading__copy { font-size: 18px; }
-  .about__copy { gap: 11px; font-size: 19px; }
+  .about__copy { gap: 8px; font-size: 19px; }
   .about__extra { display: none; }
   .metric__caption { font-size: 18px; }
   .evidence__heading > p { font-size: 18px; }
