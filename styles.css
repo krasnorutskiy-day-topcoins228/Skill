@@ -295,8 +295,6 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 .evidence-card__link:focus-visible { outline: 2px solid var(--wine); outline-offset: 3px; border-radius: 12px; }
 .evidence-card__screen img { display: block; width: 100%; height: auto; max-height: 62vh; object-fit: contain; }
 .evidence-card figcaption { display: flex; justify-content: space-between; gap: 10px; padding-top: 11px; margin-top: auto; border-top: 1px solid var(--line-on-ice); font-size: 15px; font-weight: 700; letter-spacing: .04em; }
-.evidence__hint { margin-top: 13px; font-size: 18px; font-weight: 600; }
-.evidence__hint span { margin-left: 5px; font-size: 18px; }
 /* The funnel takeaway closes the proof block in the accent colour. */
 .evidence__note { margin-top: 28px; padding: 26px 30px; border-radius: 22px; background: var(--wine); color: var(--text-on-wine); font-size: 20px; line-height: 1.65; }
 .evidence__note strong { display: block; margin-bottom: 8px; font-family: var(--font-accent); font-size: 1.55em; font-style: italic; font-weight: 600; letter-spacing: -.01em; line-height: 1.15; }
@@ -799,7 +797,6 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   /* Phone screenshots are tall; cap their height so mixed cards stay in rhythm.
      The frame mats the sides instead of cropping the statistics. */
   .evidence-card__screen img { max-height: 440px; object-fit: contain; }
-  .evidence__hint { display: none; }
   .evidence__note { display: grid; grid-template-columns: minmax(230px, 1fr) minmax(0, 1.7fr); gap: 10px 56px; align-items: center; padding: 30px 38px; }
   .evidence__note strong { margin-bottom: 0; }
   .projects__heading { margin-bottom: 70px; }

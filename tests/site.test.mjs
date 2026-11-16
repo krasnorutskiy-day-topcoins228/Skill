@@ -322,6 +322,9 @@ test('the supplied result and its evidence gallery are present', () => {
   assert.match(html, /Не только подписчики/, 'The funnel note leads with its point');
   assert.match(html, /воронк/i, 'The Reels funnel is named');
   assert.match(html, /ПЕРВЫЙ REELS/, 'The last card is captioned as the debut Reels');
+  assert.doesNotMatch(html, /АККАУНТ С НУЛЯ/, 'The repeated card labels stay removed');
+  assert.doesNotMatch(html, /0\d \/ 08/, 'The card counters stay removed');
+  assert.doesNotMatch(html, /evidence__hint|Листайте в сторону/, 'The swipe hint stays removed');
   assert.equal((html.match(/Показатель уточняется/g) || []).length, 0, 'The pending captions are retired');
   assert.match(css, /\.evidence__note\s*\{[^}]*background:\s*var\(--wine\)/, 'The funnel note is a wine callout');
   assert.match(css, /\.evidence-card__screen\s*\{[^}]*box-shadow/, 'The screenshot cards rest on a soft shadow');
@@ -740,9 +743,8 @@ test('light-blue surfaces use stronger, readable burgundy text', () => {
   assert.ok(textOnWine, 'Missing the wine-surface ink token');
   assert.ok(contrast(textOnWine, wine) >= 8.5, 'Wine-surface text should stay crisp');
   assert.ok(contrast(textOnWine, wine) > contrast(ice, wine), 'The wine ink reads brighter than the pastel ice');
-  assert.doesNotMatch(rule('.evidence__hint'), /opacity:\s*(?:0?\.\d+)/, 'The hint must not fade text');
+  assert.doesNotMatch(css, /\.evidence__hint/, 'The swipe hint and its styles stay removed');
   assert.match(rule('.project-card--light .project-card__details dd'), /opacity:\s*1/);
-  assert.match(rule('.evidence__hint'), /font-size:\s*18px/);
 });
 
 test('project cards open one at a time and glide', () => {
