@@ -348,6 +348,7 @@ test('both project categories open to show the requested case fields', () => {
   for (const field of ['Срок сотрудничества', 'Стартовая точка', 'Задачи', 'Результаты']) {
     assert.ok(html.includes(field), `Missing case field: ${field}`);
   }
+  assert.doesNotMatch(html, /Здесь будут собраны проекты/, 'The projects placeholder sentence stays removed');
 });
 
 test('services show the four supplied packages and distinguish the video editing add-on', () => {
