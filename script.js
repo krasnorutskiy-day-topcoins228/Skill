@@ -77,7 +77,7 @@
     '.about__heading', '.about__copy > p',
     '.section-heading > *', '.metrics > .metric',
     '.evidence__heading > *', '.evidence__gallery', '.evidence__hint', '.evidence__note',
-    '.projects__intro', '.project-list > .project-card',
+    '.project-list > .project-card', '.projects__cases',
     '.tariffs > .tariff-card', '.services__extra',
     '.personal__title-wrap', '.personal__intro > *', '.personal__included-heading',
     '.personal__features > .personal-feature', '.personal__format',
@@ -311,69 +311,5 @@
     button.addEventListener('focus', pour);
     button.addEventListener('mouseleave', drain);
     button.addEventListener('blur', drain);
-  }
-})();
-
-// Project cards behave like a polite accordion: opening one folds the other,
-// and the case details glide in and out by height. Native <details> keeps
-// working without scripting; reduced motion skips the glide entirely.
-(() => {
-  'use strict';
-  const list = typeof document.querySelector === 'function' ? document.querySelector('.project-list') : null;
-  if (!list || typeof list.querySelectorAll !== 'function') return;
-  const cards = [...list.querySelectorAll('.project-card')]
-    .filter((card) => card && typeof card.querySelector === 'function' && card.querySelector('summary'));
-  if (!cards.length) return;
-  const raf = typeof window.requestAnimationFrame === 'function' ? window.requestAnimationFrame.bind(window) : null;
-  const reduce = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false;
-  const glide = 'height .42s cubic-bezier(.22, 1, .36, 1)';
-  function settle(card, body, closing) {
-    if (card.__glide) window.clearTimeout(card.__glide);
-    card.__glide = window.setTimeout(() => {
-      card.__glide = null;
-      card.dataset.state = '';
-      if (closing) card.open = false;
-      if (body) body.style.cssText = '';
-    }, 450);
-  }
-  function collapse(card) {
-    if (card.dataset.state === 'closing') return;
-    card.dataset.state = 'closing';
-    const body = card.querySelector('.project-card__details');
-    if (!body || !raf || reduce) { card.open = false; card.dataset.state = ''; return; }
-    const from = body.offsetHeight;
-    body.style.transition = 'none';
-    body.style.height = from + 'px';
-    body.style.overflow = 'hidden';
-    void body.offsetHeight;
-    body.style.transition = glide;
-    body.style.height = '0px';
-    settle(card, body, true);
-  }
-  function expand(card) {
-    if (card.dataset.state === 'opening') return;
-    card.dataset.state = 'opening';
-    card.open = true;
-    const body = card.querySelector('.project-card__details');
-    if (!body || !raf || reduce) { card.dataset.state = ''; return; }
-    const from = card.__glide ? body.offsetHeight : 0;
-    body.style.transition = 'none';
-    body.style.height = from + 'px';
-    body.style.overflow = 'hidden';
-    void body.offsetHeight;
-    body.style.transition = glide;
-    body.style.height = body.scrollHeight + 'px';
-    settle(card, body, false);
-  }
-  for (const card of cards) {
-    const summary = card.querySelector('summary');
-    if (!summary || typeof summary.addEventListener !== 'function') continue;
-    summary.addEventListener('click', (event) => {
-      if (event && typeof event.preventDefault === 'function') event.preventDefault();
-      for (const other of cards) if (other !== card && other.open) collapse(other);
-      const closing = card.dataset.state === 'closing';
-      if (card.open && !closing) collapse(card);
-      else expand(card);
-    });
   }
 })();

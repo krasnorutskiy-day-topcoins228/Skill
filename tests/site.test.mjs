@@ -360,12 +360,27 @@ test('the supplied result and its evidence gallery are present', () => {
   assert.match(css, /@media\s*\(min-width:\s*900px\)\s*\{[\s\S]*?\.evidence-card:nth-child\(5\)\s*\{[^}]*order:\s*4/, 'The mixed pair drops to the third row');
 });
 
-test('both project categories open to show the requested case fields', () => {
-  assert.ok((html.match(/<details\b/g) || []).length >= 2);
-  for (const field of ['Срок сотрудничества', 'Стартовая точка', 'Задачи', 'Результаты']) {
-    assert.ok(html.includes(field), `Missing case field: ${field}`);
+test('both project directions lay out their real scope instead of placeholder fields', () => {
+  const projects = html.match(/<section\b[^>]*id="projects"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(projects, 'Projects section is missing');
+  for (const text of ['Коммерческие', 'Личные', 'SMM-стратегии', 'контент-план', 'ИЗ ПРАКТИКИ', '2&nbsp;900&nbsp;000', '8&nbsp;000']) {
+    assert.ok(projects.includes(text), `Missing projects copy: ${text}`);
   }
+  assert.doesNotMatch(projects, /Будет добавлено/, 'The placeholder case fields stay retired');
+  assert.doesNotMatch(projects, /ФОРМАТ КЕЙСА|НАЖМИТЕ, ЧТОБЫ УЗНАТЬ БОЛЬШЕ/, 'The accordion affordances stay retired');
+  assert.doesNotMatch(projects, /<details\b/, 'The direction cards stay open without an accordion');
   assert.doesNotMatch(html, /Здесь будут собраны проекты/, 'The projects placeholder sentence stays removed');
+});
+
+test('the projects section names the accounts grown from zero', () => {
+  const projects = html.match(/<section\b[^>]*id="projects"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(projects, 'Projects section is missing');
+  assert.match(projects, /КЕЙСЫ \/ ВЫРАЩЕНО С НУЛЯ/);
+  for (const handle of ['xsky\.drone', 'formomilk', 'jad\.su\.export']) {
+    assert.match(projects, new RegExp(`class="projects__account" href="https://www\\.instagram\\.com/${handle}" target="_blank" rel="noopener"`), `Missing projects chip for @${handle}`);
+  }
+  assert.match(projects, /class="project-card__cta" href="#services"/, 'The business card points at the tariffs');
+  assert.match(projects, /class="project-card__cta" href="#personal-brand"/, 'The experts card points at the personal brand offer');
 });
 
 test('services show the four supplied packages and distinguish the video editing add-on', () => {
@@ -759,21 +774,19 @@ test('light-blue surfaces use stronger, readable burgundy text', () => {
   assert.ok(contrast(textOnWine, wine) >= 8.5, 'Wine-surface text should stay crisp');
   assert.ok(contrast(textOnWine, wine) > contrast(ice, wine), 'The wine ink reads brighter than the pastel ice');
   assert.doesNotMatch(css, /\.evidence__hint/, 'The swipe hint and its styles stay removed');
-  assert.match(rule('.project-card--light .project-card__details dd'), /opacity:\s*1/);
 });
 
-test('project cards open one at a time and glide', () => {
+test('project cards stay open as rich static cards', () => {
   const js = read('script.js');
   assert.doesNotMatch(html, /Показатель уточняется/, 'The pending captions are retired');
   assert.doesNotMatch(html, /metric__pending/);
   assert.doesNotMatch(css, /\.metric__pending/);
-  assert.match(js, /querySelector\('\.project-list'\)/, 'The cards learn accordion manners');
-  assert.match(js, /other !== card && other\.open/, 'Opening one card folds the other');
-  assert.match(js, /if \(closing\) card\.open = false/, 'The glide ends by really closing the card');
-  assert.match(js, /prefers-reduced-motion/, 'The glide respects reduced motion');
+  assert.doesNotMatch(js, /other !== card && other\.open/, 'The accordion script stays retired');
   assert.match(css, /@media\s*\(hover:\s*hover\)\s*\{[\s\S]*?\.project-card:hover\s*\{[^}]*translateY\(-3px\)/, 'Cards lift on hover');
-  assert.match(css, /\.project-card__toggle\s*\{[^}]*linear-gradient\(/, 'The plus button sits on glass');
-  assert.doesNotMatch(css, /\n\s*\.project-card__details dd\s*\{[^}]*opacity/, 'The case values read at full strength');
+  assert.match(css, /\.project-card\s*\{[^}]*flex-direction:\s*column/, 'The cards stack their content statically');
+  assert.match(css, /\.project-card__stat\s*\{[^}]*border-radius:\s*16px/, 'The practice highlight sits on its own panel');
+  assert.match(css, /\.projects__account\s*\{[^}]*min-height:\s*44px/, 'Account chips keep a comfortable tap target');
+  assert.doesNotMatch(css, /\n\s*\.project-card__details/, 'The accordion-only details styles stay removed');
 });
 
 test('phones read lighter and scroll less', () => {
@@ -871,7 +884,8 @@ test('the hedge has transparent edges and dense foliage across its centre', () =
 test('main mobile reading text is at least 20px', () => {
   for (const selector of [
     '.hero__role', '.hero__description', '.section-heading__copy', '.about__copy',
-    '.metric__caption', '.project-card__description', '.project-card__details',
+    '.metric__caption', '.project-card__description', '.project-card__list li', '.project-card__stat-unit',
+    '.projects__cases-text',
     '.tariff-card__name', '.tariff-card__details', '.tariff-card__description',
     '.services__extra-copy', '.services__related', '.personal__intro', '.personal-feature__content',
     '.personal__format-copy', '.personal__offer', '.why__intro-copy', '.why__item h4',
