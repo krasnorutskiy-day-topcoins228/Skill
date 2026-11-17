@@ -331,19 +331,19 @@ test('the supplied result and its evidence gallery are present', () => {
   assert.doesNotMatch(css, /\.evidence-lightbox/, 'The retired lightbox styles stay gone');
   assert.doesNotMatch(html, /Место для/, 'No leftover screenshot placeholders');
   assert.equal((html.match(/<img src="assets\/account-0\d\.jpg"/g) || []).length, 8, 'Eight real screenshots in the gallery');
-  assert.equal((html.match(/class="evidence-card__link"/g) || []).length, 8, 'Every screenshot is a link');
+  assert.equal((html.match(/class="evidence-card__link"/g) || []).length, 5, 'Only the user-confirmed screenshots stay links');
   const profileLinks = {
     'account-01.jpg': 'xsky.drone',
     'account-02.jpg': 'formomilk',
     'account-03.jpg': 'jad.su.export',
-    'account-04.jpg': 'xsky.drone',
-    'account-05.jpg': 'xsky.drone',
-    'account-06.jpg': 'formomilk',
     'account-07.jpg': 'jad.su.export',
     'account-08.jpg': 'jad.su.export',
   };
   for (const [asset, handle] of Object.entries(profileLinks)) {
     assert.match(html, new RegExp(`class="evidence-card__link" href="https:\\/\\/www\\.instagram\\.com\\/${handle.replace(/\./g, '\\.')}" target="_blank" rel="noopener">\\s*<img src="assets\\/${asset}"`), `${asset} opens ${handle}`);
+  }
+  for (const asset of ['account-04.jpg', 'account-05.jpg', 'account-06.jpg']) {
+    assert.doesNotMatch(html, new RegExp(`evidence-card__link"[^>]*>\\s*<img src="assets\\/${asset}"`), `${asset} stays a plain image without a link`);
   }
   for (let i = 1; i <= 8; i += 1) {
     const asset = `account-0${i}.jpg`;
