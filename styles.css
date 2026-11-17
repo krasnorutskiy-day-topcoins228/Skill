@@ -281,7 +281,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 .evidence__heading h3 span { font-style: normal; }
 .evidence__heading > p { max-width: 330px; font-size: 20px; line-height: 1.7; }
 /* A flex track lets each card pick its own width: landscape stats read larger. */
-.evidence__gallery { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; scrollbar-width: thin; }
+.evidence__gallery { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; scrollbar-width: thin; align-items: center; }
 .evidence-card { display: flex; min-width: 0; flex: 0 0 max(76%, 220px); flex-direction: column; scroll-snap-align: start; }
 /* Real screenshots keep their own proportions: no cropping, no letterboxing. */
 .evidence-card__screen { position: relative; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line-on-ice); border-radius: 17px; background: rgba(255, 255, 255, .10); box-shadow: 0 10px 26px rgba(25, 0, 9, .10); }
@@ -360,12 +360,10 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
 .tariff-card__description { margin-top: 18px; font-size: 20px; line-height: 1.55; }
 .tariff-card--package { background: rgba(199, 229, 255, .12); }
 .tariff-card__package { display: inline-block; margin-top: 20px; padding: 6px 12px; border: 1px solid var(--line-on-wine); border-radius: 999px; font-size: 18px; font-weight: 700; line-height: 1.3; }
-.services__extra { display: grid; gap: 24px; margin-top: 24px; padding: 28px; border-radius: 20px; background: var(--ice); color: var(--ink-on-ice); font-weight: 600; }
-.services__extra-label { margin-bottom: 13px; font-size: 18px; font-weight: 700; letter-spacing: .08em; line-height: 1.4; }
-.services__extra h3 { font-size: clamp(32px, 7vw, 46px); font-weight: 700; letter-spacing: -.04em; line-height: 1.15; }
-.services__extra-copy { max-width: 560px; font-size: 21px; line-height: 1.6; }
+.services__extra { margin-top: 16px; color: var(--text-on-wine); }
+.services__extra-copy { max-width: 640px; font-size: 20px; line-height: 1.6; }
 .text-link { display: inline-flex; align-items: center; margin-top: 25px; padding-bottom: 4px; border-bottom: 1px solid currentColor; font-size: 18px; font-weight: 700; }
-.services__extra .text-link { min-height: 44px; padding-block: 8px; font-size: 20px; line-height: 1.3; }
+.services__extra .text-link { margin-top: 0; font-size: 20px; }
 @media (min-width: 320px) {
   .tariff-card__term { white-space: nowrap; }
 }
@@ -732,7 +730,6 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .tariffs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   /* Reserve two title lines only where narrow cards need them for price alignment. */
   .tariff-card__name { min-height: 2.6em; }
-  .services__extra { grid-template-columns: minmax(0, .8fr) minmax(0, 1fr); gap: 40px; align-items: center; padding: 34px; }
 }
 
 @media (min-width: 760px) {
@@ -780,7 +777,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .metric__number { font-size: clamp(2.2rem, 3.4vw, 3.4rem); }
   .evidence { margin-top: 100px; }
   .evidence__heading { grid-template-columns: 1fr 300px; align-items: end; margin-bottom: 28px; }
-  .evidence__gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; }
+  .evidence__gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; align-items: stretch; }
   /* The three matching phone screenshots (04, 07, 08) share the second row;
      the mixed pair (05, 06) closes the grid. DOM and phone order stay 01-08. */
   .evidence-card:nth-child(4) { order: 1; }
@@ -799,7 +796,7 @@ main > .section:nth-of-type(even):not(.about)::before { transform: scaleX(-1); }
   .project-card__title { margin-top: 62px; font-size: clamp(2.55rem, 4.9vw, 4.2rem); }
   .project-card__details { padding-inline: 35px; }
   .services__heading { grid-template-columns: minmax(0, 1fr) minmax(0, .78fr); gap: 40px; margin-bottom: 52px; }
-  .services__extra { margin-top: 32px; padding: 38px; }
+  .services__extra { margin-top: 20px; }
   .personal__header { grid-template-columns: minmax(0, 1fr) minmax(0, .87fr); gap: 60px; }
   .personal__intro { padding-top: 42px; font-size: 23px; }
   .personal__included { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 60px; margin-top: 100px; }

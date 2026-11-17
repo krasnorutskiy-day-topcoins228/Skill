@@ -354,6 +354,8 @@ test('the supplied result and its evidence gallery are present', () => {
   assert.match(css, /\.evidence-card__screen img\s*\{[^}]*width:\s*100%/, 'Screenshots fill their cards without cropping');
   assert.match(css, /\.evidence-card__screen img\s*\{[^}]*max-height:\s*440px[^}]*object-fit:\s*contain/, 'Tall phone screenshots stay in rhythm without cropping');
   assert.match(css, /\.evidence__gallery\s*\{[^}]*display:\s*flex/, 'The scroller flexes so each card picks its own width');
+  assert.match(css, /\.evidence__gallery\s*\{[^}]*align-items:\s*center/, 'Short screenshot cards sit centered in the scroller');
+  assert.match(css, /\.evidence__gallery\s*\{[^}]*display:\s*grid[^}]*align-items:\s*stretch/, 'The desktop grid keeps stretching its cards');
   assert.match(css, /@media\s*\(min-width:\s*900px\)\s*\{[\s\S]*?\.evidence-card:nth-child\(4\)\s*\{[^}]*order:\s*1/, 'The matching phone screenshots gather beside 04');
   assert.match(css, /@media\s*\(min-width:\s*900px\)\s*\{[\s\S]*?\.evidence-card:nth-child\(5\)\s*\{[^}]*order:\s*4/, 'The mixed pair drops to the third row');
 });
@@ -741,10 +743,11 @@ test('light-blue surfaces use stronger, readable burgundy text', () => {
     assert.ok(match, `Missing rule: ${selector}`);
     return match[1];
   };
-  for (const selector of ['.section--ice', '.project-card--light', '.services__extra']) {
+  for (const selector of ['.section--ice', '.project-card--light']) {
     assert.match(rule(selector), /color:\s*var\(--ink-on-ice\)/);
     assert.match(rule(selector), /font-weight:\s*600/);
   }
+  assert.match(rule('.services__extra'), /color:\s*var\(--text-on-wine\)/, 'The montage note reads as plain wine-surface text');
   assert.match(rule('.button--ice'), /color:\s*var\(--ink-on-ice\)/);
   for (const selector of ['.metric--feature', '.personal__format']) {
     assert.match(rule(selector), /background:\s*var\(--wine\)/);
