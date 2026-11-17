@@ -151,8 +151,7 @@ test('the gliding thumb follows the section in view without extra ornaments', ()
   assert.match(js, /requestAnimationFrame/, 'Section tracking is throttled to animation frames');
   assert.match(js, /lockedId/, 'Clicking a link locks the highlight while its smooth scroll runs');
   assert.match(js, /lockedId = null;\s*schedule\(\)/, 'The lock releases once the scroll comes to rest');
-  assert.match(js, /evidence-lightbox/, 'Screenshots open in a lightbox dialog');
-  assert.match(js, /showModal/, 'The lightbox uses the native dialog element');
+  assert.doesNotMatch(js, /evidence-lightbox|showModal/, 'The retired lightbox script stays gone');
   assert.match(js, /setAttribute\('aria-current',\s*'true'\)/);
   assert.match(js, /removeAttribute\('aria-current'\)/);
   assert.match(js, /--header-offset/);
@@ -329,16 +328,18 @@ test('the supplied result and its evidence gallery are present', () => {
   assert.match(css, /\.evidence__note\s*\{[^}]*background:\s*var\(--wine\)/, 'The funnel note is a wine callout');
   assert.match(css, /\.evidence-card__screen\s*\{[^}]*box-shadow/, 'The screenshot cards rest on a soft shadow');
   assert.match(css, /@media \(hover: hover\)\s*\{[\s\S]*?\.evidence-card:hover \.evidence-card__screen\s*\{[^}]*translateY\(-4px\)/, 'Cards lift gently on hover');
-  assert.match(css, /\.evidence-lightbox\s*\{[^}]*background:\s*var\(--wine\)/, 'The lightbox viewer keeps the wine surface');
+  assert.doesNotMatch(css, /\.evidence-lightbox/, 'The retired lightbox styles stay gone');
   assert.doesNotMatch(html, /Место для/, 'No leftover screenshot placeholders');
   assert.equal((html.match(/<img src="assets\/account-0\d\.jpg"/g) || []).length, 8, 'Eight real screenshots in the gallery');
-  assert.equal((html.match(/class="evidence-card__link"/g) || []).length, 8, 'Every screenshot opens larger');
+  assert.equal((html.match(/class="evidence-card__link"/g) || []).length, 8, 'Every screenshot is a link');
+  assert.equal((html.match(/class="evidence-card__link" href="https:\/\/www\.instagram\.com\/jad\.su\.export"/g) || []).length, 8, 'Every screenshot links to the Instagram profile');
+  assert.match(html, /class="evidence-card__link" href="https:\/\/www\.instagram\.com\/jad\.su\.export" target="_blank" rel="noopener"/, 'The profile opens in a new tab');
   for (let i = 1; i <= 8; i += 1) {
     const asset = `account-0${i}.jpg`;
     assert.ok(existsSync(`assets/${asset}`), `Missing screenshot: ${asset}`);
     assert.ok(html.includes(`assets/${asset}`), `${asset} must be shown in the gallery`);
   }
-  assert.match(html, /<dialog class="evidence-lightbox"/, 'The lightbox dialog is present');
+  assert.doesNotMatch(html, /evidence-lightbox/, 'The lightbox dialog stays retired');
   assert.match(css, /\.evidence-card__screen img\s*\{[^}]*width:\s*100%/, 'Screenshots fill their cards without cropping');
   assert.match(css, /\.evidence-card__screen img\s*\{[^}]*max-height:\s*440px[^}]*object-fit:\s*contain/, 'Tall phone screenshots stay in rhythm without cropping');
   assert.match(css, /\.evidence__gallery\s*\{[^}]*display:\s*flex/, 'The scroller flexes so each card picks its own width');
